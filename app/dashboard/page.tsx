@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
-type Tab = 'image' | 'video' | '3d'
+type Tab = 'image' | 'video'
 
 type Model =
   | 'flux2klein'
@@ -200,9 +200,9 @@ const MODELS: {
 ]
 
 const TIER_LABEL: Record<Tier, string> = {
-  budget: '💚 Budget',
-  standard: '🟡 Standard',
-  premium: '🔴 Premium',
+  budget: '★',
+  standard: '★★★',
+  premium: '★★★★★',
 }
 
 // ── Video models ─────────────────────────────────────────────────────────────
@@ -249,62 +249,6 @@ const VIDEO_MODELS: VideoModelDef[] = [
     badge: 'Google',
     desc: "Google Veo 3.1 Quality — richer detail, smoother motion, accurate lighting.",
     color: 'from-blue-600 to-indigo-500',
-    tier: 'premium',
-  },
-]
-
-// ── 3D models ─────────────────────────────────────────────────────────────────
-
-type ThreeDModel = 'tripo3d' | 'meshy4' | 'shape' | 'zero123pp' | 'stable3d'
-
-interface ThreeDModelDef {
-  id: ThreeDModel
-  label: string
-  badge: string
-  desc: string
-  color: string
-  tier: Tier
-}
-
-const THREE_D_MODELS: ThreeDModelDef[] = [
-  {
-    id: 'tripo3d',
-    label: 'TripoSG',
-    badge: 'Tripo3D',
-    desc: 'High-fidelity text-to-3D in seconds. Supports mesh, PBR, and glTF export.',
-    color: 'from-cyan-500 to-blue-400',
-    tier: 'budget',
-  },
-  {
-    id: 'shape',
-    label: 'Shap-E',
-    badge: 'OpenAI',
-    desc: "OpenAI's generative 3D model — fast implicit & mesh output from prompts.",
-    color: 'from-emerald-500 to-teal-400',
-    tier: 'budget',
-  },
-  {
-    id: 'stable3d',
-    label: 'Stable Zero123',
-    badge: 'Stability AI',
-    desc: 'Single-image to 3D object. Excellent for product and character assets.',
-    color: 'from-violet-500 to-purple-400',
-    tier: 'standard',
-  },
-  {
-    id: 'zero123pp',
-    label: 'Zero123++',
-    badge: 'Zero123',
-    desc: 'Multi-view consistent 3D from a single image with high geometric accuracy.',
-    color: 'from-sky-500 to-indigo-400',
-    tier: 'standard',
-  },
-  {
-    id: 'meshy4',
-    label: 'Meshy 4',
-    badge: 'Meshy',
-    desc: "Meshy's flagship — text-to-3D with textures, rigging, and animation-ready output.",
-    color: 'from-rose-500 to-pink-400',
     tier: 'premium',
   },
 ]
@@ -359,7 +303,6 @@ export default function DashboardPage() {
   const [model, setModel] = useState<Model>('gemini')
   const [tab, setTab] = useState<Tab>('image')
   const [videoModel, setVideoModel] = useState<VideoModel>('runway_turbo')
-  const [threeDModel, setThreeDModel] = useState<ThreeDModel>('tripo3d')
   const [resolution, setResolution] = useState<Resolution>('1024×1024')
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1 Square')
   const [loading, setLoading] = useState(false)
@@ -557,7 +500,6 @@ export default function DashboardPage() {
               {([
                 { id: 'image' as Tab, label: 'Image', icon: <ImageTabIcon /> },
                 { id: 'video' as Tab, label: 'Video', icon: <VideoTabIcon /> },
-                { id: '3d' as Tab, label: '3D Elements', icon: <CubeTabIcon /> },
               ] as { id: Tab; label: string; icon: React.ReactNode }[]).map((t) => {
                 const active = tab === t.id
                 return (
@@ -595,8 +537,6 @@ export default function DashboardPage() {
               placeholder={
                 tab === 'video'
                   ? 'A timelapse of a neon-lit city at night, rain falling, people rushing by, cinematic 4K…'
-                  : tab === '3d'
-                  ? 'A futuristic sci-fi helmet with glowing visor, detailed surface textures, ready for game engine…'
                   : 'A cosmic library floating in deep space, bookshelves carved from nebula clouds, golden light spilling between the stars…'
               }
               rows={5}
@@ -624,17 +564,17 @@ export default function DashboardPage() {
                       disabled={loading}
                       className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-purple-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
                     >
-                      <optgroup label="💚 Budget" className="bg-[#1a1a2e]">
+                      <optgroup label="★" className="bg-[#1a1a2e]">
                         {MODELS.filter((m) => m.tier === 'budget').map((m) => (
                           <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
                         ))}
                       </optgroup>
-                      <optgroup label="🟡 Standard" className="bg-[#1a1a2e]">
+                      <optgroup label="★★★" className="bg-[#1a1a2e]">
                         {MODELS.filter((m) => m.tier === 'standard').map((m) => (
                           <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
                         ))}
                       </optgroup>
-                      <optgroup label="🔴 Premium" className="bg-[#1a1a2e]">
+                      <optgroup label="★★★★★" className="bg-[#1a1a2e]">
                         {MODELS.filter((m) => m.tier === 'premium').map((m) => (
                           <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
                         ))}
@@ -651,14 +591,13 @@ export default function DashboardPage() {
                 {(() => {
                   const m = MODELS.find((x) => x.id === model)
                   if (!m) return null
-                  const tierColor = m.tier === 'budget' ? 'text-emerald-400' : m.tier === 'standard' ? 'text-yellow-400' : 'text-rose-400'
                   return (
                     <div className="mb-1 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.05] flex items-start gap-2">
                       <span className={`mt-0.5 shrink-0 w-2 h-2 rounded-full bg-gradient-to-br ${m.color}`} />
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
                           <span className="text-[10px] font-semibold text-white/60">{m.badge}</span>
-                          <span className={`text-[10px] font-bold ${tierColor}`}>{TIER_LABEL[m.tier]}</span>
+                          <span className="text-[9px] font-bold tracking-wider bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">{TIER_LABEL[m.tier]}</span>
                         </div>
                         <p className="text-[11px] text-slate-400 leading-relaxed">{m.desc}</p>
                       </div>
@@ -698,7 +637,7 @@ export default function DashboardPage() {
                   />
                 </PanelRow>
               </>
-            ) : tab === 'video' ? (
+            ) : (
               <>
                 {/* Video — AI Model */}
                 <PanelRow icon={<ModelIcon />} label="AI Model">
@@ -709,17 +648,17 @@ export default function DashboardPage() {
                       disabled={loading}
                       className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-purple-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
                     >
-                      <optgroup label="💚 Budget" className="bg-[#1a1a2e]">
+                      <optgroup label="★" className="bg-[#1a1a2e]">
                         {VIDEO_MODELS.filter((m) => m.tier === 'budget').map((m) => (
                           <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
                         ))}
                       </optgroup>
-                      <optgroup label="🟡 Standard" className="bg-[#1a1a2e]">
+                      <optgroup label="★★★" className="bg-[#1a1a2e]">
                         {VIDEO_MODELS.filter((m) => m.tier === 'standard').map((m) => (
                           <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
                         ))}
                       </optgroup>
-                      <optgroup label="🔴 Premium" className="bg-[#1a1a2e]">
+                      <optgroup label="★★★★★" className="bg-[#1a1a2e]">
                         {VIDEO_MODELS.filter((m) => m.tier === 'premium').map((m) => (
                           <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
                         ))}
@@ -736,14 +675,13 @@ export default function DashboardPage() {
                 {(() => {
                   const m = VIDEO_MODELS.find((x) => x.id === videoModel)
                   if (!m) return null
-                  const tierColor = m.tier === 'budget' ? 'text-emerald-400' : m.tier === 'standard' ? 'text-yellow-400' : 'text-rose-400'
                   return (
                     <div className="mb-1 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.05] flex items-start gap-2">
                       <span className={`mt-0.5 shrink-0 w-2 h-2 rounded-full bg-gradient-to-br ${m.color}`} />
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
                           <span className="text-[10px] font-semibold text-white/60">{m.badge}</span>
-                          <span className={`text-[10px] font-bold ${tierColor}`}>{TIER_LABEL[m.tier]}</span>
+                          <span className="text-[9px] font-bold tracking-wider bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">{TIER_LABEL[m.tier]}</span>
                         </div>
                         <p className="text-[11px] text-slate-400 leading-relaxed">{m.desc}</p>
                       </div>
@@ -776,92 +714,14 @@ export default function DashboardPage() {
                   </p>
                 </div>
               </>
-            ) : (
-              <>
-                {/* 3D — AI Model */}
-                <PanelRow icon={<ModelIcon />} label="AI Model">
-                  <div className="relative">
-                    <select
-                      value={threeDModel}
-                      onChange={(e) => setThreeDModel(e.target.value as ThreeDModel)}
-                      disabled={loading}
-                      className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-purple-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
-                    >
-                      <optgroup label="💚 Budget" className="bg-[#1a1a2e]">
-                        {THREE_D_MODELS.filter((m) => m.tier === 'budget').map((m) => (
-                          <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
-                        ))}
-                      </optgroup>
-                      <optgroup label="🟡 Standard" className="bg-[#1a1a2e]">
-                        {THREE_D_MODELS.filter((m) => m.tier === 'standard').map((m) => (
-                          <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
-                        ))}
-                      </optgroup>
-                      <optgroup label="🔴 Premium" className="bg-[#1a1a2e]">
-                        {THREE_D_MODELS.filter((m) => m.tier === 'premium').map((m) => (
-                          <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
-                        ))}
-                      </optgroup>
-                    </select>
-                    <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-500">
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                        <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                  </div>
-                </PanelRow>
-                {/* Selected 3D model info */}
-                {(() => {
-                  const m = THREE_D_MODELS.find((x) => x.id === threeDModel)
-                  if (!m) return null
-                  const tierColor = m.tier === 'budget' ? 'text-emerald-400' : m.tier === 'standard' ? 'text-yellow-400' : 'text-rose-400'
-                  return (
-                    <div className="mb-1 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.05] flex items-start gap-2">
-                      <span className={`mt-0.5 shrink-0 w-2 h-2 rounded-full bg-gradient-to-br ${m.color}`} />
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <span className="text-[10px] font-semibold text-white/60">{m.badge}</span>
-                          <span className={`text-[10px] font-bold ${tierColor}`}>{TIER_LABEL[m.tier]}</span>
-                        </div>
-                        <p className="text-[11px] text-slate-400 leading-relaxed">{m.desc}</p>
-                      </div>
-                    </div>
-                  )
-                })()}
-
-                {/* Output Format */}
-                <PanelRow icon={<CubeTabIcon />} label="Output Format">
-                  <PanelSelect
-                    value="glTF / GLB"
-                    onChange={() => {}}
-                    disabled={true}
-                    options={[
-                      { value: 'glTF / GLB', label: 'glTF / GLB' },
-                      { value: 'OBJ + MTL', label: 'OBJ + MTL' },
-                      { value: 'FBX', label: 'FBX' },
-                      { value: 'USDZ', label: 'USDZ' },
-                    ]}
-                  />
-                </PanelRow>
-
-                {/* Coming soon notice */}
-                <div className="mt-2 px-3 py-3 rounded-xl bg-violet-500/5 border border-violet-500/15 flex items-start gap-2">
-                  <svg className="w-4 h-4 text-violet-400 shrink-0 mt-0.5" viewBox="0 0 16 16" fill="none">
-                    <path d="M8 2a6 6 0 100 12A6 6 0 008 2zm0 3.5v3m0 2h.01" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-                  </svg>
-                  <p className="text-[11px] text-violet-300/80 leading-relaxed">
-                    3D generation is coming soon. Models are ready — API integration is in progress.
-                  </p>
-                </div>
-              </>
             )}
           </div>
 
           {/* Generate button */}
           <div className="px-5 pb-5 pt-2 shrink-0">
             <button
-              onClick={tab !== '3d' ? handleGenerate : undefined}
-              disabled={loading || !prompt.trim() || tab === '3d'}
+              onClick={handleGenerate}
+              disabled={loading || !prompt.trim()}
               className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-purple-600 via-violet-600 to-purple-600 hover:from-purple-500 hover:via-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_0_24px_rgba(139,92,246,0.35)] hover:shadow-[0_0_36px_rgba(139,92,246,0.55)] active:scale-[0.98] flex items-center justify-center gap-2"
             >
               {loading ? (
@@ -873,11 +733,6 @@ export default function DashboardPage() {
                 <>
                   <VideoTabIcon />
                   Generate Video
-                </>
-              ) : tab === '3d' ? (
-                <>
-                  <CubeTabIcon />
-                  Coming Soon
                 </>
               ) : (
                 <>
@@ -1160,14 +1015,6 @@ function VideoTabIcon() {
   )
 }
 
-function CubeTabIcon() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-      <path d="M6.5 1.5L11 4v5L6.5 11.5 2 9V4L6.5 1.5Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
-      <path d="M6.5 1.5v10M2 4l4.5 2.5L11 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
 
 function PromptIcon() {
   return (
