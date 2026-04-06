@@ -3,17 +3,28 @@ import { NextRequest, NextResponse } from 'next/server'
 
 // ── Model routing ─────────────────────────────────────────────────────────────
 
-type RunwayModel = 'runway_turbo' | 'runway_aleph'
-type VeoModel    = 'veo3_fast' | 'veo3'
-type VideoModel  = RunwayModel | VeoModel
+type VideoModel =
+  | 'runway_turbo' | 'runway_aleph'
+  | 'veo3_fast' | 'veo3' | 'veo3_audio'
+  | 'kling26' | 'kling3' | 'kling3_audio'
+  | 'seedance2' | 'seedance2_fast'
+  | 'hailuo_pro' | 'hailuo_std'
+  | 'sora2' | 'sora2_pro' | 'sora2_audio'
+  | 'wan26'
+  | 'grok_t2v'
 
 const RUNWAY_MODELS = new Set<VideoModel>(['runway_turbo', 'runway_aleph'])
-const ALL_MODELS    = new Set<VideoModel>(['runway_turbo', 'runway_aleph', 'veo3_fast', 'veo3'])
-
-const VEO_MODEL_ID: Record<VeoModel, string> = {
-  veo3_fast: 'veo3_fast',
-  veo3:      'veo3',
-}
+const VEO_MODELS    = new Set<VideoModel>(['veo3_fast', 'veo3', 'veo3_audio'])
+const GENERIC_MODELS = new Set<VideoModel>([
+  'kling26', 'kling3', 'kling3_audio',
+  'seedance2', 'seedance2_fast',
+  'hailuo_pro', 'hailuo_std',
+  'sora2', 'sora2_pro', 'sora2_audio',
+  'wan26', 'grok_t2v',
+])
+const ALL_MODELS = new Set<VideoModel>([
+  ...RUNWAY_MODELS, ...VEO_MODELS, ...GENERIC_MODELS,
+])
 
 // Normalise dashboard aspect ratio label → kie.ai format
 const AR_MAP: Record<string, string> = {
@@ -28,7 +39,9 @@ const DAILY_LIMIT   = 10
 const POLL_INTERVAL = 8_000   // 8 s
 const POLL_TIMEOUT  = 300_000 // 5 min
 
-const KIE_BASE = 'https://api.kie.ai'
+const KIE_BASE         = 'https://api.kie.ai'
+const CREATE_TASK_URL  = `${KIE_BASE}/api/v1/jobs/createTask`
+const RECORD_INFO_URL  = `${KIE_BASE}/api/v1/jobs/recordInfo`
 
 // ── kie.ai response shapes ────────────────────────────────────────────────────
 
@@ -51,6 +64,89 @@ interface KieVeoStatus {
   data?: {
     successFlag?: number  // 0 generating | 1 success | 2/3 failed
     resultUrls?:  string[]
+  }
+}
+
+interface KieGenericStatus {
+  code: number
+  data?: {
+    state?:      string // waiting | queuing | generating | success | fail
+    resultJson?: string
+  }
+}
+
+// ── Build generic-API task body for models using /jobs/createTask ─────────────
+
+function buildT2VTaskBody(
+  model: VideoModel,
+  prompt: string,
+  aspectRatio: string | undefined,
+) {
+  const ar = aspectRatio ?? '16:9'
+
+  switch (model) {
+    case 'kling26':
+      return {
+        model: 'kling-2.6/text-to-video',
+        input: { prompt, sound: true, aspect_ratio: ar, duration: '5' },
+      }
+    case 'kling3':
+      return {
+        model: 'kling-3.0/video',
+        input: { prompt, sound: false, mode: 'std', duration: '5', aspect_ratio: ar, multi_shots: false },
+      }
+    case 'kling3_audio':
+      return {
+        model: 'kling-3.0/video',
+        input: { prompt, sound: true, mode: 'pro', duration: '5', aspect_ratio: ar, multi_shots: false },
+      }
+    case 'seedance2':
+      return {
+        model: 'bytedance/seedance-2',
+        input: { prompt, resolution: '720p', aspect_ratio: ar, duration: 8, generate_audio: true },
+      }
+    case 'seedance2_fast':
+      return {
+        model: 'bytedance/seedance-2-fast',
+        input: { prompt, resolution: '720p', aspect_ratio: ar, duration: 8, generate_audio: true },
+      }
+    case 'hailuo_pro':
+      return {
+        model: 'hailuo/02-text-to-video-pro',
+        input: { prompt },
+      }
+    case 'hailuo_std':
+      return {
+        model: 'hailuo/02-text-to-video-standard',
+        input: { prompt },
+      }
+    case 'sora2':
+      return {
+        model: 'sora-2-text-to-video',
+        input: { prompt, aspect_ratio: ar === '9:16' ? 'portrait' : 'landscape', upload_method: 's3' },
+      }
+    case 'sora2_pro':
+      return {
+        model: 'sora-2-pro-text-to-video',
+        input: { prompt, aspect_ratio: ar === '9:16' ? 'portrait' : 'landscape', size: 'high', upload_method: 's3' },
+      }
+    case 'sora2_audio':
+      return {
+        model: 'sora-2-pro-text-to-video',
+        input: { prompt, aspect_ratio: ar === '9:16' ? 'portrait' : 'landscape', size: 'high', upload_method: 's3' },
+      }
+    case 'wan26':
+      return {
+        model: 'wan/2-6-text-to-video',
+        input: { prompt, audio: true, duration: '5', resolution: '720p' },
+      }
+    case 'grok_t2v':
+      return {
+        model: 'grok-imagine/text-to-video',
+        input: { prompt, aspect_ratio: ar, mode: 'normal', duration: '6', resolution: '720p' },
+      }
+    default:
+      throw new Error(`Unsupported generic model: ${model}`)
   }
 }
 
@@ -85,15 +181,15 @@ async function submitRunway(
 
 async function submitVeo(
   prompt: string,
-  model: VeoModel,
+  model: VideoModel,
   aspectRatio: string | undefined,
   apiKey: string,
 ): Promise<string> {
+  const veoId = model === 'veo3_fast' ? 'veo3_fast' : 'veo3'
   const body: Record<string, unknown> = {
     prompt,
-    model: VEO_MODEL_ID[model],
+    model: veoId,
   }
-  // Veo only supports 16:9 and 9:16; default to 16:9 for others
   if (aspectRatio === '9:16') body.aspect_ratio = '9:16'
   else body.aspect_ratio = '16:9'
 
@@ -108,6 +204,22 @@ async function submitVeo(
   const data = JSON.parse(raw) as KieSubmitResponse
   if (data.code !== 200 || !data.data?.taskId) {
     throw new Error(`kie.ai Veo error: ${data.msg ?? raw.slice(0, 200)}`)
+  }
+  return data.data.taskId
+}
+
+async function submitGenericTask(body: object, apiKey: string): Promise<string> {
+  const res = await fetch(CREATE_TASK_URL, {
+    method:  'POST',
+    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    body:    JSON.stringify(body),
+  })
+  const raw = await res.text()
+  console.log(`[generate-video] generic submit ${res.status}:`, raw)
+
+  const data = JSON.parse(raw) as KieSubmitResponse
+  if (data.code !== 200 || !data.data?.taskId) {
+    throw new Error(`kie.ai createTask error: ${data.msg ?? raw.slice(0, 200)}`)
   }
   return data.data.taskId
 }
@@ -150,6 +262,30 @@ async function pollVeo(taskId: string, apiKey: string): Promise<string> {
       return url
     }
     if (flag === 2 || flag === 3) throw new Error('Veo video generation failed')
+  }
+  throw new Error('Video generation timed out — try again')
+}
+
+async function pollGenericTask(taskId: string, apiKey: string): Promise<string> {
+  const deadline = Date.now() + POLL_TIMEOUT
+  while (Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, POLL_INTERVAL))
+    const res  = await fetch(`${RECORD_INFO_URL}?taskId=${taskId}`, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    })
+    const data = (await res.json()) as KieGenericStatus
+    const state = data.data?.state
+    console.log('[generate-video] generic poll:', state)
+
+    if (state === 'success') {
+      const resultJson = data.data?.resultJson
+      if (!resultJson) throw new Error('Task completed but no resultJson returned')
+      const parsed = JSON.parse(resultJson) as { resultUrls?: string[] }
+      const url = parsed.resultUrls?.[0]
+      if (!url) throw new Error('Task completed but no video URL in resultJson')
+      return url
+    }
+    if (state === 'fail') throw new Error('Video generation failed')
   }
   throw new Error('Video generation timed out — try again')
 }
@@ -218,22 +354,35 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to create video record' }, { status: 500 })
   }
   const videoId: string = videoRow.id
-  const isRunway = RUNWAY_MODELS.has(model as VideoModel)
+  const vm = model as VideoModel
+  const isRunway = RUNWAY_MODELS.has(vm)
+  const isVeo    = VEO_MODELS.has(vm)
 
   try {
     // 6. Submit to kie.ai
-    const taskId = isRunway
-      ? await submitRunway(prompt.trim(), ar, apiKey)
-      : await submitVeo(prompt.trim(), model as VeoModel, ar, apiKey)
+    let taskId: string
+    if (isRunway) {
+      taskId = await submitRunway(prompt.trim(), ar, apiKey)
+    } else if (isVeo) {
+      taskId = await submitVeo(prompt.trim(), vm, ar, apiKey)
+    } else {
+      const taskBody = buildT2VTaskBody(vm, prompt.trim(), ar)
+      taskId = await submitGenericTask(taskBody, apiKey)
+    }
 
     // Store task ID immediately for traceability
     await service.from('videos').update({ job_id: taskId }).eq('id', videoId)
     console.log('[generate-video] task ID:', taskId)
 
     // 7. Poll for result
-    const videoUrl = isRunway
-      ? await pollRunway(taskId, apiKey)
-      : await pollVeo(taskId, apiKey)
+    let videoUrl: string
+    if (isRunway) {
+      videoUrl = await pollRunway(taskId, apiKey)
+    } else if (isVeo) {
+      videoUrl = await pollVeo(taskId, apiKey)
+    } else {
+      videoUrl = await pollGenericTask(taskId, apiKey)
+    }
 
     // 8. Mark done
     await service

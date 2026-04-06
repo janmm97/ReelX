@@ -27,6 +27,22 @@ type Model =
 type Resolution = '512×512' | '768×768' | '1024×1024' | '1024×1792' | '1792×1024'
 type AspectRatio = '1:1 Square' | '4:3 Landscape' | '3:4 Portrait' | '16:9 Widescreen' | '9:16 Vertical'
 
+type I2VModel =
+  | 'grok'
+  | 'kling3'
+  | 'kling3_audio'
+  | 'seedance2'
+  | 'hailuo_pro'
+  | 'hailuo_std'
+  | 'wan26'
+  | 'wan26_flash'
+  | 'sora2'
+  | 'sora2_pro'
+  | 'veo3_i2v'
+  | 'veo3_fast_i2v'
+type Quality = '480p' | '720p' | '1080p'
+type VideoMode = 'text' | 'image'
+
 interface HistoryImage {
   id: string
   prompt: string
@@ -34,7 +50,20 @@ interface HistoryImage {
   model: string
   created_at: string
   status: string
+  kind: 'image'
 }
+
+interface HistoryVideo {
+  id: string
+  prompt: string
+  video_url: string
+  model: string
+  created_at: string
+  status: string
+  kind: 'video'
+}
+
+type HistoryItem = HistoryImage | HistoryVideo
 
 interface UserProfile {
   email: string
@@ -207,7 +236,24 @@ const TIER_LABEL: Record<Tier, string> = {
 
 // ── Video models ─────────────────────────────────────────────────────────────
 
-type VideoModel = 'runway_turbo' | 'runway_aleph' | 'veo3_fast' | 'veo3'
+type VideoModel =
+  | 'runway_turbo'
+  | 'runway_aleph'
+  | 'veo3_fast'
+  | 'veo3'
+  | 'veo3_audio'
+  | 'kling26'
+  | 'kling3'
+  | 'kling3_audio'
+  | 'seedance2'
+  | 'seedance2_fast'
+  | 'hailuo_pro'
+  | 'hailuo_std'
+  | 'sora2'
+  | 'sora2_pro'
+  | 'sora2_audio'
+  | 'wan26'
+  | 'grok_t2v'
 
 interface VideoModelDef {
   id: VideoModel
@@ -219,6 +265,7 @@ interface VideoModelDef {
 }
 
 const VIDEO_MODELS: VideoModelDef[] = [
+  // ── Budget ────────────────────────────────────────────────────
   {
     id: 'runway_turbo',
     label: 'Runway Gen4 Turbo',
@@ -227,6 +274,31 @@ const VIDEO_MODELS: VideoModelDef[] = [
     color: 'from-orange-500 to-amber-400',
     tier: 'budget',
   },
+  {
+    id: 'grok_t2v',
+    label: 'Grok Text-to-Video',
+    badge: 'xAI',
+    desc: 'Fast text-to-video with fun/normal/spicy modes. 6–30s, up to 720p.',
+    color: 'from-rose-500 to-orange-400',
+    tier: 'budget',
+  },
+  {
+    id: 'seedance2_fast',
+    label: 'Seedance 2.0 Fast',
+    badge: 'ByteDance',
+    desc: 'Quick generation with audio. 4–15s, up to 720p.',
+    color: 'from-cyan-500 to-teal-400',
+    tier: 'budget',
+  },
+  {
+    id: 'hailuo_std',
+    label: 'Hailuo Standard',
+    badge: 'MiniMax',
+    desc: 'Rapid video generation optimised for speed and volume.',
+    color: 'from-amber-500 to-yellow-400',
+    tier: 'budget',
+  },
+  // ── Standard ──────────────────────────────────────────────────
   {
     id: 'runway_aleph',
     label: 'Runway Aleph',
@@ -239,15 +311,209 @@ const VIDEO_MODELS: VideoModelDef[] = [
     id: 'veo3_fast',
     label: 'Veo 3.1 Fast',
     badge: 'Google',
-    desc: "Google Veo 3.1 Fast — quick generation with audio, 8s clips.",
+    desc: 'Google Veo 3.1 Fast — quick generation with audio, 8s clips.',
     color: 'from-sky-500 to-cyan-400',
     tier: 'standard',
   },
   {
+    id: 'kling26',
+    label: 'Kling 2.6',
+    badge: 'Kuaishou',
+    desc: 'Kling 2.6 text-to-video with optional audio. 5–10s.',
+    color: 'from-indigo-500 to-blue-400',
+    tier: 'standard',
+  },
+  {
+    id: 'kling3',
+    label: 'Kling 3.0',
+    badge: 'Kuaishou',
+    desc: 'High-fidelity video with multi-shot support. 3–15s, up to 1080p.',
+    color: 'from-violet-500 to-indigo-400',
+    tier: 'standard',
+  },
+  {
+    id: 'seedance2',
+    label: 'Seedance 2.0',
+    badge: 'ByteDance',
+    desc: 'Rich detail with audio generation. 4–15s, up to 720p.',
+    color: 'from-teal-500 to-emerald-400',
+    tier: 'standard',
+  },
+  {
+    id: 'hailuo_pro',
+    label: 'Hailuo Pro',
+    badge: 'MiniMax',
+    desc: 'High-quality Hailuo model with prompt optimisation.',
+    color: 'from-orange-500 to-red-400',
+    tier: 'standard',
+  },
+  {
+    id: 'sora2',
+    label: 'Sora 2',
+    badge: 'OpenAI',
+    desc: 'Realistic motion with complex scene understanding. 10–15 frames.',
+    color: 'from-emerald-500 to-teal-400',
+    tier: 'standard',
+  },
+  {
+    id: 'wan26',
+    label: 'Wan 2.6',
+    badge: 'Alibaba',
+    desc: 'Wan 2.6 text-to-video with multi-shot and audio support.',
+    color: 'from-blue-500 to-sky-400',
+    tier: 'standard',
+  },
+  // ── Premium ───────────────────────────────────────────────────
+  {
     id: 'veo3',
     label: 'Veo 3.1 Quality',
     badge: 'Google',
-    desc: "Google Veo 3.1 Quality — richer detail, smoother motion, accurate lighting.",
+    desc: 'Google Veo 3.1 Quality — richer detail, smoother motion, accurate lighting.',
+    color: 'from-blue-600 to-indigo-500',
+    tier: 'premium',
+  },
+  {
+    id: 'veo3_audio',
+    label: 'Veo 3.1 with Audio',
+    badge: 'Google',
+    desc: 'Veo 3.1 Quality with synchronised background audio.',
+    color: 'from-blue-600 to-purple-500',
+    tier: 'premium',
+  },
+  {
+    id: 'kling3_audio',
+    label: 'Kling 3.0 with Audio',
+    badge: 'Kuaishou',
+    desc: 'Kling 3.0 pro mode with sound effects enabled. Up to 1080p.',
+    color: 'from-purple-600 to-indigo-500',
+    tier: 'premium',
+  },
+  {
+    id: 'sora2_pro',
+    label: 'Sora 2 Pro',
+    badge: 'OpenAI',
+    desc: 'Premium Sora 2 with higher resolution and longer output.',
+    color: 'from-green-600 to-emerald-500',
+    tier: 'premium',
+  },
+  {
+    id: 'sora2_audio',
+    label: 'Sora 2 with Audio',
+    badge: 'OpenAI',
+    desc: 'Sora 2 Pro with synchronised audio generation.',
+    color: 'from-emerald-600 to-green-500',
+    tier: 'premium',
+  },
+]
+
+// ── Image-to-Video models ───────────────────────────────────────────────────
+
+interface I2VModelDef {
+  id: I2VModel
+  label: string
+  badge: string
+  desc: string
+  color: string
+  tier: Tier
+}
+
+const I2V_MODELS: I2VModelDef[] = [
+  // ── Budget ────────────────────────────────────────────────────
+  {
+    id: 'grok',
+    label: 'Grok',
+    badge: 'xAI',
+    desc: 'Fast image-to-video with expressive motion. 6–30s, max 720p.',
+    color: 'from-rose-500 to-orange-400',
+    tier: 'budget',
+  },
+  {
+    id: 'wan26_flash',
+    label: 'Wan 2.6 Flash',
+    badge: 'Alibaba',
+    desc: 'Fast image-to-video with audio. Up to 1080p.',
+    color: 'from-blue-500 to-sky-400',
+    tier: 'budget',
+  },
+  {
+    id: 'hailuo_std',
+    label: 'Hailuo Standard',
+    badge: 'MiniMax',
+    desc: 'Quick image-to-video for rapid iteration.',
+    color: 'from-amber-500 to-yellow-400',
+    tier: 'budget',
+  },
+  // ── Standard ──────────────────────────────────────────────────
+  {
+    id: 'kling3',
+    label: 'Kling 3.0',
+    badge: 'Kuaishou',
+    desc: 'High-fidelity video with multi-shot support. 3–15s, up to 1080p.',
+    color: 'from-violet-500 to-indigo-400',
+    tier: 'standard',
+  },
+  {
+    id: 'seedance2',
+    label: 'Seedance 2.0',
+    badge: 'ByteDance',
+    desc: 'Image-to-video with audio, first/last frame control. 4–15s.',
+    color: 'from-teal-500 to-emerald-400',
+    tier: 'standard',
+  },
+  {
+    id: 'hailuo_pro',
+    label: 'Hailuo Pro',
+    badge: 'MiniMax',
+    desc: 'High-quality image-to-video with prompt optimisation.',
+    color: 'from-orange-500 to-red-400',
+    tier: 'standard',
+  },
+  {
+    id: 'wan26',
+    label: 'Wan 2.6',
+    badge: 'Alibaba',
+    desc: 'Wan 2.6 image-to-video with audio and multi-shot support.',
+    color: 'from-blue-500 to-indigo-400',
+    tier: 'standard',
+  },
+  {
+    id: 'sora2',
+    label: 'Sora 2',
+    badge: 'OpenAI',
+    desc: 'Realistic motion with complex scene understanding and continuity.',
+    color: 'from-emerald-500 to-teal-400',
+    tier: 'standard',
+  },
+  {
+    id: 'veo3_fast_i2v',
+    label: 'Veo 3.1 Fast',
+    badge: 'Google',
+    desc: 'Google Veo 3.1 Fast image-to-video with audio.',
+    color: 'from-sky-500 to-cyan-400',
+    tier: 'standard',
+  },
+  // ── Premium ───────────────────────────────────────────────────
+  {
+    id: 'kling3_audio',
+    label: 'Kling 3.0 with Audio',
+    badge: 'Kuaishou',
+    desc: 'Kling 3.0 pro mode with sound effects. Up to 1080p.',
+    color: 'from-purple-600 to-indigo-500',
+    tier: 'premium',
+  },
+  {
+    id: 'sora2_pro',
+    label: 'Sora 2 Pro',
+    badge: 'OpenAI',
+    desc: 'Premium Sora 2 with higher fidelity and longer output.',
+    color: 'from-green-600 to-emerald-500',
+    tier: 'premium',
+  },
+  {
+    id: 'veo3_i2v',
+    label: 'Veo 3.1 Quality',
+    badge: 'Google',
+    desc: 'Google Veo 3.1 Quality image-to-video with audio.',
     color: 'from-blue-600 to-indigo-500',
     tier: 'premium',
   },
@@ -303,14 +569,20 @@ export default function DashboardPage() {
   const [model, setModel] = useState<Model>('gemini')
   const [tab, setTab] = useState<Tab>('image')
   const [videoModel, setVideoModel] = useState<VideoModel>('runway_turbo')
+
   const [resolution, setResolution] = useState<Resolution>('1024×1024')
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>('1:1 Square')
+  const [videoMode, setVideoMode] = useState<VideoMode>('text')
+  const [i2vModel, setI2vModel] = useState<I2VModel>('grok')
+  const [quality, setQuality] = useState<Quality>('720p')
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  const [uploadPreview, setUploadPreview] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [lastError, setLastError] = useState<string | null>(null)
   const [currentImage, setCurrentImage] = useState<{ url: string; prompt: string } | null>(null)
   const [currentVideo, setCurrentVideo] = useState<{ url: string; prompt: string } | null>(null)
-  const [history, setHistory] = useState<HistoryImage[]>([])
-  const [expanded, setExpanded] = useState<HistoryImage | null>(null)
+  const [history, setHistory] = useState<HistoryItem[]>([])
+  const [expanded, setExpanded] = useState<HistoryItem | null>(null)
   const [historyLoading, setHistoryLoading] = useState(true)
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
@@ -328,14 +600,27 @@ export default function DashboardPage() {
 
   const fetchHistory = useCallback(async () => {
     setHistoryLoading(true)
-    const { data } = await supabase
-      .from('images')
-      .select('id, prompt, image_url, model, created_at, status')
-      .eq('status', 'done')
-      .eq('hidden', false)
-      .order('created_at', { ascending: false })
-      .limit(30)
-    setHistory((data as HistoryImage[]) ?? [])
+    const [{ data: images }, { data: videos }] = await Promise.all([
+      supabase
+        .from('images')
+        .select('id, prompt, image_url, model, created_at, status')
+        .eq('status', 'done')
+        .eq('hidden', false)
+        .order('created_at', { ascending: false })
+        .limit(30),
+      supabase
+        .from('videos')
+        .select('id, prompt, video_url, model, created_at, status')
+        .eq('status', 'done')
+        .order('created_at', { ascending: false })
+        .limit(30),
+    ])
+    const imageItems: HistoryImage[] = (images ?? []).map((r) => ({ ...r, kind: 'image' as const }))
+    const videoItems: HistoryVideo[] = (videos ?? []).map((r) => ({ ...r, kind: 'video' as const }))
+    const merged = [...imageItems, ...videoItems]
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(0, 30)
+    setHistory(merged)
     setHistoryLoading(false)
   }, [supabase])
 
@@ -352,6 +637,47 @@ export default function DashboardPage() {
 
     if (tab === 'video') {
       setLastError(null)
+
+      // Image-to-Video mode
+      if (videoMode === 'image') {
+        if (!uploadedFile) {
+          push('Please upload an image first.', 'error')
+          setLoading(false)
+          return
+        }
+        try {
+          const form = new FormData()
+          form.append('image', uploadedFile)
+          form.append('prompt', prompt.trim())
+          form.append('model', i2vModel)
+          form.append('quality', quality)
+          form.append('aspectRatio', aspectRatio)
+
+          const res = await fetch('/api/generate-video-from-image', { method: 'POST', body: form })
+          const data = await res.json()
+          if (!res.ok) {
+            const msg = res.status === 429
+              ? 'Daily limit reached — come back tomorrow!'
+              : (data.error ?? 'Video generation failed')
+            setLastError(msg)
+            push(msg, 'error')
+            return
+          }
+          setLastError(null)
+          setCurrentVideo({ url: data.videoUrl, prompt: prompt.trim() })
+          fetchHistory()
+          push('Video generated from image!', 'success', 3000)
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : 'Something went wrong, try again!'
+          setLastError(msg)
+          push(msg, 'error')
+        } finally {
+          setLoading(false)
+        }
+        return
+      }
+
+      // Text-to-Video mode
       try {
         const res = await fetch('/api/generate-video', {
           method: 'POST',
@@ -433,6 +759,53 @@ export default function DashboardPage() {
       fetchHistory()
       push('Could not remove image, try again.', 'error')
     }
+  }
+
+  function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      push('Only JPEG, PNG, and WebP images are supported.', 'error')
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      push('Image must be under 10 MB.', 'error')
+      return
+    }
+    setUploadedFile(file)
+    setUploadPreview(URL.createObjectURL(file))
+  }
+
+  async function useImageForVideo(imageUrl: string, imagePrompt: string) {
+    try {
+      const res = await fetch(imageUrl)
+      const blob = await res.blob()
+      const ext = blob.type === 'image/webp' ? 'webp' : blob.type === 'image/png' ? 'png' : 'jpg'
+      const file = new File([blob], `instaart-i2v.${ext}`, { type: blob.type })
+      setUploadedFile(file)
+      setUploadPreview(URL.createObjectURL(file))
+      setPrompt(imagePrompt)
+      setTab('video')
+      setVideoMode('image')
+    } catch {
+      push('Could not load image — try again.', 'error')
+    }
+  }
+
+  function handleImageDrop(e: React.DragEvent) {
+    e.preventDefault()
+    const file = e.dataTransfer.files[0]
+    if (!file) return
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      push('Only JPEG, PNG, and WebP images are supported.', 'error')
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      push('Image must be under 10 MB.', 'error')
+      return
+    }
+    setUploadedFile(file)
+    setUploadPreview(URL.createObjectURL(file))
   }
 
   return (
@@ -639,31 +1012,118 @@ export default function DashboardPage() {
               </>
             ) : (
               <>
+                {/* Video sub-mode toggle: Text / Image */}
+                <div className="flex gap-1 bg-white/[0.04] rounded-lg p-0.5 mb-3">
+                  {([
+                    { id: 'text' as VideoMode, label: 'Text to Video' },
+                    { id: 'image' as VideoMode, label: 'Image to Video' },
+                  ]).map((m) => {
+                    const active = videoMode === m.id
+                    return (
+                      <button
+                        key={m.id}
+                        onClick={() => setVideoMode(m.id)}
+                        className={`flex-1 py-1.5 rounded-md text-[11px] font-medium transition-all duration-200
+                          ${active
+                            ? 'bg-white/[0.1] text-white shadow-sm'
+                            : 'text-slate-500 hover:text-white'
+                          }`}
+                      >
+                        {m.label}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {videoMode === 'image' && (
+                  <>
+                    {/* Image upload area */}
+                    <div
+                      onDrop={handleImageDrop}
+                      onDragOver={(e) => e.preventDefault()}
+                      className="mb-3 relative rounded-xl border-2 border-dashed border-white/[0.1] hover:border-purple-500/40 transition-colors overflow-hidden"
+                    >
+                      {uploadPreview ? (
+                        <div className="relative">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={uploadPreview} alt="Upload preview" className="w-full h-32 object-cover rounded-lg" />
+                          <button
+                            onClick={() => { setUploadedFile(null); setUploadPreview(null) }}
+                            className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/70 text-white/80 hover:text-white flex items-center justify-center text-xs"
+                          >
+                            ✕
+                          </button>
+                          <p className="absolute bottom-1.5 left-1.5 text-[9px] text-white/60 bg-black/50 px-1.5 py-0.5 rounded">
+                            {uploadedFile?.name}
+                          </p>
+                        </div>
+                      ) : (
+                        <label className="flex flex-col items-center justify-center gap-1.5 py-6 cursor-pointer">
+                          <UploadIcon />
+                          <span className="text-[11px] text-slate-400">Drop image or click to upload</span>
+                          <span className="text-[9px] text-slate-600">JPEG, PNG, WebP — max 10 MB</span>
+                          <input
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            onChange={handleImageSelect}
+                            className="hidden"
+                          />
+                        </label>
+                      )}
+                    </div>
+                  </>
+                )}
+
                 {/* Video — AI Model */}
                 <PanelRow icon={<ModelIcon />} label="AI Model">
                   <div className="relative">
-                    <select
-                      value={videoModel}
-                      onChange={(e) => setVideoModel(e.target.value as VideoModel)}
-                      disabled={loading}
-                      className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-purple-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
-                    >
-                      <optgroup label="★" className="bg-[#1a1a2e]">
-                        {VIDEO_MODELS.filter((m) => m.tier === 'budget').map((m) => (
-                          <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
-                        ))}
-                      </optgroup>
-                      <optgroup label="★★★" className="bg-[#1a1a2e]">
-                        {VIDEO_MODELS.filter((m) => m.tier === 'standard').map((m) => (
-                          <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
-                        ))}
-                      </optgroup>
-                      <optgroup label="★★★★★" className="bg-[#1a1a2e]">
-                        {VIDEO_MODELS.filter((m) => m.tier === 'premium').map((m) => (
-                          <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
-                        ))}
-                      </optgroup>
-                    </select>
+                    {videoMode === 'text' ? (
+                      <select
+                        value={videoModel}
+                        onChange={(e) => setVideoModel(e.target.value as VideoModel)}
+                        disabled={loading}
+                        className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-purple-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
+                      >
+                        <optgroup label="★" className="bg-[#1a1a2e]">
+                          {VIDEO_MODELS.filter((m) => m.tier === 'budget').map((m) => (
+                            <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="★★★" className="bg-[#1a1a2e]">
+                          {VIDEO_MODELS.filter((m) => m.tier === 'standard').map((m) => (
+                            <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="★★★★★" className="bg-[#1a1a2e]">
+                          {VIDEO_MODELS.filter((m) => m.tier === 'premium').map((m) => (
+                            <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
+                          ))}
+                        </optgroup>
+                      </select>
+                    ) : (
+                      <select
+                        value={i2vModel}
+                        onChange={(e) => setI2vModel(e.target.value as I2VModel)}
+                        disabled={loading}
+                        className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-purple-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
+                      >
+                        <optgroup label="★" className="bg-[#1a1a2e]">
+                          {I2V_MODELS.filter((m) => m.tier === 'budget').map((m) => (
+                            <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="★★★" className="bg-[#1a1a2e]">
+                          {I2V_MODELS.filter((m) => m.tier === 'standard').map((m) => (
+                            <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="★★★★★" className="bg-[#1a1a2e]">
+                          {I2V_MODELS.filter((m) => m.tier === 'premium').map((m) => (
+                            <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
+                          ))}
+                        </optgroup>
+                      </select>
+                    )}
                     <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-500">
                       <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                         <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -673,7 +1133,9 @@ export default function DashboardPage() {
                 </PanelRow>
                 {/* Selected video model info */}
                 {(() => {
-                  const m = VIDEO_MODELS.find((x) => x.id === videoModel)
+                  const m = videoMode === 'text'
+                    ? VIDEO_MODELS.find((x) => x.id === videoModel)
+                    : I2V_MODELS.find((x) => x.id === i2vModel)
                   if (!m) return null
                   return (
                     <div className="mb-1 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.05] flex items-start gap-2">
@@ -688,6 +1150,20 @@ export default function DashboardPage() {
                     </div>
                   )
                 })()}
+
+                {/* Quality selector (both modes) */}
+                <PanelRow icon={<ResolutionIcon />} label="Quality">
+                  <PanelSelect
+                    value={quality}
+                    onChange={(v) => setQuality(v as Quality)}
+                    disabled={loading}
+                    options={[
+                      { value: '480p', label: '480p' },
+                      { value: '720p', label: '720p' },
+                      { value: '1080p', label: '1080p' },
+                    ]}
+                  />
+                </PanelRow>
 
                 {/* Aspect Ratio for video */}
                 <PanelRow icon={<AspectIcon />} label="Aspect Ratio">
@@ -710,7 +1186,7 @@ export default function DashboardPage() {
                     <path d="M8 5v3.5l2 1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   <p className="text-[11px] text-sky-300/80 leading-relaxed">
-                    Video generation takes 1–3 minutes depending on the model. Add <code className="text-sky-200 bg-white/10 px-0.5 rounded">FAL_API_KEY</code> to your environment to enable.
+                    Video generation takes 1–3 minutes depending on the model.
                   </p>
                 </div>
               </>
@@ -721,7 +1197,7 @@ export default function DashboardPage() {
           <div className="px-5 pb-5 pt-2 shrink-0">
             <button
               onClick={handleGenerate}
-              disabled={loading || !prompt.trim()}
+              disabled={loading || !prompt.trim() || (tab === 'video' && videoMode === 'image' && !uploadedFile)}
               className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-purple-600 via-violet-600 to-purple-600 hover:from-purple-500 hover:via-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_0_24px_rgba(139,92,246,0.35)] hover:shadow-[0_0_36px_rgba(139,92,246,0.55)] active:scale-[0.98] flex items-center justify-center gap-2"
             >
               {loading ? (
@@ -732,7 +1208,7 @@ export default function DashboardPage() {
               ) : tab === 'video' ? (
                 <>
                   <VideoTabIcon />
-                  Generate Video
+                  {videoMode === 'image' ? 'Generate from Image' : 'Generate Video'}
                 </>
               ) : (
                 <>
@@ -833,6 +1309,16 @@ export default function DashboardPage() {
                     <DownloadIcon />
                   </button>
                 </div>
+                <button
+                  onClick={() => useImageForVideo(currentImage.url, currentImage.prompt)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-500/15 border border-purple-500/30 text-purple-300 hover:bg-purple-500/25 hover:text-purple-200 transition-all text-xs font-medium"
+                >
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none" className="shrink-0">
+                    <rect x="1" y="2.5" width="7" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+                    <path d="M9 5l3 2-3 2V5z" fill="currentColor" />
+                  </svg>
+                  Use this image to generate a video
+                </button>
               </div>
             ) : (
               <PlaceholderIllustration />
@@ -859,31 +1345,45 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-none">
-                {history.map((img) => (
-                  <div key={img.id} className="group shrink-0 w-28 relative rounded-xl overflow-hidden ring-1 ring-white/10 hover:ring-purple-500/50 hover:scale-105 transition-all duration-200">
-                    <button onClick={() => setExpanded(img)} className="block w-full">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={img.image_url} alt={img.prompt} className="w-28 h-28 object-cover" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2">
-                        <p className="text-[10px] text-white leading-tight line-clamp-2">{img.prompt}</p>
-                      </div>
+                {history.map((item) => (
+                  <div key={item.id} className="group shrink-0 w-28 relative rounded-xl overflow-hidden ring-1 ring-white/10 hover:ring-purple-500/50 hover:scale-105 transition-all duration-200">
+                    <button onClick={() => setExpanded(item)} className="block w-full">
+                      {item.kind === 'image' ? (
+                        <>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={item.image_url} alt={item.prompt} className="w-28 h-28 object-cover" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2">
+                            <p className="text-[10px] text-white leading-tight line-clamp-2">{item.prompt}</p>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="w-28 h-28 bg-black/40 flex flex-col items-center justify-center gap-1">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-purple-400">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+                            <path d="M10 8.5l6 3.5-6 3.5V8.5z" fill="currentColor" />
+                          </svg>
+                          <p className="text-[9px] text-white/50 px-1 text-center line-clamp-2 leading-tight">{item.prompt}</p>
+                        </div>
+                      )}
                     </button>
                     {/* Copy prompt on thumbnail */}
                     <button
-                      onClick={(e) => { e.stopPropagation(); copyPrompt(img.prompt, img.id) }}
+                      onClick={(e) => { e.stopPropagation(); copyPrompt(item.prompt, item.id) }}
                       title="Copy prompt"
                       className="absolute top-1.5 right-1.5 p-1 rounded-md bg-black/60 text-white/70 hover:text-white opacity-0 group-hover:opacity-100 transition-all"
                     >
-                      {copiedId === img.id ? <CheckIcon size={10} /> : <CopyIcon size={10} />}
+                      {copiedId === item.id ? <CheckIcon size={10} /> : <CopyIcon size={10} />}
                     </button>
-                    {/* Delete from history */}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleDelete(img.id) }}
-                      title="Remove from history"
-                      className="absolute top-1.5 left-1.5 p-1 rounded-md bg-black/60 text-white/50 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
-                    >
-                      <TrashIcon size={10} />
-                    </button>
+                    {/* Delete from history — only images support soft delete */}
+                    {item.kind === 'image' && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDelete(item.id) }}
+                        title="Remove from history"
+                        className="absolute top-1.5 left-1.5 p-1 rounded-md bg-black/60 text-white/50 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                      >
+                        <TrashIcon size={10} />
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
@@ -902,8 +1402,12 @@ export default function DashboardPage() {
             className="relative bg-[#13131f] border border-white/10 rounded-2xl overflow-hidden max-w-2xl w-full shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={expanded.image_url} alt={expanded.prompt} className="w-full object-contain max-h-[60vh]" />
+            {expanded.kind === 'image' ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img src={expanded.image_url} alt={expanded.prompt} className="w-full object-contain max-h-[60vh]" />
+            ) : (
+              <video src={expanded.video_url} controls className="w-full max-h-[60vh] bg-black" />
+            )}
             <div className="p-4 space-y-2">
               <p className="text-sm text-slate-300">{expanded.prompt}</p>
               <div className="flex items-center gap-3 text-xs text-slate-500">
@@ -917,18 +1421,22 @@ export default function DashboardPage() {
                 >
                   {copiedId === `modal-${expanded.id}` ? <><CheckIcon size={12} /> Copied!</> : <><CopyIcon size={12} /> Copy prompt</>}
                 </button>
-                <button
-                  onClick={() => handleDownload(expanded.image_url, expanded.prompt)}
-                  className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white border border-white/10 hover:border-white/30 px-3 py-1.5 rounded-lg transition-all"
-                >
-                  <DownloadIcon size={12} /> Download
-                </button>
-                <button
-                  onClick={() => handleDelete(expanded.id)}
-                  className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-red-400 border border-white/10 hover:border-red-500/30 px-3 py-1.5 rounded-lg transition-all ml-auto"
-                >
-                  <TrashIcon size={12} /> Remove
-                </button>
+                {expanded.kind === 'image' && (
+                  <>
+                    <button
+                      onClick={() => handleDownload(expanded.image_url, expanded.prompt)}
+                      className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white border border-white/10 hover:border-white/30 px-3 py-1.5 rounded-lg transition-all"
+                    >
+                      <DownloadIcon size={12} /> Download
+                    </button>
+                    <button
+                      onClick={() => handleDelete(expanded.id)}
+                      className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-red-400 border border-white/10 hover:border-red-500/30 px-3 py-1.5 rounded-lg transition-all ml-auto"
+                    >
+                      <TrashIcon size={12} /> Remove
+                    </button>
+                  </>
+                )}
               </div>
             </div>
             <button
@@ -1060,6 +1568,15 @@ function AspectIcon() {
   )
 }
 
+function UploadIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-slate-500">
+      <path d="M12 16V4m0 0l-4 4m4-4l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M20 16v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 function SparkleIcon() {
   return (
     <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
@@ -1113,6 +1630,8 @@ function DownloadIcon({ size = 14 }: { size?: number }) {
 
 function ModelBadge({ model }: { model: string }) {
   const m = MODELS.find((x) => x.id === model)
+    ?? VIDEO_MODELS.find((x) => x.id === model)
+    ?? I2V_MODELS.find((x) => x.id === model)
   if (!m) return <span className="text-slate-500">{model}</span>
   return (
     <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r ${m.color} text-white`}>
