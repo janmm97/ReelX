@@ -1038,42 +1038,53 @@ export default function DashboardPage() {
                 </div>
 
                 {videoMode === 'image' && (
-                  <>
-                    {/* Image upload area */}
-                    <div
-                      onDrop={handleImageDrop}
-                      onDragOver={(e) => e.preventDefault()}
-                      className="mb-3 relative rounded-xl border-2 border-dashed border-white/[0.1] hover:border-purple-500/40 transition-colors overflow-hidden"
-                    >
-                      {uploadPreview ? (
-                        <div className="relative">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={uploadPreview} alt="Upload preview" className="w-full h-32 object-cover rounded-lg" />
-                          <button
-                            onClick={() => { setUploadedFile(null); setUploadPreview(null) }}
-                            className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/70 text-white/80 hover:text-white flex items-center justify-center text-xs"
-                          >
-                            ✕
-                          </button>
-                          <p className="absolute bottom-1.5 left-1.5 text-[9px] text-white/60 bg-black/50 px-1.5 py-0.5 rounded">
-                            {uploadedFile?.name}
-                          </p>
-                        </div>
-                      ) : (
-                        <label className="flex flex-col items-center justify-center gap-1.5 py-6 cursor-pointer">
-                          <UploadIcon />
-                          <span className="text-[11px] text-slate-400">Drop image or click to upload</span>
-                          <span className="text-[9px] text-slate-600">JPEG, PNG, WebP — max 10 MB</span>
+                  <div
+                    onDrop={handleImageDrop}
+                    onDragOver={(e) => e.preventDefault()}
+                    className="mb-3"
+                  >
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                      {uploadedImages.map((img, i) => (
+                        <div key={i} className="shrink-0 flex flex-col gap-1">
+                          <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-white/[0.1]">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={img.preview} alt={`Image ${i + 1}`} className="w-full h-full object-cover" />
+                            <button
+                              onClick={() => setUploadedImages(prev => prev.filter((_, idx) => idx !== i))}
+                              className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white/80 hover:text-white flex items-center justify-center text-[10px]"
+                            >
+                              ✕
+                            </button>
+                          </div>
                           <input
-                            type="file"
-                            accept="image/jpeg,image/png,image/webp"
-                            onChange={handleImageSelect}
-                            className="hidden"
+                            type="text"
+                            value={img.description}
+                            onChange={(e) => {
+                              const val = e.target.value
+                              setUploadedImages(prev => prev.map((x, idx) => idx === i ? { ...x, description: val } : x))
+                            }}
+                            placeholder="describe…"
+                            className="w-20 bg-white/[0.05] border border-white/[0.08] rounded px-1.5 py-1 text-[10px] text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-purple-500/50"
                           />
-                        </label>
-                      )}
+                        </div>
+                      ))}
+                      {/* Add image tile */}
+                      <label className="shrink-0 w-20 h-20 rounded-lg border-2 border-dashed border-white/[0.1] hover:border-purple-500/40 transition-colors flex flex-col items-center justify-center gap-1 cursor-pointer">
+                        <UploadIcon />
+                        <span className="text-[9px] text-slate-500">Add image</span>
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp"
+                          multiple
+                          onChange={handleImageSelect}
+                          className="hidden"
+                        />
+                      </label>
                     </div>
-                  </>
+                    {uploadedImages.length > 0 && (
+                      <p className="text-[9px] text-slate-600 mt-1">First image = start frame · Last image = end frame</p>
+                    )}
+                  </div>
                 )}
 
                 {/* Video — AI Model */}
