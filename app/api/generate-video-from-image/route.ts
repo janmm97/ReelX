@@ -1,5 +1,8 @@
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { applyVoiceToVideo } from '@/lib/apply-voice'
+
+export const maxDuration = 300
 
 // ── Model routing ─────────────────────────────────────────────────────────────
 
@@ -362,6 +365,18 @@ export async function POST(request: NextRequest) {
   const aspectRatio = formData.get('aspectRatio') as string | null
   const imageFiles  = (formData.getAll('images[]') as File[]).filter(f => f.size > 0)
   const imageDescriptions = formData.getAll('imageDescriptions[]').map(d => String(d))
+  const narrationScript = (formData.get('narrationScript') as string | null) ?? ''
+  const voiceId         = (formData.get('voiceId') as string | null) ?? ''
+  const keepBackground  = formData.get('keepBackgroundAudio') === 'true'
+
+  const hasScript = narrationScript.trim().length > 0
+  const hasVoice  = voiceId.trim().length > 0
+  if (hasScript !== hasVoice) {
+    return NextResponse.json(
+      { error: 'narrationScript and voiceId must both be provided together' },
+      { status: 400 },
+    )
+  }
 
   if (!prompt?.trim()) {
     return NextResponse.json({ error: 'prompt is required' }, { status: 400 })
@@ -465,7 +480,24 @@ export async function POST(request: NextRequest) {
       videoUrl = await pollTask(taskId, apiKey)
     }
 
-    // 8. Mark done
+    // 8. Optional: apply ElevenLabs voice narration
+    if (hasScript && hasVoice) {
+      const elevenKey = process.env.ELEVENLABS_API_KEY
+      if (!elevenKey) throw new Error('ElevenLabs API key not configured')
+      videoUrl = await applyVoiceToVideo(
+        videoUrl,
+        {
+          voiceId:         voiceId.trim(),
+          narrationScript: narrationScript.trim(),
+          keepBackground,
+        },
+        elevenKey,
+        service,
+        videoId,
+      )
+    }
+
+    // 9. Mark done
     await service
       .from('videos')
       .update({ video_url: videoUrl, status: 'done' })
