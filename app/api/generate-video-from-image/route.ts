@@ -352,7 +352,8 @@ export async function POST(request: NextRequest) {
   const model       = formData.get('model') as string | null
   const quality     = formData.get('quality') as string | null
   const aspectRatio = formData.get('aspectRatio') as string | null
-  const imageFile   = formData.get('image') as File | null
+  const imageFiles  = formData.getAll('images[]') as File[]
+  const imageDescriptions = formData.getAll('imageDescriptions[]').map(d => String(d))
 
   if (!prompt?.trim()) {
     return NextResponse.json({ error: 'prompt is required' }, { status: 400 })
@@ -363,11 +364,16 @@ export async function POST(request: NextRequest) {
   if (!quality || !VALID_QUALITIES.has(quality as Quality)) {
     return NextResponse.json({ error: 'Invalid quality' }, { status: 400 })
   }
-  if (!imageFile || imageFile.size === 0) {
+  if (imageFiles.length === 0 || imageFiles.every(f => f.size === 0)) {
     return NextResponse.json({ error: 'Image file is required' }, { status: 400 })
   }
-  if (imageFile.size > 10 * 1024 * 1024) {
-    return NextResponse.json({ error: 'Image must be under 10 MB' }, { status: 400 })
+  for (const f of imageFiles) {
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(f.type)) {
+      return NextResponse.json({ error: 'Only JPEG, PNG, and WebP supported' }, { status: 400 })
+    }
+    if (f.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ error: 'Image must be under 10 MB' }, { status: 400 })
+    }
   }
 
   const apiKey = process.env.KIE_API_KEY
