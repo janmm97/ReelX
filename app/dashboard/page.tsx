@@ -715,7 +715,7 @@ export default function DashboardPage() {
   useEffect(() => { fetchHistory() }, [fetchHistory])
 
   useEffect(() => {
-    if (!voiceEnabled || voices.length > 0) return
+    if (!voiceEnabled) return
     fetch('/api/voices')
       .then((r) => r.json())
       .then((data) => { if (data.voices) setVoices(data.voices) })
