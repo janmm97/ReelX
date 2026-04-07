@@ -352,7 +352,7 @@ export async function POST(request: NextRequest) {
   const model       = formData.get('model') as string | null
   const quality     = formData.get('quality') as string | null
   const aspectRatio = formData.get('aspectRatio') as string | null
-  const imageFiles  = formData.getAll('images[]') as File[]
+  const imageFiles  = (formData.getAll('images[]') as File[]).filter(f => f.size > 0)
   const imageDescriptions = formData.getAll('imageDescriptions[]').map(d => String(d))
 
   if (!prompt?.trim()) {
