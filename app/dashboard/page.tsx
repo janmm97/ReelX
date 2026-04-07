@@ -558,6 +558,90 @@ async function downloadImage(url: string, filename = 'instaart.png') {
   URL.revokeObjectURL(blobUrl)
 }
 
+// ── Voice Clone Uploader ──────────────────────────────────────────────────────
+interface VoiceCloneUploaderProps {
+  onCloned: (voice: { id: string; name: string; category: 'cloned'; previewUrl: string }) => void
+  onError: (msg: string) => void
+  disabled: boolean
+}
+
+function VoiceCloneUploader({ onCloned, onError, disabled }: VoiceCloneUploaderProps) {
+  const [open, setOpen] = useState(false)
+  const [name, setName] = useState('')
+  const [file, setFile] = useState<File | null>(null)
+  const [uploading, setUploading] = useState(false)
+
+  async function handleSubmit() {
+    if (!file || !name.trim()) return
+    setUploading(true)
+    try {
+      const form = new FormData()
+      form.append('audio', file)
+      form.append('name', name.trim())
+      const res = await fetch('/api/voice-clone', { method: 'POST', body: form })
+      const data = await res.json()
+      if (!res.ok) { onError(data.error ?? 'Voice cloning failed'); return }
+      onCloned({ id: data.voiceId, name: data.name, category: 'cloned', previewUrl: '' })
+      setOpen(false)
+      setName('')
+      setFile(null)
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        disabled={disabled}
+        className="text-[10px] text-purple-400 hover:text-purple-300 transition-colors text-left disabled:opacity-50"
+      >
+        + Add your voice
+      </button>
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5 p-2 rounded-lg border border-white/[0.08] bg-white/[0.03]">
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Voice name"
+        className="w-full bg-transparent text-xs text-white placeholder-slate-600 border border-white/[0.08] rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-purple-500/50"
+      />
+      <label className="flex flex-col items-center justify-center gap-1 py-2 rounded-lg border border-dashed border-white/[0.1] hover:border-purple-500/40 transition-colors cursor-pointer text-[10px] text-slate-400">
+        {file ? file.name : 'Drop mp3/wav/m4a or click (max 25 MB)'}
+        <input
+          type="file"
+          accept="audio/mpeg,audio/wav,audio/mp4,audio/x-m4a"
+          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          className="hidden"
+        />
+      </label>
+      <div className="flex gap-1">
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={!file || !name.trim() || uploading}
+          className="flex-1 py-1 rounded-lg text-[10px] font-medium bg-purple-600 hover:bg-purple-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        >
+          {uploading ? 'Cloning…' : 'Clone voice'}
+        </button>
+        <button
+          type="button"
+          onClick={() => { setOpen(false); setName(''); setFile(null) }}
+          className="px-2 py-1 rounded-lg text-[10px] text-slate-400 hover:text-white border border-white/[0.08] transition-colors"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // ── Main component ───────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const supabase = createClient()
@@ -584,6 +668,11 @@ export default function DashboardPage() {
   const [expanded, setExpanded] = useState<HistoryItem | null>(null)
   const [historyLoading, setHistoryLoading] = useState(true)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [voiceEnabled, setVoiceEnabled]         = useState(false)
+  const [selectedVoiceId, setSelectedVoiceId]   = useState<string | null>(null)
+  const [narrationScript, setNarrationScript]   = useState('')
+  const [keepBackgroundAudio, setKeepBackgroundAudio] = useState(false)
+  const [voices, setVoices] = useState<{ id: string; name: string; category: 'library' | 'cloned'; previewUrl: string }[]>([])
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user: u } }) => {
@@ -625,6 +714,15 @@ export default function DashboardPage() {
 
   useEffect(() => { fetchHistory() }, [fetchHistory])
 
+  useEffect(() => {
+    if (!voiceEnabled || voices.length > 0) return
+    fetch('/api/voices')
+      .then((r) => r.json())
+      .then((data) => { if (data.voices) setVoices(data.voices) })
+      .catch(() => push('Could not load voices — check your connection.', 'error'))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [voiceEnabled])
+
   async function handleSignOut() {
     await supabase.auth.signOut()
     router.push('/login')
@@ -654,6 +752,11 @@ export default function DashboardPage() {
           form.append('model', i2vModel)
           form.append('quality', quality)
           form.append('aspectRatio', aspectRatio)
+          if (voiceEnabled && selectedVoiceId && narrationScript.trim()) {
+            form.append('narrationScript', narrationScript.trim())
+            form.append('voiceId', selectedVoiceId)
+            form.append('keepBackgroundAudio', String(keepBackgroundAudio))
+          }
 
           const res = await fetch('/api/generate-video-from-image', { method: 'POST', body: form })
           const data = await res.json()
@@ -684,7 +787,18 @@ export default function DashboardPage() {
         const res = await fetch('/api/generate-video', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: prompt.trim(), model: videoModel, aspectRatio }),
+          body: JSON.stringify({
+            prompt: prompt.trim(),
+            model: videoModel,
+            aspectRatio,
+            ...(voiceEnabled && selectedVoiceId && narrationScript.trim()
+              ? {
+                  narrationScript:    narrationScript.trim(),
+                  voiceId:            selectedVoiceId,
+                  keepBackgroundAudio,
+                }
+              : {}),
+          }),
         })
         const data = await res.json()
         if (!res.ok) {
@@ -1192,6 +1306,105 @@ export default function DashboardPage() {
                   />
                 </PanelRow>
 
+                {/* Voice Narration */}
+                <div className="mt-1">
+                  {/* Toggle row */}
+                  <div className="flex items-center justify-between px-1 mb-2">
+                    <span className="text-xs font-medium text-slate-300">Voice Narration</span>
+                    <button
+                      type="button"
+                      onClick={() => setVoiceEnabled((v) => !v)}
+                      disabled={loading}
+                      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none disabled:opacity-50
+                        ${voiceEnabled ? 'bg-purple-600' : 'bg-white/[0.12]'}`}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200
+                          ${voiceEnabled ? 'translate-x-4' : 'translate-x-0'}`}
+                      />
+                    </button>
+                  </div>
+
+                  {voiceEnabled && (
+                    <div className="flex flex-col gap-2">
+                      {/* Voice picker */}
+                      <div className="relative">
+                        <select
+                          value={selectedVoiceId ?? ''}
+                          onChange={(e) => setSelectedVoiceId(e.target.value || null)}
+                          disabled={loading || voices.length === 0}
+                          className="w-full appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <option value="">{voices.length === 0 ? 'Loading voices…' : 'Select a voice'}</option>
+                          {voices.filter((v) => v.category === 'cloned').length > 0 && (
+                            <optgroup label="Your Voices" className="bg-[#1a1a2e]">
+                              {voices.filter((v) => v.category === 'cloned').map((v) => (
+                                <option key={v.id} value={v.id} className="bg-[#1a1a2e] text-white">{v.name}</option>
+                              ))}
+                            </optgroup>
+                          )}
+                          <optgroup label="Library" className="bg-[#1a1a2e]">
+                            {voices.filter((v) => v.category === 'library').map((v) => (
+                              <option key={v.id} value={v.id} className="bg-[#1a1a2e] text-white">{v.name}</option>
+                            ))}
+                          </optgroup>
+                        </select>
+                        <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-500">
+                          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                            <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </div>
+                      </div>
+
+                      {/* Preview button */}
+                      {selectedVoiceId && (() => {
+                        const v = voices.find((x) => x.id === selectedVoiceId)
+                        return v?.previewUrl ? (
+                          <button
+                            type="button"
+                            onClick={() => new Audio(v.previewUrl).play()}
+                            className="text-[10px] text-purple-400 hover:text-purple-300 text-left transition-colors"
+                          >
+                            ▶ Preview voice
+                          </button>
+                        ) : null
+                      })()}
+
+                      {/* Add your voice */}
+                      <VoiceCloneUploader
+                        onCloned={(newVoice) => {
+                          setVoices((prev) => [newVoice, ...prev])
+                          setSelectedVoiceId(newVoice.id)
+                        }}
+                        onError={(msg) => push(msg, 'error')}
+                        disabled={loading}
+                      />
+
+                      {/* Narration script */}
+                      <textarea
+                        value={narrationScript}
+                        onChange={(e) => setNarrationScript(e.target.value)}
+                        placeholder="Write the narration that will be spoken in the video…"
+                        rows={3}
+                        disabled={loading}
+                        className="w-full bg-transparent text-xs text-white placeholder-slate-600 resize-none focus:outline-none disabled:opacity-50 leading-relaxed border border-white/[0.08] rounded-lg p-2"
+                      />
+
+                      {/* Keep background audio */}
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={keepBackgroundAudio}
+                          onChange={(e) => setKeepBackgroundAudio(e.target.checked)}
+                          disabled={loading}
+                          className="rounded border-white/20 bg-white/10 text-purple-500 focus:ring-purple-500/50 disabled:opacity-50"
+                        />
+                        <span className="text-[11px] text-slate-400">Keep background audio</span>
+                      </label>
+                    </div>
+                  )}
+                </div>
+
                 {/* Generation time note */}
                 <div className="mt-2 px-3 py-3 rounded-xl bg-sky-500/5 border border-sky-500/15 flex items-start gap-2">
                   <svg className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" viewBox="0 0 16 16" fill="none">
@@ -1210,7 +1423,12 @@ export default function DashboardPage() {
           <div className="px-5 pb-5 pt-2 shrink-0">
             <button
               onClick={handleGenerate}
-              disabled={loading || !prompt.trim() || (tab === 'video' && videoMode === 'image' && uploadedImages.length === 0)}
+              disabled={
+                loading ||
+                !prompt.trim() ||
+                (tab === 'video' && videoMode === 'image' && uploadedImages.length === 0) ||
+                (tab === 'video' && voiceEnabled && (!selectedVoiceId || !narrationScript.trim()))
+              }
               className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-purple-600 via-violet-600 to-purple-600 hover:from-purple-500 hover:via-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_0_24px_rgba(139,92,246,0.35)] hover:shadow-[0_0_36px_rgba(139,92,246,0.55)] active:scale-[0.98] flex items-center justify-center gap-2"
             >
               {loading ? (
