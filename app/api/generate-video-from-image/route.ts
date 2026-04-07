@@ -53,18 +53,19 @@ const AR_MAP: Record<string, string> = {
 function buildTaskBody(
   model: I2VModel,
   prompt: string,
-  imageUrl: string,
+  imageUrls: string[],
   quality: Quality,
   aspectRatio: string | undefined,
 ) {
   const ar = aspectRatio ?? '16:9'
+  const imageUrl = imageUrls[0]  // first image for single-image models
 
   switch (model) {
     case 'grok':
       return {
         model: 'grok-imagine/image-to-video',
         input: {
-          image_urls: [imageUrl],
+          image_urls: imageUrls,
           prompt,
           resolution: quality === '1080p' ? '720p' : quality, // Grok max 720p
           aspect_ratio: ar,
@@ -76,13 +77,13 @@ function buildTaskBody(
       return {
         model: 'kling-3.0/video',
         input: {
-          image_urls: [imageUrl],
+          image_urls: imageUrls,
           prompt,
           mode: quality === '1080p' ? 'pro' : 'std',
           duration: '5',
           sound: false,
           aspect_ratio: ar,
-          multi_shots: false,
+          multi_shots: imageUrls.length > 1,
         },
       }
 
@@ -90,13 +91,13 @@ function buildTaskBody(
       return {
         model: 'kling-3.0/video',
         input: {
-          image_urls: [imageUrl],
+          image_urls: imageUrls,
           prompt,
           mode: 'pro',
           duration: '5',
           sound: true,
           aspect_ratio: ar,
-          multi_shots: false,
+          multi_shots: imageUrls.length > 1,
         },
       }
 
@@ -117,7 +118,7 @@ function buildTaskBody(
       return {
         model: 'hailuo/02-image-to-video-pro',
         input: {
-          image_urls: [imageUrl],
+          image_urls: imageUrls,
           prompt,
         },
       }
@@ -126,7 +127,7 @@ function buildTaskBody(
       return {
         model: 'hailuo/02-image-to-video-standard',
         input: {
-          image_urls: [imageUrl],
+          image_urls: imageUrls,
           prompt,
         },
       }
@@ -135,7 +136,7 @@ function buildTaskBody(
       return {
         model: 'wan/2-6-image-to-video',
         input: {
-          image_urls: [imageUrl],
+          image_urls: imageUrls,
           prompt,
           audio: true,
           duration: '5',
@@ -147,7 +148,7 @@ function buildTaskBody(
       return {
         model: 'wan/2-6-flash-image-to-video',
         input: {
-          image_urls: [imageUrl],
+          image_urls: imageUrls,
           prompt,
           audio: true,
           duration: '5',
@@ -159,7 +160,7 @@ function buildTaskBody(
       return {
         model: 'sora-2-image-to-video',
         input: {
-          image_urls: [imageUrl],
+          image_urls: imageUrls,
           prompt,
           aspect_ratio: ar === '9:16' ? 'portrait' : 'landscape',
           upload_method: 's3',
@@ -170,7 +171,7 @@ function buildTaskBody(
       return {
         model: 'sora-2-pro-image-to-video',
         input: {
-          image_urls: [imageUrl],
+          image_urls: imageUrls,
           prompt,
           aspect_ratio: ar === '9:16' ? 'portrait' : 'landscape',
           upload_method: 's3',
@@ -203,7 +204,7 @@ interface KieVeoStatus {
 async function submitVeoI2V(
   prompt: string,
   model: I2VModel,
-  imageUrl: string,
+  imageUrls: string[],
   aspectRatio: string | undefined,
   apiKey: string,
 ): Promise<string> {
@@ -212,7 +213,7 @@ async function submitVeoI2V(
     prompt,
     model: veoId,
     generationType: 'FIRST_AND_LAST_FRAMES_2_VIDEO',
-    imageUrls: [imageUrl],
+    imageUrls,
   }
   if (aspectRatio === '9:16') body.aspect_ratio = '9:16'
   else body.aspect_ratio = '16:9'
@@ -334,14 +335,14 @@ async function uploadToStorage(
   return data.publicUrl
 }
 
-// ── Route handler ─────────────────────────────────────────────────────────────
-
 function buildAugmentedPrompt(prompt: string, descriptions: string[]): string {
   const nonEmpty = descriptions.map(d => d.trim()).filter(Boolean)
   if (nonEmpty.length === 0) return prompt
   const preamble = nonEmpty.map((d, i) => `[Image ${i + 1}: ${d}]`).join(' ')
   return `${preamble}\n${prompt}`
 }
+
+// ── Route handler ─────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
   // 1. Authenticate
