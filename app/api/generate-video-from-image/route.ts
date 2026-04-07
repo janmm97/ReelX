@@ -336,6 +336,13 @@ async function uploadToStorage(
 
 // ── Route handler ─────────────────────────────────────────────────────────────
 
+function buildAugmentedPrompt(prompt: string, descriptions: string[]): string {
+  const nonEmpty = descriptions.map(d => d.trim()).filter(Boolean)
+  if (nonEmpty.length === 0) return prompt
+  const preamble = nonEmpty.map((d, i) => `[Image ${i + 1}: ${d}]`).join(' ')
+  return `${preamble}\n${prompt}`
+}
+
 export async function POST(request: NextRequest) {
   // 1. Authenticate
   const supabase = await createClient()
@@ -403,16 +410,22 @@ export async function POST(request: NextRequest) {
 
   const ar = aspectRatio ? AR_MAP[aspectRatio] : undefined
 
-  // 5. Upload image to Supabase Storage
-  let imageUrl: string
+  // 5. Upload all images to Supabase Storage
+  const imageUrls: string[] = []
   try {
-    const buffer = Buffer.from(await imageFile.arrayBuffer())
-    imageUrl = await uploadToStorage(service, buffer, imageFile.name, imageFile.type)
+    for (const f of imageFiles) {
+      const buffer = Buffer.from(await f.arrayBuffer())
+      const url = await uploadToStorage(service, buffer, f.name, f.type)
+      imageUrls.push(url)
+    }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Image upload failed'
     console.error('[i2v] upload error:', msg)
     return NextResponse.json({ error: msg }, { status: 500 })
   }
+
+  // 5b. Augment prompt with image descriptions
+  const augmentedPrompt = buildAugmentedPrompt(prompt.trim(), imageDescriptions)
 
   // 6. Insert pending row
   const { data: videoRow, error: insertErr } = await service
@@ -439,12 +452,12 @@ export async function POST(request: NextRequest) {
     let videoUrl: string
 
     if (isVeoI2V) {
-      taskId = await submitVeoI2V(prompt.trim(), model as I2VModel, imageUrl, ar, apiKey)
+      taskId = await submitVeoI2V(augmentedPrompt, model as I2VModel, imageUrls, ar, apiKey)
       await service.from('videos').update({ job_id: taskId }).eq('id', videoId)
       console.log('[i2v] veo task ID:', taskId)
       videoUrl = await pollVeoI2V(taskId, apiKey)
     } else {
-      const taskBody = buildTaskBody(model as I2VModel, prompt.trim(), imageUrl, quality as Quality, ar)
+      const taskBody = buildTaskBody(model as I2VModel, augmentedPrompt, imageUrls, quality as Quality, ar)
       taskId = await submitTask(taskBody, apiKey)
       await service.from('videos').update({ job_id: taskId }).eq('id', videoId)
       console.log('[i2v] task ID:', taskId)
