@@ -575,8 +575,7 @@ export default function DashboardPage() {
   const [videoMode, setVideoMode] = useState<VideoMode>('text')
   const [i2vModel, setI2vModel] = useState<I2VModel>('grok')
   const [quality, setQuality] = useState<Quality>('720p')
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
-  const [uploadPreview, setUploadPreview] = useState<string | null>(null)
+  const [uploadedImages, setUploadedImages] = useState<{ file: File; preview: string; description: string }[]>([])
   const [loading, setLoading] = useState(false)
   const [lastError, setLastError] = useState<string | null>(null)
   const [currentImage, setCurrentImage] = useState<{ url: string; prompt: string } | null>(null)
@@ -640,14 +639,17 @@ export default function DashboardPage() {
 
       // Image-to-Video mode
       if (videoMode === 'image') {
-        if (!uploadedFile) {
-          push('Please upload an image first.', 'error')
+        if (uploadedImages.length === 0) {
+          push('Please upload at least one image first.', 'error')
           setLoading(false)
           return
         }
         try {
           const form = new FormData()
-          form.append('image', uploadedFile)
+          uploadedImages.forEach((img) => {
+            form.append('images[]', img.file)
+            form.append('imageDescriptions[]', img.description)
+          })
           form.append('prompt', prompt.trim())
           form.append('model', i2vModel)
           form.append('quality', quality)
@@ -762,18 +764,19 @@ export default function DashboardPage() {
   }
 
   function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-      push('Only JPEG, PNG, and WebP images are supported.', 'error')
-      return
+    const files = Array.from(e.target.files ?? [])
+    for (const file of files) {
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        push('Only JPEG, PNG, and WebP images are supported.', 'error')
+        continue
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        push('Image must be under 10 MB.', 'error')
+        continue
+      }
+      setUploadedImages(prev => [...prev, { file, preview: URL.createObjectURL(file), description: '' }])
     }
-    if (file.size > 10 * 1024 * 1024) {
-      push('Image must be under 10 MB.', 'error')
-      return
-    }
-    setUploadedFile(file)
-    setUploadPreview(URL.createObjectURL(file))
+    e.target.value = ''
   }
 
   async function useImageForVideo(imageUrl: string, imagePrompt: string) {
@@ -782,8 +785,7 @@ export default function DashboardPage() {
       const blob = await res.blob()
       const ext = blob.type === 'image/webp' ? 'webp' : blob.type === 'image/png' ? 'png' : 'jpg'
       const file = new File([blob], `instaart-i2v.${ext}`, { type: blob.type })
-      setUploadedFile(file)
-      setUploadPreview(URL.createObjectURL(file))
+      setUploadedImages([{ file, preview: URL.createObjectURL(file), description: '' }])
       setPrompt(imagePrompt)
       setTab('video')
       setVideoMode('image')
@@ -794,18 +796,18 @@ export default function DashboardPage() {
 
   function handleImageDrop(e: React.DragEvent) {
     e.preventDefault()
-    const file = e.dataTransfer.files[0]
-    if (!file) return
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-      push('Only JPEG, PNG, and WebP images are supported.', 'error')
-      return
+    const files = Array.from(e.dataTransfer.files)
+    for (const file of files) {
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        push('Only JPEG, PNG, and WebP images are supported.', 'error')
+        continue
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        push('Image must be under 10 MB.', 'error')
+        continue
+      }
+      setUploadedImages(prev => [...prev, { file, preview: URL.createObjectURL(file), description: '' }])
     }
-    if (file.size > 10 * 1024 * 1024) {
-      push('Image must be under 10 MB.', 'error')
-      return
-    }
-    setUploadedFile(file)
-    setUploadPreview(URL.createObjectURL(file))
   }
 
   return (
@@ -1197,7 +1199,7 @@ export default function DashboardPage() {
           <div className="px-5 pb-5 pt-2 shrink-0">
             <button
               onClick={handleGenerate}
-              disabled={loading || !prompt.trim() || (tab === 'video' && videoMode === 'image' && !uploadedFile)}
+              disabled={loading || !prompt.trim() || (tab === 'video' && videoMode === 'image' && uploadedImages.length === 0)}
               className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-purple-600 via-violet-600 to-purple-600 hover:from-purple-500 hover:via-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_0_24px_rgba(139,92,246,0.35)] hover:shadow-[0_0_36px_rgba(139,92,246,0.55)] active:scale-[0.98] flex items-center justify-center gap-2"
             >
               {loading ? (
