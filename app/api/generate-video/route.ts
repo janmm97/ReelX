@@ -1,5 +1,8 @@
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { applyVoiceToVideo } from '@/lib/apply-voice'
+
+export const maxDuration = 300
 
 // ── Model routing ─────────────────────────────────────────────────────────────
 
@@ -301,8 +304,19 @@ export async function POST(request: NextRequest) {
   // 2. Validate body
   const body = await request.json().catch(() => ({})) as {
     prompt?: unknown; model?: unknown; aspectRatio?: unknown
+    narrationScript?: unknown; voiceId?: unknown; keepBackgroundAudio?: unknown
   }
-  const { prompt, model, aspectRatio } = body
+  const { prompt, model, aspectRatio, narrationScript, voiceId, keepBackgroundAudio } = body
+
+  // Validate voice params — must provide both or neither
+  const hasScript = typeof narrationScript === 'string' && narrationScript.trim().length > 0
+  const hasVoice  = typeof voiceId === 'string' && voiceId.trim().length > 0
+  if (hasScript !== hasVoice) {
+    return NextResponse.json(
+      { error: 'narrationScript and voiceId must both be provided together' },
+      { status: 400 },
+    )
+  }
 
   if (!prompt || typeof prompt !== 'string' || !prompt.trim()) {
     return NextResponse.json({ error: 'prompt is required' }, { status: 400 })
@@ -384,7 +398,24 @@ export async function POST(request: NextRequest) {
       videoUrl = await pollGenericTask(taskId, apiKey)
     }
 
-    // 8. Mark done
+    // 8. Optional: apply ElevenLabs voice narration
+    if (hasScript && hasVoice) {
+      const elevenKey = process.env.ELEVENLABS_API_KEY
+      if (!elevenKey) throw new Error('ElevenLabs API key not configured')
+      videoUrl = await applyVoiceToVideo(
+        videoUrl,
+        {
+          voiceId:         (voiceId as string).trim(),
+          narrationScript: (narrationScript as string).trim(),
+          keepBackground:  keepBackgroundAudio === true,
+        },
+        elevenKey,
+        service,
+        videoId,
+      )
+    }
+
+    // 9. Mark done
     await service
       .from('videos')
       .update({ video_url: videoUrl, status: 'done' })
