@@ -1,15 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050510;
-  --foreground: #ededed;
-  --accent-purple: #a855f7;
-  --accent-pink: #ec4899;
-  --accent-blue: #3b82f6;
-  --accent-cyan: #06b6d4;
-  --surface: #0f0f23;
-  --surface-light: #1a1a3e;
-  --muted: #94a3b8;
+  /* ── Core background ── */
+  --background: #060510;
+  --foreground: #f0ede8;
+
+  /* ── Brand gradient (matches Iart icon: purple → cyan → pink) ── */
+  --brand-purple: #8b5cf6;
+  --brand-cyan:   #06b6d4;
+  --brand-pink:   #ec4899;
+  --brand-gold:   #fbbf24;
+
+  /* ── Brand gradient as CSS value (reusable) ── */
+  --gradient-brand: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 55%, #ec4899 100%);
+  --gradient-brand-text: linear-gradient(90deg, #a78bfa 0%, #22d3ee 50%, #f472b6 100%);
+
+  /* ── Surfaces ── */
+  --surface: #0f0d1a;
+  --surface-light: #1a1630;
+
+  /* ── Legacy aliases (keep dashboard working) ── */
+  --accent-purple: #8b5cf6;
+  --accent-pink:   #ec4899;
+  --accent-blue:   #3b82f6;
+  --accent-cyan:   #06b6d4;
+  --muted: #7a7492;
 }
 
 @theme inline {
@@ -122,31 +137,79 @@ body {
 
 /* ── Glass card ── */
 .glass {
-  background: rgba(15, 15, 35, 0.6);
+  background: rgba(15, 13, 26, 0.65);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.18);
 }
 .glass-light {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-/* ── Gradient text ── */
+/* ── Brand gradient text (purple → cyan → pink — matches icon) ── */
 .text-gradient {
-  background: linear-gradient(135deg, #a855f7, #ec4899, #3b82f6);
+  background: var(--gradient-brand-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 .text-gradient-shimmer {
-  background: linear-gradient(90deg, #a855f7, #ec4899, #3b82f6, #06b6d4, #a855f7);
+  background: linear-gradient(90deg, #a78bfa, #22d3ee, #f472b6, #a78bfa);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: shimmer 4s linear infinite;
 }
+
+/* ── Brand gradient background (for buttons, badges) ── */
+.bg-brand-gradient {
+  background: var(--gradient-brand);
+}
+.bg-brand-gradient:hover {
+  opacity: 0.9;
+}
+
+/* ── Hero image floats (varied timing & rotation) ── */
+@keyframes float-a {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50%       { transform: translateY(-18px) rotate(-2deg); }
+}
+@keyframes float-b {
+  0%, 100% { transform: translateY(0) rotate(2.5deg); }
+  50%       { transform: translateY(-14px) rotate(1.5deg); }
+}
+@keyframes float-c {
+  0%, 100% { transform: translateY(0) rotate(1deg); }
+  50%       { transform: translateY(-22px) rotate(0deg); }
+}
+.animate-float-a { animation: float-a 7s ease-in-out infinite; }
+.animate-float-b { animation: float-b 5.5s ease-in-out infinite; }
+.animate-float-c { animation: float-c 8.5s ease-in-out infinite; }
+
+/* ── Brand gradient glow (for CTA button) ── */
+@keyframes brand-glow {
+  0%, 100% { box-shadow: 0 0 24px rgba(139,92,246,0.35), 0 0 48px rgba(6,182,212,0.12); }
+  50%       { box-shadow: 0 0 40px rgba(139,92,246,0.55), 0 0 80px rgba(236,72,153,0.18); }
+}
+.animate-brand-glow  { animation: brand-glow 3s ease-in-out infinite; }
+/* legacy alias so old class still works */
+.animate-amber-glow  { animation: brand-glow 3s ease-in-out infinite; }
+
+/* ── Gallery horizontal scroll ── */
+@keyframes gallery-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-gallery-scroll { animation: gallery-scroll 40s linear infinite; }
+
+/* ── Marquee reverse (scrolls right) ── */
+@keyframes marquee-reverse {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+.animate-marquee-reverse { animation: marquee-reverse 28s linear infinite; }
 
 /* ── Respect reduced motion ── */
 @media (prefers-reduced-motion: reduce) {

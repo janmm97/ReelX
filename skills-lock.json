@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "one-auth": {
+      "source": "withoneai/auth",
+      "sourceType": "github",
+      "computedHash": "d84b4e624d1c31c2b1537daf135543095e6980e7c210067989fd6073a1499e31"
+    }
+  }
+}

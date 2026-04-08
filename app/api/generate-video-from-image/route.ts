@@ -8,13 +8,21 @@ export const maxDuration = 300
 
 type I2VModel =
   | 'grok'
+  | 'kling21_i2v'
+  | 'kling25_turbo_i2v'
   | 'kling3'
   | 'kling3_audio'
   | 'seedance2'
+  | 'seedance15_pro_i2v'
   | 'hailuo_pro'
   | 'hailuo_std'
+  | 'hailuo23_pro'
+  | 'hailuo23_std'
   | 'wan26'
   | 'wan26_flash'
+  | 'wan27_i2v'
+  | 'bytedance_v1_pro_i2v'
+  | 'bytedance_v1_lite_i2v'
   | 'sora2'
   | 'sora2_pro'
   | 'veo3_i2v'
@@ -23,9 +31,12 @@ type I2VModel =
 type Quality  = '480p' | '720p' | '1080p'
 
 const ALL_MODELS = new Set<I2VModel>([
-  'grok', 'kling3', 'kling3_audio',
-  'seedance2', 'hailuo_pro', 'hailuo_std',
-  'wan26', 'wan26_flash',
+  'grok',
+  'kling21_i2v', 'kling25_turbo_i2v', 'kling3', 'kling3_audio',
+  'seedance2', 'seedance15_pro_i2v',
+  'hailuo_pro', 'hailuo_std', 'hailuo23_pro', 'hailuo23_std',
+  'wan26', 'wan26_flash', 'wan27_i2v',
+  'bytedance_v1_pro_i2v', 'bytedance_v1_lite_i2v',
   'sora2', 'sora2_pro',
   'veo3_i2v', 'veo3_fast_i2v',
 ])
@@ -59,8 +70,10 @@ function buildTaskBody(
   imageUrls: string[],
   quality: Quality,
   aspectRatio: string | undefined,
+  duration: string,
 ) {
   const ar = aspectRatio ?? '16:9'
+  const dur = duration ?? '5'
   const imageUrl = imageUrls[0]  // first image for single-image models
 
   switch (model) {
@@ -72,7 +85,32 @@ function buildTaskBody(
           prompt,
           resolution: quality === '1080p' ? '720p' : quality, // Grok max 720p
           aspect_ratio: ar,
-          duration: '6',
+          duration: dur,
+        },
+      }
+
+    case 'kling21_i2v':
+      return {
+        model: 'kling-2.1/image-to-video',
+        input: {
+          image_urls: imageUrls,
+          prompt,
+          mode: quality === '1080p' ? 'pro' : 'std',
+          duration: dur,
+          sound: false,
+          aspect_ratio: ar,
+        },
+      }
+
+    case 'kling25_turbo_i2v':
+      return {
+        model: 'kling-2.5-turbo/image-to-video-pro',
+        input: {
+          image_urls: imageUrls,
+          prompt,
+          duration: dur,
+          sound: false,
+          aspect_ratio: ar,
         },
       }
 
@@ -83,7 +121,7 @@ function buildTaskBody(
           image_urls: imageUrls,
           prompt,
           mode: quality === '1080p' ? 'pro' : 'std',
-          duration: '5',
+          duration: dur,
           sound: false,
           aspect_ratio: ar,
           multi_shots: imageUrls.length > 1,
@@ -97,7 +135,7 @@ function buildTaskBody(
           image_urls: imageUrls,
           prompt,
           mode: 'pro',
-          duration: '5',
+          duration: dur,
           sound: true,
           aspect_ratio: ar,
           multi_shots: imageUrls.length > 1,
@@ -112,7 +150,20 @@ function buildTaskBody(
           first_frame_url: imageUrl,
           resolution: quality === '1080p' ? '720p' : quality,
           aspect_ratio: ar,
-          duration: 8,
+          duration: parseInt(dur, 10),
+          generate_audio: true,
+        },
+      }
+
+    case 'seedance15_pro_i2v':
+      return {
+        model: 'bytedance/seedance-1-5-pro-image-to-video',
+        input: {
+          prompt,
+          first_frame_url: imageUrl,
+          resolution: quality === '1080p' ? '720p' : quality,
+          aspect_ratio: ar,
+          duration: parseInt(dur, 10),
           generate_audio: true,
         },
       }
@@ -135,6 +186,24 @@ function buildTaskBody(
         },
       }
 
+    case 'hailuo23_pro':
+      return {
+        model: 'hailuo/2-3-image-to-video-pro',
+        input: {
+          image_urls: imageUrls,
+          prompt,
+        },
+      }
+
+    case 'hailuo23_std':
+      return {
+        model: 'hailuo/2-3-image-to-video-standard',
+        input: {
+          image_urls: imageUrls,
+          prompt,
+        },
+      }
+
     case 'wan26':
       return {
         model: 'wan/2-6-image-to-video',
@@ -142,7 +211,7 @@ function buildTaskBody(
           image_urls: imageUrls,
           prompt,
           audio: true,
-          duration: '5',
+          duration: dur,
           resolution: quality === '480p' ? '720p' : quality,
         },
       }
@@ -154,8 +223,49 @@ function buildTaskBody(
           image_urls: imageUrls,
           prompt,
           audio: true,
-          duration: '5',
+          duration: dur,
           resolution: quality === '480p' ? '720p' : quality,
+        },
+      }
+
+    case 'wan27_i2v':
+      return {
+        model: 'wan/2-7-image-to-video',
+        input: {
+          image_urls: imageUrls,
+          prompt,
+          audio: true,
+          duration: dur,
+          resolution: quality === '480p' ? '720p' : quality,
+          aspect_ratio: ar,
+        },
+      }
+
+    case 'bytedance_v1_pro_i2v':
+      return {
+        model: 'bytedance/v1-pro-image-to-video',
+        input: {
+          prompt,
+          image_url: imageUrl,
+          first_frame_url: imageUrl,
+          resolution: quality === '1080p' ? '720p' : quality,
+          aspect_ratio: ar,
+          duration: parseInt(dur, 10),
+          generate_audio: true,
+        },
+      }
+
+    case 'bytedance_v1_lite_i2v':
+      return {
+        model: 'bytedance/v1-lite-image-to-video',
+        input: {
+          prompt,
+          image_url: imageUrl,
+          first_frame_url: imageUrl,
+          resolution: quality === '1080p' ? '720p' : quality,
+          aspect_ratio: ar,
+          duration: parseInt(dur, 10),
+          generate_audio: true,
         },
       }
 
@@ -201,6 +311,7 @@ interface KieVeoStatus {
   data?: {
     successFlag?: number
     resultUrls?:  string[]
+    resultJson?:  string
   }
 }
 
@@ -248,8 +359,17 @@ async function pollVeoI2V(taskId: string, apiKey: string): Promise<string> {
     console.log('[i2v] veo poll successFlag:', flag)
 
     if (flag === 1) {
-      const url = data.data?.resultUrls?.[0]
-      if (!url) throw new Error('Veo completed but no video URL returned')
+      let url = data.data?.resultUrls?.[0]
+      if (!url && data.data?.resultJson) {
+        try {
+          const parsed = JSON.parse(data.data.resultJson) as { resultUrls?: string[] }
+          url = parsed.resultUrls?.[0]
+        } catch { /* ignore */ }
+      }
+      if (!url) {
+        console.error('[i2v] veo response missing URL:', JSON.stringify(data).slice(0, 400))
+        throw new Error('Veo completed but no video URL returned')
+      }
       return url
     }
     if (flag === 2 || flag === 3) throw new Error('Veo video generation failed')
@@ -365,9 +485,13 @@ export async function POST(request: NextRequest) {
   const aspectRatio = formData.get('aspectRatio') as string | null
   const imageFiles  = (formData.getAll('images[]') as File[]).filter(f => f.size > 0)
   const imageDescriptions = formData.getAll('imageDescriptions[]').map(d => String(d))
-  const narrationScript = (formData.get('narrationScript') as string | null) ?? ''
-  const voiceId         = (formData.get('voiceId') as string | null) ?? ''
-  const keepBackground  = formData.get('keepBackgroundAudio') === 'true'
+  const narrationScript   = (formData.get('narrationScript') as string | null) ?? ''
+  const voiceId           = (formData.get('voiceId') as string | null) ?? ''
+  const duration          = (formData.get('duration') as string | null) ?? '5'
+  const voiceStability    = parseFloat((formData.get('voiceStability') as string | null) ?? 'NaN')
+  const voiceSimilarity   = parseFloat((formData.get('voiceSimilarity') as string | null) ?? 'NaN')
+  const voiceStyle        = parseFloat((formData.get('voiceStyle') as string | null) ?? 'NaN')
+  const voiceSpeed        = parseFloat((formData.get('voiceSpeed') as string | null) ?? 'NaN')
 
   const hasScript = narrationScript.trim().length > 0
   const hasVoice  = voiceId.trim().length > 0
@@ -473,7 +597,7 @@ export async function POST(request: NextRequest) {
       console.log('[i2v] veo task ID:', taskId)
       videoUrl = await pollVeoI2V(taskId, apiKey)
     } else {
-      const taskBody = buildTaskBody(model as I2VModel, augmentedPrompt, imageUrls, quality as Quality, ar)
+      const taskBody = buildTaskBody(model as I2VModel, augmentedPrompt, imageUrls, quality as Quality, ar, duration)
       taskId = await submitTask(taskBody, apiKey)
       await service.from('videos').update({ job_id: taskId }).eq('id', videoId)
       console.log('[i2v] task ID:', taskId)
@@ -489,7 +613,12 @@ export async function POST(request: NextRequest) {
         {
           voiceId:         voiceId.trim(),
           narrationScript: narrationScript.trim(),
-          keepBackground,
+          voiceSettings: {
+            stability:        isNaN(voiceStability) ? undefined : voiceStability,
+            similarity_boost: isNaN(voiceSimilarity) ? undefined : voiceSimilarity,
+            style:            isNaN(voiceStyle) ? undefined : voiceStyle,
+            speed:            isNaN(voiceSpeed) ? undefined : voiceSpeed,
+          },
         },
         elevenKey,
         service,

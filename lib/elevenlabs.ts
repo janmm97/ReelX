@@ -8,6 +8,20 @@ export interface Voice {
   previewUrl: string
 }
 
+export interface VoiceSettings {
+  stability:        number  // 0–1  (default 0.5)
+  similarity_boost: number  // 0–1  (default 0.75)
+  style:            number  // 0–1  (default 0.4)
+  speed:            number  // 0.7–1.3 (default 1.0)
+}
+
+const DEFAULT_VOICE_SETTINGS: VoiceSettings = {
+  stability:        0.5,
+  similarity_boost: 0.75,
+  style:            0.4,
+  speed:            1.0,
+}
+
 interface ElevenLabsVoicesResponse {
   voices: Array<{
     voice_id: string
@@ -38,11 +52,23 @@ export async function generateSpeech(
   apiKey: string,
   voiceId: string,
   text: string,
+  settings?: Partial<VoiceSettings>,
 ): Promise<Buffer> {
+  const merged = { ...DEFAULT_VOICE_SETTINGS, ...settings }
   const res = await fetch(`${ELEVENLABS_BASE}/v1/text-to-speech/${voiceId}`, {
     method:  'POST',
     headers: { 'xi-api-key': apiKey, 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ text, model_id: 'eleven_multilingual_v2' }),
+    body:    JSON.stringify({
+      text,
+      model_id: 'eleven_turbo_v2_5',
+      voice_settings: {
+        stability:        merged.stability,
+        similarity_boost: merged.similarity_boost,
+        style:            merged.style,
+        speed:            merged.speed,
+        use_speaker_boost: true,
+      },
+    }),
   })
   if (!res.ok) {
     const msg = await res.text()

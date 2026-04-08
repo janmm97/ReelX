@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
@@ -29,13 +30,21 @@ type AspectRatio = '1:1 Square' | '4:3 Landscape' | '3:4 Portrait' | '16:9 Wides
 
 type I2VModel =
   | 'grok'
+  | 'kling21_i2v'
+  | 'kling25_turbo_i2v'
   | 'kling3'
   | 'kling3_audio'
   | 'seedance2'
+  | 'seedance15_pro_i2v'
   | 'hailuo_pro'
   | 'hailuo_std'
+  | 'hailuo23_pro'
+  | 'hailuo23_std'
   | 'wan26'
   | 'wan26_flash'
+  | 'wan27_i2v'
+  | 'bytedance_v1_pro_i2v'
+  | 'bytedance_v1_lite_i2v'
   | 'sora2'
   | 'sora2_pro'
   | 'veo3_i2v'
@@ -242,17 +251,25 @@ type VideoModel =
   | 'veo3_fast'
   | 'veo3'
   | 'veo3_audio'
+  | 'veo3_lite'
+  | 'kling21_std'
+  | 'kling21_pro'
+  | 'kling25_turbo'
   | 'kling26'
   | 'kling3'
   | 'kling3_audio'
   | 'seedance2'
   | 'seedance2_fast'
+  | 'seedance15_pro'
   | 'hailuo_pro'
   | 'hailuo_std'
   | 'sora2'
   | 'sora2_pro'
   | 'sora2_audio'
   | 'wan26'
+  | 'wan27'
+  | 'bytedance_v1_pro'
+  | 'bytedance_v1_lite'
   | 'grok_t2v'
 
 interface VideoModelDef {
@@ -404,6 +421,70 @@ const VIDEO_MODELS: VideoModelDef[] = [
     color: 'from-emerald-600 to-green-500',
     tier: 'premium',
   },
+  {
+    id: 'kling21_std',
+    label: 'Kling 2.1 Standard',
+    badge: 'Kuaishou',
+    desc: 'Kling 2.1 standard mode — solid quality at budget speed.',
+    color: 'from-indigo-400 to-blue-400',
+    tier: 'budget',
+  },
+  {
+    id: 'kling21_pro',
+    label: 'Kling 2.1 Pro',
+    badge: 'Kuaishou',
+    desc: 'Kling 2.1 pro mode — higher fidelity with cinematic motion.',
+    color: 'from-indigo-500 to-violet-400',
+    tier: 'standard',
+  },
+  {
+    id: 'kling25_turbo',
+    label: 'Kling 2.5 Turbo',
+    badge: 'Kuaishou',
+    desc: 'Kling 2.5 Turbo Pro — fast generation with high visual quality.',
+    color: 'from-violet-500 to-purple-500',
+    tier: 'standard',
+  },
+  {
+    id: 'wan27',
+    label: 'Wan 2.7',
+    badge: 'Alibaba',
+    desc: 'Wan 2.7 text-to-video with improved motion and up to 1080p.',
+    color: 'from-cyan-500 to-blue-500',
+    tier: 'standard',
+  },
+  {
+    id: 'seedance15_pro',
+    label: 'Seedance 1.5 Pro',
+    badge: 'ByteDance',
+    desc: 'Seedance 1.5 Pro — higher fidelity video with audio generation.',
+    color: 'from-teal-600 to-emerald-500',
+    tier: 'standard',
+  },
+  {
+    id: 'bytedance_v1_pro',
+    label: 'ByteDance V1 Pro',
+    badge: 'ByteDance',
+    desc: 'ByteDance V1 Pro — detailed generation with audio. Up to 720p.',
+    color: 'from-orange-400 to-amber-500',
+    tier: 'standard',
+  },
+  {
+    id: 'bytedance_v1_lite',
+    label: 'ByteDance V1 Lite',
+    badge: 'ByteDance',
+    desc: 'ByteDance V1 Lite — fast and economical video generation.',
+    color: 'from-yellow-500 to-amber-400',
+    tier: 'budget',
+  },
+  {
+    id: 'veo3_lite',
+    label: 'Veo 3.1 Lite',
+    badge: 'Google',
+    desc: 'Google Veo 3.1 Lite — fastest Veo variant with audio.',
+    color: 'from-sky-400 to-teal-400',
+    tier: 'budget',
+  },
 ]
 
 // ── Image-to-Video models ───────────────────────────────────────────────────
@@ -517,6 +598,70 @@ const I2V_MODELS: I2VModelDef[] = [
     color: 'from-blue-600 to-indigo-500',
     tier: 'premium',
   },
+  {
+    id: 'kling21_i2v',
+    label: 'Kling 2.1',
+    badge: 'Kuaishou',
+    desc: 'Kling 2.1 image-to-video — smooth motion and good detail.',
+    color: 'from-indigo-400 to-blue-400',
+    tier: 'standard',
+  },
+  {
+    id: 'kling25_turbo_i2v',
+    label: 'Kling 2.5 Turbo',
+    badge: 'Kuaishou',
+    desc: 'Kling 2.5 Turbo Pro image-to-video — fast with high fidelity.',
+    color: 'from-violet-500 to-purple-500',
+    tier: 'standard',
+  },
+  {
+    id: 'seedance15_pro_i2v',
+    label: 'Seedance 1.5 Pro',
+    badge: 'ByteDance',
+    desc: 'Seedance 1.5 Pro image-to-video with audio. Up to 720p.',
+    color: 'from-teal-600 to-emerald-500',
+    tier: 'standard',
+  },
+  {
+    id: 'hailuo23_pro',
+    label: 'Hailuo 2.3 Pro',
+    badge: 'MiniMax',
+    desc: 'Hailuo 2.3 Pro image-to-video with prompt optimisation.',
+    color: 'from-red-500 to-orange-500',
+    tier: 'standard',
+  },
+  {
+    id: 'hailuo23_std',
+    label: 'Hailuo 2.3 Standard',
+    badge: 'MiniMax',
+    desc: 'Hailuo 2.3 Standard image-to-video for fast iteration.',
+    color: 'from-amber-500 to-orange-400',
+    tier: 'budget',
+  },
+  {
+    id: 'wan27_i2v',
+    label: 'Wan 2.7',
+    badge: 'Alibaba',
+    desc: 'Wan 2.7 image-to-video with audio and improved fidelity.',
+    color: 'from-cyan-500 to-blue-500',
+    tier: 'standard',
+  },
+  {
+    id: 'bytedance_v1_pro_i2v',
+    label: 'ByteDance V1 Pro',
+    badge: 'ByteDance',
+    desc: 'ByteDance V1 Pro image-to-video with audio. Up to 720p.',
+    color: 'from-orange-400 to-amber-500',
+    tier: 'standard',
+  },
+  {
+    id: 'bytedance_v1_lite_i2v',
+    label: 'ByteDance V1 Lite',
+    badge: 'ByteDance',
+    desc: 'ByteDance V1 Lite image-to-video — fast and economical.',
+    color: 'from-yellow-500 to-amber-400',
+    tier: 'budget',
+  },
 ]
 
 // ── Toast hook ──────────────────────────────────────────────────────────────
@@ -558,90 +703,6 @@ async function downloadImage(url: string, filename = 'instaart.png') {
   URL.revokeObjectURL(blobUrl)
 }
 
-// ── Voice Clone Uploader ──────────────────────────────────────────────────────
-interface VoiceCloneUploaderProps {
-  onCloned: (voice: { id: string; name: string; category: 'cloned'; previewUrl: string }) => void
-  onError: (msg: string) => void
-  disabled: boolean
-}
-
-function VoiceCloneUploader({ onCloned, onError, disabled }: VoiceCloneUploaderProps) {
-  const [open, setOpen] = useState(false)
-  const [name, setName] = useState('')
-  const [file, setFile] = useState<File | null>(null)
-  const [uploading, setUploading] = useState(false)
-
-  async function handleSubmit() {
-    if (!file || !name.trim()) return
-    setUploading(true)
-    try {
-      const form = new FormData()
-      form.append('audio', file)
-      form.append('name', name.trim())
-      const res = await fetch('/api/voice-clone', { method: 'POST', body: form })
-      const data = await res.json()
-      if (!res.ok) { onError(data.error ?? 'Voice cloning failed'); return }
-      onCloned({ id: data.voiceId, name: data.name, category: 'cloned', previewUrl: '' })
-      setOpen(false)
-      setName('')
-      setFile(null)
-    } finally {
-      setUploading(false)
-    }
-  }
-
-  if (!open) {
-    return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        disabled={disabled}
-        className="text-[10px] text-purple-400 hover:text-purple-300 transition-colors text-left disabled:opacity-50"
-      >
-        + Add your voice
-      </button>
-    )
-  }
-
-  return (
-    <div className="flex flex-col gap-1.5 p-2 rounded-lg border border-white/[0.08] bg-white/[0.03]">
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Voice name"
-        className="w-full bg-transparent text-xs text-white placeholder-slate-600 border border-white/[0.08] rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-purple-500/50"
-      />
-      <label className="flex flex-col items-center justify-center gap-1 py-2 rounded-lg border border-dashed border-white/[0.1] hover:border-purple-500/40 transition-colors cursor-pointer text-[10px] text-slate-400">
-        {file ? file.name : 'Drop mp3/wav/m4a or click (max 25 MB)'}
-        <input
-          type="file"
-          accept="audio/mpeg,audio/wav,audio/mp4,audio/x-m4a"
-          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          className="hidden"
-        />
-      </label>
-      <div className="flex gap-1">
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={!file || !name.trim() || uploading}
-          className="flex-1 py-1 rounded-lg text-[10px] font-medium bg-purple-600 hover:bg-purple-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-        >
-          {uploading ? 'Cloning…' : 'Clone voice'}
-        </button>
-        <button
-          type="button"
-          onClick={() => { setOpen(false); setName(''); setFile(null) }}
-          className="px-2 py-1 rounded-lg text-[10px] text-slate-400 hover:text-white border border-white/[0.08] transition-colors"
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  )
-}
-
 // ── Main component ───────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const supabase = createClient()
@@ -668,11 +729,7 @@ export default function DashboardPage() {
   const [expanded, setExpanded] = useState<HistoryItem | null>(null)
   const [historyLoading, setHistoryLoading] = useState(true)
   const [copiedId, setCopiedId] = useState<string | null>(null)
-  const [voiceEnabled, setVoiceEnabled]         = useState(false)
-  const [selectedVoiceId, setSelectedVoiceId]   = useState<string | null>(null)
-  const [narrationScript, setNarrationScript]   = useState('')
-  const [keepBackgroundAudio, setKeepBackgroundAudio] = useState(false)
-  const [voices, setVoices] = useState<{ id: string; name: string; category: 'library' | 'cloned'; previewUrl: string }[]>([])
+  const [videoDuration, setVideoDuration] = useState('5')
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user: u } }) => {
@@ -714,15 +771,6 @@ export default function DashboardPage() {
 
   useEffect(() => { fetchHistory() }, [fetchHistory])
 
-  useEffect(() => {
-    if (!voiceEnabled) return
-    fetch('/api/voices')
-      .then((r) => r.json())
-      .then((data) => { if (data.voices) setVoices(data.voices) })
-      .catch(() => push('Could not load voices — check your connection.', 'error'))
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [voiceEnabled])
-
   async function handleSignOut() {
     await supabase.auth.signOut()
     router.push('/login')
@@ -734,6 +782,50 @@ export default function DashboardPage() {
 
     if (tab === 'video') {
       setLastError(null)
+
+      const totalDurationSec = parseInt(videoDuration, 10)
+
+      // ── Long video (≥30 s) — multi-clip pipeline ─────────────────────────────
+      if (totalDurationSec >= 30) {
+        try {
+          if (videoMode === 'image' && uploadedImages.length === 0) {
+            push('Please upload at least one image first.', 'error')
+            setLoading(false)
+            return
+          }
+
+          let res: Response
+          if (videoMode === 'image') {
+            const form = new FormData()
+            form.append('prompt',        prompt.trim())
+            form.append('mode',          videoMode)
+            form.append('i2vModel',      i2vModel)
+            form.append('aspectRatio',   aspectRatio)
+            form.append('totalDuration', String(totalDurationSec))
+            uploadedImages.forEach((img) => form.append('images[]', img.file))
+            res = await fetch('/api/generate-long-video', { method: 'POST', body: form })
+          } else {
+            res = await fetch('/api/generate-long-video', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prompt: prompt.trim(), mode: videoMode, videoModel, aspectRatio, totalDuration: totalDurationSec }),
+            })
+          }
+          const data = await res.json()
+          if (!res.ok) {
+            const msg = res.status === 429 ? 'Daily limit reached — come back tomorrow!' : (data.error ?? 'Long video generation failed')
+            setLastError(msg); push(msg, 'error'); return
+          }
+          setLastError(null)
+          setCurrentVideo({ url: data.videoUrl, prompt: prompt.trim() })
+          fetchHistory()
+          push(`${videoDuration}s video ready!`, 'success', 4000)
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : 'Something went wrong, try again!'
+          setLastError(msg); push(msg, 'error')
+        } finally { setLoading(false) }
+        return
+      }
 
       // Image-to-Video mode
       if (videoMode === 'image') {
@@ -752,11 +844,7 @@ export default function DashboardPage() {
           form.append('model', i2vModel)
           form.append('quality', quality)
           form.append('aspectRatio', aspectRatio)
-          if (voiceEnabled && selectedVoiceId && narrationScript.trim()) {
-            form.append('narrationScript', narrationScript.trim())
-            form.append('voiceId', selectedVoiceId)
-            form.append('keepBackgroundAudio', String(keepBackgroundAudio))
-          }
+          form.append('duration', videoDuration)
 
           const res = await fetch('/api/generate-video-from-image', { method: 'POST', body: form })
           const data = await res.json()
@@ -787,18 +875,7 @@ export default function DashboardPage() {
         const res = await fetch('/api/generate-video', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            prompt: prompt.trim(),
-            model: videoModel,
-            aspectRatio,
-            ...(voiceEnabled && selectedVoiceId && narrationScript.trim()
-              ? {
-                  narrationScript:    narrationScript.trim(),
-                  voiceId:            selectedVoiceId,
-                  keepBackgroundAudio,
-                }
-              : {}),
-          }),
+          body: JSON.stringify({ prompt: prompt.trim(), model: videoModel, aspectRatio, duration: videoDuration }),
         })
         const data = await res.json()
         if (!res.ok) {
@@ -961,6 +1038,12 @@ export default function DashboardPage() {
               </div>
             )}
             <span className="text-sm text-slate-400 hidden sm:block">{user.email}</span>
+            <Link
+              href="/studio"
+              className="text-xs text-purple-400 hover:text-purple-300 border border-purple-500/30 hover:border-purple-400/50 px-3 py-1.5 rounded-lg transition-all hidden sm:block"
+            >
+              Talking Video
+            </Link>
             <button
               onClick={handleSignOut}
               className="text-xs text-slate-500 hover:text-white border border-white/10 hover:border-white/30 px-3 py-1.5 rounded-lg transition-all"
@@ -1306,104 +1389,29 @@ export default function DashboardPage() {
                   />
                 </PanelRow>
 
-                {/* Voice Narration */}
-                <div className="mt-1">
-                  {/* Toggle row */}
-                  <div className="flex items-center justify-between px-1 mb-2">
-                    <span className="text-xs font-medium text-slate-300">Voice Narration</span>
-                    <button
-                      type="button"
-                      onClick={() => setVoiceEnabled((v) => !v)}
-                      disabled={loading}
-                      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none disabled:opacity-50
-                        ${voiceEnabled ? 'bg-purple-600' : 'bg-white/[0.12]'}`}
-                    >
-                      <span
-                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200
-                          ${voiceEnabled ? 'translate-x-4' : 'translate-x-0'}`}
-                      />
-                    </button>
-                  </div>
+                {/* Duration selector */}
+                <PanelRow icon={<svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 text-slate-400"><circle cx="8" cy="8" r="5.5" stroke="currentColor" strokeWidth="1.3"/><path d="M8 5.5V8l1.5 1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>} label="Duration">
+                  <PanelSelect
+                    value={videoDuration}
+                    onChange={(v) => setVideoDuration(v)}
+                    disabled={loading}
+                    options={[
+                      { value: '5',   label: '5 sec' },
+                      { value: '8',   label: '8 sec' },
+                      { value: '10',  label: '10 sec' },
+                      { value: '30',  label: '30 sec' },
+                      { value: '60',  label: '60 sec' },
+                      { value: '90',  label: '90 sec' },
+                      { value: '120', label: '2 min' },
+                    ]}
+                  />
+                </PanelRow>
 
-                  {voiceEnabled && (
-                    <div className="flex flex-col gap-2">
-                      {/* Voice picker */}
-                      <div className="relative">
-                        <select
-                          value={selectedVoiceId ?? ''}
-                          onChange={(e) => setSelectedVoiceId(e.target.value || null)}
-                          disabled={loading || voices.length === 0}
-                          className="w-full appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <option value="">{voices.length === 0 ? 'Loading voices…' : 'Select a voice'}</option>
-                          {voices.filter((v) => v.category === 'cloned').length > 0 && (
-                            <optgroup label="Your Voices" className="bg-[#1a1a2e]">
-                              {voices.filter((v) => v.category === 'cloned').map((v) => (
-                                <option key={v.id} value={v.id} className="bg-[#1a1a2e] text-white">{v.name}</option>
-                              ))}
-                            </optgroup>
-                          )}
-                          <optgroup label="Library" className="bg-[#1a1a2e]">
-                            {voices.filter((v) => v.category === 'library').map((v) => (
-                              <option key={v.id} value={v.id} className="bg-[#1a1a2e] text-white">{v.name}</option>
-                            ))}
-                          </optgroup>
-                        </select>
-                        <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-500">
-                          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                            <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </div>
-                      </div>
-
-                      {/* Preview button */}
-                      {selectedVoiceId && (() => {
-                        const v = voices.find((x) => x.id === selectedVoiceId)
-                        return v?.previewUrl ? (
-                          <button
-                            type="button"
-                            onClick={() => new Audio(v.previewUrl).play()}
-                            className="text-[10px] text-purple-400 hover:text-purple-300 text-left transition-colors"
-                          >
-                            ▶ Preview voice
-                          </button>
-                        ) : null
-                      })()}
-
-                      {/* Add your voice */}
-                      <VoiceCloneUploader
-                        onCloned={(newVoice) => {
-                          setVoices((prev) => [newVoice, ...prev])
-                          setSelectedVoiceId(newVoice.id)
-                        }}
-                        onError={(msg) => push(msg, 'error')}
-                        disabled={loading}
-                      />
-
-                      {/* Narration script */}
-                      <textarea
-                        value={narrationScript}
-                        onChange={(e) => setNarrationScript(e.target.value)}
-                        placeholder="Write the narration that will be spoken in the video…"
-                        rows={3}
-                        disabled={loading}
-                        className="w-full bg-transparent text-xs text-white placeholder-slate-600 resize-none focus:outline-none disabled:opacity-50 leading-relaxed border border-white/[0.08] rounded-lg p-2"
-                      />
-
-                      {/* Keep background audio */}
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={keepBackgroundAudio}
-                          onChange={(e) => setKeepBackgroundAudio(e.target.checked)}
-                          disabled={loading}
-                          className="rounded border-white/20 bg-white/10 text-purple-500 focus:ring-purple-500/50 disabled:opacity-50"
-                        />
-                        <span className="text-[11px] text-slate-400">Keep background audio</span>
-                      </label>
-                    </div>
-                  )}
-                </div>
+                {parseInt(videoDuration, 10) >= 30 && (
+                  <p className="text-[10px] text-purple-400/70 px-1">
+                    Long video: {Math.ceil(parseInt(videoDuration, 10) / 10)} × 10 s clips stitched. Use Kling 3.0, Wan 2.7, or ByteDance V1.
+                  </p>
+                )}
 
                 {/* Generation time note */}
                 <div className="mt-2 px-3 py-3 rounded-xl bg-sky-500/5 border border-sky-500/15 flex items-start gap-2">
@@ -1412,7 +1420,9 @@ export default function DashboardPage() {
                     <path d="M8 5v3.5l2 1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   <p className="text-[11px] text-sky-300/80 leading-relaxed">
-                    Video generation takes 1–3 minutes depending on the model.
+                    {parseInt(videoDuration, 10) >= 30
+                      ? 'Long video: clips generate in parallel (~3–5 min) then stitch automatically.'
+                      : 'Video generation takes 1–3 minutes depending on the model.'}
                   </p>
                 </div>
               </>
@@ -1423,12 +1433,7 @@ export default function DashboardPage() {
           <div className="px-5 pb-5 pt-2 shrink-0">
             <button
               onClick={handleGenerate}
-              disabled={
-                loading ||
-                !prompt.trim() ||
-                (tab === 'video' && videoMode === 'image' && uploadedImages.length === 0) ||
-                (tab === 'video' && voiceEnabled && (!selectedVoiceId || !narrationScript.trim()))
-              }
+              disabled={loading || !prompt.trim() || (tab === 'video' && videoMode === 'image' && uploadedImages.length === 0)}
               className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-purple-600 via-violet-600 to-purple-600 hover:from-purple-500 hover:via-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_0_24px_rgba(139,92,246,0.35)] hover:shadow-[0_0_36px_rgba(139,92,246,0.55)] active:scale-[0.98] flex items-center justify-center gap-2"
             >
               {loading ? (

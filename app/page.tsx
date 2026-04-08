@@ -2,146 +2,181 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
-import { motion, useInView, useScroll, useTransform } from 'framer-motion'
+import { useRef } from 'react'
+import { motion, useInView } from 'framer-motion'
 import {
-  Sparkles,
-  Zap,
-  Shield,
-  ImageIcon,
   ArrowRight,
-  ChevronDown,
   Wand2,
-  Layers,
+  Zap,
   Clock,
+  Download,
+  Shield,
+  Film,
+  CheckCircle,
+  Users,
+  Building2,
+  ImageIcon,
   Star,
 } from 'lucide-react'
 
-/* ── Showcase images ── */
-const SHOWCASE = [
-  {
-    prompt: 'A cyberpunk city at sunset with neon reflections on wet streets',
-    image: '/A cyberpunk city at sunset with neon reflections on wet streets.png',
-  },
-  {
-    prompt: 'Ethereal forest with bioluminescent mushrooms and fireflies',
-    image: '/Ethereal forest with bioluminescent mushrooms and fireflies.png',
-  },
-  {
-    prompt: 'Abstract liquid chrome sculpture in a void, studio lighting',
-    image: '/Abstract liquid chrome sculpture of Donald Trump\'s face with its half covered in a spiderman venom type mask in a void, studio lighting.png',
-  },
-  {
-    prompt: 'Watercolor painting of a Japanese garden in autumn',
-    image: '/Watercolor painting of a Japanese garden in autumn.png',
-  },
-  {
-    prompt: 'Surreal floating islands above clouds at golden hour',
-    image: '/Surreal floating islands above clouds at golden hour.png',
-  },
-  {
-    prompt: 'Macro photograph of morning dew on a spider web',
-    image: '/Macro photograph of morning dew on a spider web.png',
-  },
+/* ══════════════════════════════════════════════════════════════
+   DESIGN TOKENS — Brand palette (matches Iart icon)
+   Purple (#8B5CF6) → Cyan (#06B6D4) → Pink (#EC4899) + Gold star
+══════════════════════════════════════════════════════════════ */
+const BG       = '#060510'      // near-black with deep purple tint
+const SURFACE  = '#0F0D1A'      // dark surface with purple undertone
+const SURFACE2 = '#09070F'      // slightly deeper surface
+const TEXT     = '#F0EDE8'      // warm off-white
+const MUTED    = '#7A7492'      // muted with subtle purple tint
+const BORDER   = 'rgba(139,92,246,0.14)'   // purple-tinted border
+
+// Brand accent (primary — purple)
+const PURPLE      = '#8B5CF6'
+const PURPLE_DIM  = 'rgba(139,92,246,0.14)'
+const PURPLE_BDR  = 'rgba(139,92,246,0.28)'
+
+// Brand gradient (purple → cyan → pink — matches icon exactly)
+const GRADIENT    = 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 55%, #ec4899 100%)'
+const GRAD_GLOW   = 'linear-gradient(135deg, rgba(139,92,246,0.35) 0%, rgba(6,182,212,0.2) 55%, rgba(236,72,153,0.2) 100%)'
+
+// Accent aliases for readability
+const GOLD  = '#fbbf24'         // star/highlight accent (matches icon's star)
+const CYAN  = '#06b6d4'
+const PINK  = '#ec4899'
+
+// Legacy alias used in the file
+const ACCENT       = PURPLE
+const ACCENT_DIM   = PURPLE_DIM
+const ACCENT_BORDER = PURPLE_BDR
+
+/* ══════════════════════════════════════════════════════════════
+   DATA
+══════════════════════════════════════════════════════════════ */
+
+const MODELS = [
+  { name: 'GPT-5 Image', tag: 'Image', hot: true },
+  { name: 'Gemini 3.1 Flash', tag: 'Image', hot: false },
+  { name: 'FLUX.2 Max', tag: 'Image', hot: false },
+  { name: 'Veo 3.1 Fast', tag: 'Video', hot: true },
+  { name: 'Sora 2', tag: 'Video', hot: true },
+  { name: 'Kling 3.0', tag: 'Video', hot: false },
+  { name: 'Runway Aleph', tag: 'Video', hot: false },
+  { name: 'Seedance 2.0', tag: 'Video', hot: false },
+  { name: 'FLUX.2 Pro', tag: 'Image', hot: false },
+  { name: 'Hailuo Pro', tag: 'Video', hot: false },
+  { name: 'Gemini 3 Pro', tag: 'Image', hot: true },
+  { name: 'Seedream 4.5', tag: 'Image', hot: false },
+  { name: 'Kling 2.6', tag: 'Video', hot: false },
+  { name: 'Wan 2.6', tag: 'Video', hot: false },
+  { name: 'Runway Gen4 Turbo', tag: 'Video', hot: false },
+  { name: 'Grok T2V', tag: 'Video', hot: false },
+  { name: 'FLUX.2 Klein', tag: 'Image', hot: false },
+  { name: 'Riverflow v2 Max', tag: 'Image', hot: false },
+  { name: 'CogVideoX-5B', tag: 'Video', hot: false },
+  { name: 'Gemini 2.5 Flash', tag: 'Image', hot: false },
+  { name: 'GPT-5 Image Mini', tag: 'Image', hot: false },
+  { name: 'FLUX.2 Flex', tag: 'Image', hot: false },
+  { name: 'Seedance 2.0 Fast', tag: 'Video', hot: false },
+  { name: 'Hailuo Standard', tag: 'Video', hot: false },
+  { name: 'Riverflow v2 Fast', tag: 'Image', hot: false },
 ]
 
 const FEATURES = [
   {
     icon: Wand2,
     title: 'Text to Image',
-    description:
-      'Describe your vision in words and watch it materialize into stunning visuals within seconds.',
+    desc: 'Describe anything. Get studio-quality visuals in seconds from the world\'s best image models.',
+    col: 'lg:col-span-1',
   },
   {
-    icon: Layers,
-    title: 'Multiple Models',
-    description:
-      'Choose between Gemini Flash and GPT-5 Image — two of the most powerful AI image models available.',
+    icon: Film,
+    title: 'Image to Video',
+    desc: 'One click breathes life into any image — cinematic clips from your stills, instantly.',
+    col: 'lg:col-span-1',
   },
   {
     icon: Zap,
-    title: 'Lightning Fast',
-    description:
-      'Optimized pipeline delivers high-quality images in under 15 seconds. No waiting, just creating.',
-  },
-  {
-    icon: Shield,
-    title: 'Private & Secure',
-    description:
-      'Your prompts and images are yours. Secured with enterprise-grade authentication via Google OAuth.',
+    title: '25+ AI Models in One Place',
+    desc: 'GPT-5, Gemini, FLUX, Veo 3.1, Sora 2, Kling, Runway and 18+ more — all under one roof. Switch models instantly. Star your favourites. No API keys needed.',
+    col: 'lg:col-span-2',
+    accent: true,
   },
   {
     icon: Clock,
     title: 'History & Gallery',
-    description:
-      'Every creation is saved. Browse, revisit, and download your entire image library anytime.',
+    desc: 'Every creation auto-saved. Star-rate and curate your growing visual library.',
+    col: 'lg:col-span-1',
   },
   {
-    icon: ImageIcon,
+    icon: Download,
     title: 'HD Downloads',
-    description:
-      'Download your generated images in full resolution. Ready for print, social media, or projects.',
+    desc: 'Full-resolution exports, ready for social, print, or client presentations.',
+    col: 'lg:col-span-1',
+  },
+  {
+    icon: Shield,
+    title: 'Private & Secure',
+    desc: 'Enterprise-grade Google OAuth. Your work stays yours — never used for model training.',
+    col: 'lg:col-span-2',
   },
 ]
 
-const STATS = [
-  { value: '2', label: 'AI Models', suffix: '' },
-  { value: '10', label: 'Daily Generations', suffix: '' },
-  { value: '<15', label: 'Seconds Per Image', suffix: 's' },
-  { value: '100', label: 'Free to Start', suffix: '%' },
+const CREATOR_USES = [
+  'Social media content at scale',
+  'Personal brand & portfolio visuals',
+  'YouTube thumbnails & channel art',
+  'Concept art & mood boards',
+  'Animated video clips from photos',
+  'Product showcase imagery',
 ]
 
-/* ── Animated counter ── */
-function AnimatedStat({
-  value,
-  label,
-  suffix,
-}: {
-  value: string
-  label: string
-  suffix: string
-}) {
-  const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: '-50px' })
-  const numericValue = parseInt(value.replace(/\D/g, ''), 10)
-  const prefix = value.startsWith('<') ? '<' : ''
-  const [count, setCount] = useState(0)
+const TEAM_USES = [
+  'Campaign visuals across all channels',
+  'On-brand imagery in minutes',
+  'Ad creative A/B test variations',
+  'Product visualization',
+  'Presentation & pitch deck graphics',
+  'Video ads from static brand assets',
+]
 
-  useEffect(() => {
-    if (!isInView) return
-    let start = 0
-    const duration = 1200
-    const step = Math.ceil(numericValue / (duration / 16))
-    const timer = setInterval(() => {
-      start += step
-      if (start >= numericValue) {
-        setCount(numericValue)
-        clearInterval(timer)
-      } else {
-        setCount(start)
-      }
-    }, 16)
-    return () => clearInterval(timer)
-  }, [isInView, numericValue])
+const STEPS = [
+  {
+    n: '01',
+    title: 'Describe',
+    text: 'Type your vision — a scene, a mood, an emotion. Be specific or go abstract.',
+  },
+  {
+    n: '02',
+    title: 'Choose',
+    text: 'Pick from 25+ frontier AI models. Star your favourites for instant recall.',
+  },
+  {
+    n: '03',
+    title: 'Publish',
+    text: 'Generate in seconds. Download HD images or turn any image into video.',
+  },
+]
 
-  return (
-    <div ref={ref} className="text-center">
-      <div
-        className="text-5xl md:text-6xl font-bold font-[family-name:var(--font-syne)] text-gradient"
-        style={{ opacity: isInView ? 1 : 0, transition: 'opacity 0.5s' }}
-      >
-        {prefix}
-        {count}
-        {suffix}
-      </div>
-      <div className="mt-2 text-sm md:text-base text-[var(--muted)] uppercase tracking-widest">
-        {label}
-      </div>
-    </div>
-  )
-}
+const GALLERY_IMAGES = [
+  { src: '/Ethereal forest with bioluminescent mushrooms and fireflies.png', prompt: 'Ethereal bioluminescent forest' },
+  { src: '/A cyberpunk city at sunset with neon reflections on wet streets.png', prompt: 'Cyberpunk city at sunset' },
+  { src: '/Watercolor painting of a Japanese garden in autumn.png', prompt: 'Japanese garden in autumn' },
+  { src: '/Surreal floating islands above clouds at golden hour.png', prompt: 'Floating islands, golden hour' },
+  { src: '/Macro photograph of morning dew on a spider web.png', prompt: 'Morning dew macro' },
+  { src: '/Abstract liquid chrome sculpture of Donald Trump\'s face with its half covered in a spiderman venom type mask in a void, studio lighting.png', prompt: 'Abstract liquid chrome sculpture' },
+  // duplicate for seamless loop
+  { src: '/Ethereal forest with bioluminescent mushrooms and fireflies.png', prompt: 'Ethereal bioluminescent forest' },
+  { src: '/A cyberpunk city at sunset with neon reflections on wet streets.png', prompt: 'Cyberpunk city at sunset' },
+  { src: '/Watercolor painting of a Japanese garden in autumn.png', prompt: 'Japanese garden in autumn' },
+  { src: '/Surreal floating islands above clouds at golden hour.png', prompt: 'Floating islands, golden hour' },
+  { src: '/Macro photograph of morning dew on a spider web.png', prompt: 'Morning dew macro' },
+  { src: '/Abstract liquid chrome sculpture of Donald Trump\'s face with its half covered in a spiderman venom type mask in a void, studio lighting.png', prompt: 'Abstract liquid chrome sculpture' },
+]
 
-/* ── Fade-in wrapper ── */
+/* ══════════════════════════════════════════════════════════════
+   UTILITIES
+══════════════════════════════════════════════════════════════ */
+
 function FadeIn({
   children,
   delay = 0,
@@ -152,14 +187,13 @@ function FadeIn({
   className?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: '-80px' })
-
+  const inView = useInView(ref, { once: true, margin: '-60px' })
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 40 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+      initial={{ opacity: 0, y: 32 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }}
       className={className}
     >
       {children}
@@ -167,253 +201,582 @@ function FadeIn({
   )
 }
 
-/* ── Main page ── */
-export default function LandingPage() {
-  const heroRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ['start start', 'end start'],
-  })
-  const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0])
-  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 0.95])
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, 100])
-
-  const [typedText, setTypedText] = useState('')
-  const fullPrompt = 'A dreamy castle floating in the clouds at sunset...'
-
-  useEffect(() => {
-    let i = 0
-    const timer = setInterval(() => {
-      setTypedText(fullPrompt.slice(0, i + 1))
-      i++
-      if (i >= fullPrompt.length) clearInterval(timer)
-    }, 50)
-    return () => clearInterval(timer)
-  }, [])
-
+function ModelPill({ m }: { m: (typeof MODELS)[0] }) {
   return (
-    <main className="relative overflow-hidden bg-[var(--background)]">
-      {/* ══════════════════════════════════════════════
+    <div
+      className="inline-flex items-center gap-2 px-4 py-2 rounded-full shrink-0 select-none"
+      style={{
+        background: m.hot ? ACCENT_DIM : 'rgba(255,255,255,0.04)',
+        border: `1px solid ${m.hot ? ACCENT_BORDER : BORDER}`,
+      }}
+    >
+      {m.hot && <Star className="w-3 h-3" style={{ color: GOLD }} />}
+      <span className="text-sm font-medium" style={{ color: m.hot ? GOLD : TEXT }}>
+        {m.name}
+      </span>
+      <span
+        className="text-[0.6rem] font-semibold px-1.5 py-0.5 rounded-full"
+        style={{
+          background: m.tag === 'Video' ? 'rgba(99,102,241,0.15)' : 'rgba(34,197,94,0.1)',
+          color: m.tag === 'Video' ? '#818CF8' : '#4ADE80',
+        }}
+      >
+        {m.tag}
+      </span>
+    </div>
+  )
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MAIN PAGE
+══════════════════════════════════════════════════════════════ */
+
+export default function LandingPage() {
+  return (
+    <main
+      style={{ background: BG, color: TEXT }}
+      className="relative overflow-hidden font-[family-name:var(--font-manrope)]"
+    >
+      {/* ═══════════════════════════════════════════════
           NAVBAR
-      ══════════════════════════════════════════════ */}
-      <nav className="fixed top-4 left-4 right-4 z-50 glass rounded-2xl px-4 md:px-6 py-3 flex items-center justify-between max-w-6xl mx-auto">
+      ═══════════════════════════════════════════════ */}
+      <nav
+        style={{
+          background: 'rgba(10,8,5,0.88)',
+          borderBottom: `1px solid ${BORDER}`,
+        }}
+        className="fixed top-0 left-0 right-0 z-50 px-5 md:px-8 py-4 flex items-center justify-between backdrop-blur-xl"
+      >
         <Link href="/" className="cursor-pointer shrink-0">
-          <Image
-            src="/Iart.png"
-            alt="InstaArt"
-            width={160}
-            height={40}
-            className="h-9 w-auto"
-            priority
-          />
+          <Image src="/Iart.png" alt="InstaArt" width={140} height={35} className="h-8 w-auto" priority />
         </Link>
+
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium" style={{ color: MUTED }}>
+          <Link href="#features" className="hover:text-[#F0EAE0] transition-colors duration-200 cursor-pointer">
+            Features
+          </Link>
+          <Link href="#models" className="hover:text-[#F0EAE0] transition-colors duration-200 cursor-pointer">
+            Models
+          </Link>
+          <Link href="#how-it-works" className="hover:text-[#F0EAE0] transition-colors duration-200 cursor-pointer">
+            How It Works
+          </Link>
+        </div>
+
         <div className="flex items-center gap-3">
           <Link
             href="/login"
-            className="hidden sm:inline-flex px-4 py-2 text-sm font-bold cursor-pointer text-gradient hover:opacity-80 transition-opacity duration-200"
+            style={{ color: MUTED }}
+            className="hidden sm:inline-flex px-4 py-2 text-sm font-medium hover:text-[#F0EAE0] transition-colors duration-200 cursor-pointer"
           >
             Sign In
           </Link>
           <Link
             href="/login"
-            className="px-5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer text-white"
+            style={{ background: GRADIENT, color: '#fff' }}
+            className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-opacity duration-200 hover:opacity-90 cursor-pointer flex items-center gap-1.5"
           >
             Get Started
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
       </nav>
 
-      {/* ══════════════════════════════════════════════
-          SECTION 1 — HERO
-      ══════════════════════════════════════════════ */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center justify-center px-4 pt-20">
-        {/* Aurora blobs */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="animate-aurora-1 absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-purple-600/20 blur-[120px]" />
-          <div className="animate-aurora-2 absolute top-1/3 right-0 h-[400px] w-[400px] rounded-full bg-pink-500/15 blur-[120px]" />
-          <div className="animate-aurora-3 absolute bottom-0 left-1/3 h-[450px] w-[450px] rounded-full bg-blue-500/15 blur-[120px]" />
-        </div>
+      {/* ═══════════════════════════════════════════════
+          HERO
+      ═══════════════════════════════════════════════ */}
+      <section className="min-h-screen flex items-center pt-20 px-5 md:px-8 lg:px-12">
+        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-12 lg:gap-8 items-center py-20 lg:py-28">
 
-        {/* Subtle grid overlay */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)',
-            backgroundSize: '60px 60px',
-          }}
-        />
+          {/* ── Left: Text ── */}
+          <div className="relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-8 text-xs font-semibold tracking-wide"
+              style={{ background: ACCENT_DIM, color: ACCENT, border: `1px solid ${ACCENT_BORDER}` }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+              25+ AI Models &middot; Image &amp; Video Generation
+            </motion.div>
 
-        <motion.div
-          style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
-          className="relative z-10 max-w-4xl mx-auto text-center"
-        >
-          {/* Badge */}
-          <FadeIn>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-sm text-[var(--muted)] mb-8">
-              <Sparkles className="w-4 h-4 text-purple-400" />
-              <span>Powered by Gemini & GPT-5</span>
-            </div>
-          </FadeIn>
-
-          {/* Heading */}
-          <FadeIn delay={0.1}>
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold font-[family-name:var(--font-syne)] leading-[0.95] tracking-tight">
-              Imagine it.
+            <motion.h1
+              initial={{ opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.75, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+              className="font-[family-name:var(--font-syne)] font-extrabold leading-[0.9] tracking-tight"
+              style={{ fontSize: 'clamp(3rem, 5.5vw, 5.25rem)', color: TEXT }}
+            >
+              From Prompt
               <br />
-              <span className="text-gradient-shimmer">Create it.</span>
-            </h1>
-          </FadeIn>
+              <span
+              style={{
+                background: GRADIENT,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              to Published.
+            </span>
+            </motion.h1>
 
-          {/* Subheading */}
-          <FadeIn delay={0.2}>
-            <p className="mt-6 text-lg md:text-xl text-[var(--muted)] max-w-2xl mx-auto leading-relaxed">
-              Transform your ideas into stunning AI-generated images in seconds.
-              Type a prompt, pick a model, and watch the magic unfold.
-            </p>
-          </FadeIn>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+              className="mt-6 text-lg leading-relaxed max-w-[440px]"
+              style={{ color: MUTED }}
+            >
+              The AI creative studio for content creators and marketing teams
+              who demand extraordinary results — in seconds, not hours.
+            </motion.p>
 
-          {/* Fake prompt input */}
-          <FadeIn delay={0.3}>
-            <div className="mt-10 max-w-2xl mx-auto">
-              <div className="glass rounded-2xl p-1.5 flex items-center gap-2 group hover:border-purple-500/30 transition-colors duration-300">
-                <div className="flex-1 flex items-center gap-3 px-4 py-3 text-left">
-                  <Wand2 className="w-5 h-5 text-purple-400 shrink-0" />
-                  <span className="text-[var(--muted)] text-sm md:text-base truncate">
-                    {typedText}
-                    <span className="inline-block w-0.5 h-5 bg-purple-400 ml-0.5 animate-pulse align-middle" />
-                  </span>
-                </div>
-                <Link
-                  href="/login"
-                  className="shrink-0 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-xl font-semibold text-sm text-white transition-all duration-200 cursor-pointer flex items-center gap-2"
-                >
-                  Generate
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
-          </FadeIn>
-
-          {/* CTA buttons */}
-          <FadeIn delay={0.4}>
-            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              className="mt-10 flex flex-col sm:flex-row gap-3"
+            >
               <Link
                 href="/login"
-                className="px-8 py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-full font-semibold transition-all duration-200 animate-pulse-glow cursor-pointer text-white flex items-center gap-2"
+                style={{ background: GRADIENT, color: '#fff' }}
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-semibold text-base cursor-pointer hover:opacity-90 transition-opacity duration-200 animate-brand-glow"
               >
                 Start Creating — It&apos;s Free
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 href="/dashboard"
-                className="px-8 py-3.5 rounded-full font-semibold glass hover:bg-white/10 transition-all duration-200 cursor-pointer text-white"
+                style={{ color: TEXT, border: `1px solid ${BORDER}`, background: 'rgba(255,255,255,0.04)' }}
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-semibold text-base cursor-pointer hover:bg-white/[0.07] transition-colors duration-200"
               >
-                Go to Dashboard
+                View Dashboard
               </Link>
-            </div>
-          </FadeIn>
-        </motion.div>
+            </motion.div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <ChevronDown className="w-6 h-6 text-[var(--muted)]" />
-          </motion.div>
-        </div>
-      </section>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.7, delay: 0.42 }}
+              className="mt-5 text-sm"
+              style={{ color: '#4A4540' }}
+            >
+              No credit card needed &middot; Google sign-in &middot; Instant access
+            </motion.p>
+          </div>
 
-      {/* ══════════════════════════════════════════════
-          SECTION 2 — SHOWCASE GALLERY
-      ══════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 px-4">
-        <div className="max-w-7xl mx-auto">
-          <FadeIn>
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-syne)]">
-                What will <span className="text-gradient">you</span> create?
-              </h2>
-              <p className="mt-4 text-[var(--muted)] text-lg max-w-xl mx-auto">
-                From photorealistic scenes to abstract art — if you can describe
-                it, InstaArt can generate it.
-              </p>
-            </div>
-          </FadeIn>
+          {/* ── Right: Floating image constellation ── */}
+          <div className="relative h-[520px] lg:h-[620px] hidden lg:block">
+            {/* Ambient glow */}
+            <div
+              className="absolute top-1/3 left-1/3 w-72 h-72 rounded-full blur-[100px] pointer-events-none"
+              style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(6,182,212,0.08) 60%, rgba(236,72,153,0.07) 100%)' }}
+            />
 
-          {/* Masonry-style grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-            {SHOWCASE.map((item, i) => (
-              <FadeIn key={i} delay={i * 0.1}>
-                <div
-                  className={`group relative rounded-2xl overflow-hidden cursor-pointer ${
-                    i % 3 === 0 ? 'row-span-2 aspect-[3/4]' : 'aspect-square'
-                  }`}
-                >
-                  {/* Real image */}
-                  <Image
-                    src={item.image}
-                    alt={item.prompt}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                  />
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/40 transition-colors duration-300" />
-                  {/* Prompt on hover */}
-                  <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
-                    <div className="glass rounded-xl p-3">
-                      <p className="text-xs md:text-sm text-white/90 leading-relaxed line-clamp-3">
-                        &ldquo;{item.prompt}&rdquo;
-                      </p>
-                    </div>
-                  </div>
-                  {/* Sparkle icon */}
-                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Sparkles className="w-5 h-5 text-white/80" />
-                  </div>
-                </div>
-              </FadeIn>
-            ))}
+            {/* Image A — top-left, landscape, rotate left */}
+            <motion.div
+              initial={{ opacity: 0, x: 40, rotate: -3 }}
+              animate={{ opacity: 1, x: 0, rotate: -3 }}
+              transition={{ duration: 0.95, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute top-0 left-0 w-[62%] aspect-video rounded-2xl overflow-hidden animate-float-a cursor-pointer group"
+              style={{
+                boxShadow: '0 24px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.07)',
+              }}
+            >
+              <Image
+                src="/A cyberpunk city at sunset with neon reflections on wet streets.png"
+                alt="AI generated cyberpunk city"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                sizes="400px"
+              />
+              <div
+                className="absolute inset-x-0 bottom-0 px-3 py-2.5"
+                style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75), transparent)' }}
+              >
+                <p className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                  Cyberpunk city at sunset
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Image B — center-right, portrait, rotate right */}
+            <motion.div
+              initial={{ opacity: 0, x: -28, rotate: 2.5 }}
+              animate={{ opacity: 1, x: 0, rotate: 2.5 }}
+              transition={{ duration: 0.95, delay: 0.52, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute top-[22%] right-0 w-[46%] aspect-[3/4] rounded-2xl overflow-hidden animate-float-b cursor-pointer group"
+              style={{
+                boxShadow: '0 24px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.07)',
+              }}
+            >
+              <Image
+                src="/Ethereal forest with bioluminescent mushrooms and fireflies.png"
+                alt="AI generated ethereal forest"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                sizes="300px"
+              />
+              <div
+                className="absolute inset-x-0 bottom-0 px-3 py-2.5"
+                style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75), transparent)' }}
+              >
+                <p className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                  Ethereal bioluminescent forest
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Image C — bottom-left, landscape */}
+            <motion.div
+              initial={{ opacity: 0, y: 32, rotate: 1 }}
+              animate={{ opacity: 1, y: 0, rotate: 1 }}
+              transition={{ duration: 0.95, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute bottom-0 left-[8%] w-[58%] aspect-video rounded-2xl overflow-hidden animate-float-c cursor-pointer group"
+              style={{
+                boxShadow: '0 24px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.07)',
+              }}
+            >
+              <Image
+                src="/Surreal floating islands above clouds at golden hour.png"
+                alt="AI generated floating islands"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                sizes="380px"
+              />
+              <div
+                className="absolute inset-x-0 bottom-0 px-3 py-2.5"
+                style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75), transparent)' }}
+              >
+                <p className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                  Floating islands, golden hour
+                </p>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════
-          SECTION 3 — FEATURES (Bento Grid)
-      ══════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 px-4 relative">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="animate-aurora-2 absolute top-0 right-1/4 h-[400px] w-[400px] rounded-full bg-purple-600/10 blur-[150px]" />
+      {/* ═══════════════════════════════════════════════
+          MODEL MARQUEE
+      ═══════════════════════════════════════════════ */}
+      <section
+        id="models"
+        className="py-10 overflow-hidden"
+        style={{
+          borderTop: `1px solid ${BORDER}`,
+          borderBottom: `1px solid ${BORDER}`,
+          background: SURFACE2,
+        }}
+      >
+        {/* Header row */}
+        <div className="flex items-center gap-4 px-5 md:px-8 mb-6">
+          <span
+            className="text-xs font-semibold tracking-widest uppercase shrink-0"
+            style={{ color: '#3A3530' }}
+          >
+            Frontier AI Models
+          </span>
+          <div className="h-px flex-1" style={{ background: BORDER }} />
+          <span
+            className="text-xs font-bold px-2.5 py-1 rounded-full shrink-0"
+            style={{ background: PURPLE_DIM, color: PURPLE, border: `1px solid ${PURPLE_BDR}` }}
+          >
+            25+ Available
+          </span>
         </div>
 
-        <div className="max-w-6xl mx-auto relative z-10">
+        {/* Marquee row — scrolls left */}
+        <div className="relative overflow-hidden mb-3">
+          <div
+            className="flex gap-3 animate-marquee"
+            style={{ width: 'max-content' }}
+          >
+            {[...MODELS, ...MODELS].map((m, i) => (
+              <ModelPill key={`a-${i}`} m={m} />
+            ))}
+          </div>
+          <div
+            className="absolute inset-y-0 left-0 w-20 pointer-events-none"
+            style={{ background: `linear-gradient(to right, ${SURFACE2}, transparent)` }}
+          />
+          <div
+            className="absolute inset-y-0 right-0 w-20 pointer-events-none"
+            style={{ background: `linear-gradient(to left, ${SURFACE2}, transparent)` }}
+          />
+        </div>
+
+        {/* Marquee row 2 — scrolls right */}
+        <div className="relative overflow-hidden">
+          <div
+            className="flex gap-3 animate-marquee-reverse"
+            style={{ width: 'max-content' }}
+          >
+            {[...MODELS.slice(8), ...MODELS.slice(0, 8), ...MODELS.slice(8), ...MODELS.slice(0, 8)].map((m, i) => (
+              <ModelPill key={`b-${i}`} m={m} />
+            ))}
+          </div>
+          <div
+            className="absolute inset-y-0 left-0 w-20 pointer-events-none"
+            style={{ background: `linear-gradient(to right, ${SURFACE2}, transparent)` }}
+          />
+          <div
+            className="absolute inset-y-0 right-0 w-20 pointer-events-none"
+            style={{ background: `linear-gradient(to left, ${SURFACE2}, transparent)` }}
+          />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          DUAL AUDIENCE
+      ═══════════════════════════════════════════════ */}
+      <section className="py-28 md:py-36 px-5 md:px-8">
+        <div className="max-w-7xl mx-auto">
           <FadeIn>
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-syne)]">
-                Everything you need to{' '}
-                <span className="text-gradient">create</span>
-              </h2>
-              <p className="mt-4 text-[var(--muted)] text-lg max-w-xl mx-auto">
-                Professional-grade AI image generation, simplified for everyone.
+            <div className="mb-16">
+              <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: ACCENT }}>
+                Built for creators &amp; teams
               </p>
+              <h2
+                className="font-[family-name:var(--font-syne)] font-extrabold leading-[0.92] tracking-tight"
+                style={{ fontSize: 'clamp(2.25rem, 4vw, 3.5rem)', color: TEXT }}
+              >
+                One studio.
+                <br />
+                Two superpowers.
+              </h2>
             </div>
           </FadeIn>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {FEATURES.map((feature, i) => (
-              <FadeIn key={i} delay={i * 0.08}>
-                <div className="glass rounded-2xl p-6 md:p-8 h-full hover:border-purple-500/30 hover:bg-white/[0.03] transition-all duration-300 cursor-pointer group">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600/20 to-pink-600/20 flex items-center justify-center mb-5 group-hover:from-purple-600/30 group-hover:to-pink-600/30 transition-colors duration-300">
-                    <feature.icon className="w-6 h-6 text-purple-400" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Content Creators */}
+            <FadeIn delay={0.05}>
+              <div
+                className="relative rounded-3xl p-8 md:p-10 h-full"
+                style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+              >
+                <div
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-8"
+                  style={{ background: 'rgba(99,102,241,0.12)', color: '#818CF8', border: '1px solid rgba(99,102,241,0.2)' }}
+                >
+                  <Users className="w-3.5 h-3.5" />
+                  Content Creators
+                </div>
+
+                <h3
+                  className="font-[family-name:var(--font-syne)] font-bold text-2xl md:text-3xl mb-4"
+                  style={{ color: TEXT }}
+                >
+                  Make content that stops the scroll
+                </h3>
+                <p className="text-base mb-8 leading-relaxed" style={{ color: MUTED }}>
+                  From YouTube thumbnails to TikTok animations — generate visuals your audience has
+                  never seen before. Faster than hiring a designer.
+                </p>
+
+                <ul className="space-y-3">
+                  {CREATOR_USES.map((use) => (
+                    <li key={use} className="flex items-center gap-3 text-sm" style={{ color: '#C0B8B0' }}>
+                      <CheckCircle className="w-4 h-4 shrink-0" style={{ color: '#818CF8' }} />
+                      {use}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-10">
+                  <Link
+                    href="/login"
+                    className="inline-flex items-center gap-2 text-sm font-semibold cursor-pointer hover:opacity-80 transition-opacity duration-200"
+                    style={{ color: '#818CF8' }}
+                  >
+                    Start as a creator
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+            </FadeIn>
+
+            {/* Marketing Teams */}
+            <FadeIn delay={0.12}>
+              <div
+                className="relative rounded-3xl p-8 md:p-10 h-full"
+                style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+              >
+                <div
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-8"
+                  style={{ background: PURPLE_DIM, color: PURPLE, border: `1px solid ${PURPLE_BDR}` }}
+                >
+                  <Building2 className="w-3.5 h-3.5" />
+                  Marketing Teams
+                </div>
+
+                <h3
+                  className="font-[family-name:var(--font-syne)] font-bold text-2xl md:text-3xl mb-4"
+                  style={{ color: TEXT }}
+                >
+                  Produce campaign assets at velocity
+                </h3>
+                <p className="text-base mb-8 leading-relaxed" style={{ color: MUTED }}>
+                  Brief the AI like you brief a creative team. Get on-brand imagery, ad variants,
+                  and video content — without the agency timeline or price tag.
+                </p>
+
+                <ul className="space-y-3">
+                  {TEAM_USES.map((use) => (
+                    <li key={use} className="flex items-center gap-3 text-sm" style={{ color: '#C0B8B0' }}>
+                      <CheckCircle className="w-4 h-4 shrink-0" style={{ color: PURPLE }} />
+                      {use}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-10">
+                  <Link
+                    href="/login"
+                    className="inline-flex items-center gap-2 text-sm font-semibold cursor-pointer hover:opacity-80 transition-opacity duration-200"
+                    style={{ color: PURPLE }}
+                  >
+                    Start as a team
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+            </FadeIn>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          FEATURES BENTO
+      ═══════════════════════════════════════════════ */}
+      <section
+        id="features"
+        className="py-28 md:py-36 px-5 md:px-8"
+        style={{ background: SURFACE2 }}
+      >
+        <div className="max-w-7xl mx-auto">
+          <FadeIn>
+            <div className="mb-16">
+              <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: ACCENT }}>
+                What you get
+              </p>
+              <h2
+                className="font-[family-name:var(--font-syne)] font-extrabold leading-[0.92] tracking-tight"
+                style={{ fontSize: 'clamp(2.25rem, 4vw, 3.5rem)', color: TEXT }}
+              >
+                Everything you need.
+                <br />
+                Nothing you don&apos;t.
+              </h2>
+            </div>
+          </FadeIn>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-fr">
+            {FEATURES.map((f, i) => {
+              const Icon = f.icon
+              return (
+                <FadeIn key={f.title} delay={i * 0.07} className={f.col}>
+                  <div
+                    className="relative h-full rounded-2xl p-7 group cursor-default transition-all duration-300 hover:-translate-y-0.5"
+                    style={{
+                      background: f.accent ? `linear-gradient(135deg, rgba(255,101,0,0.1) 0%, rgba(245,166,35,0.06) 100%)` : SURFACE,
+                      border: `1px solid ${f.accent ? ACCENT_BORDER : BORDER}`,
+                    }}
+                  >
+                    {f.accent && (
+                      <div
+                        className="absolute top-0 right-0 bottom-0 left-0 rounded-2xl pointer-events-none"
+                        style={{ background: 'radial-gradient(ellipse 80% 80% at 80% 20%, rgba(255,101,0,0.05), transparent)' }}
+                      />
+                    )}
+                    <div
+                      className="w-11 h-11 rounded-xl flex items-center justify-center mb-5"
+                      style={{
+                        background: f.accent ? ACCENT_DIM : 'rgba(255,255,255,0.05)',
+                        border: `1px solid ${f.accent ? ACCENT_BORDER : BORDER}`,
+                      }}
+                    >
+                      <Icon className="w-5 h-5" style={{ color: f.accent ? ACCENT : MUTED }} />
+                    </div>
+                    <h3
+                      className="font-[family-name:var(--font-syne)] font-bold text-lg mb-2.5"
+                      style={{ color: TEXT }}
+                    >
+                      {f.title}
+                    </h3>
+                    <p className="text-sm leading-relaxed" style={{ color: MUTED }}>
+                      {f.desc}
+                    </p>
                   </div>
-                  <h3 className="text-lg font-semibold font-[family-name:var(--font-syne)] mb-2">
-                    {feature.title}
+                </FadeIn>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          HOW IT WORKS
+      ═══════════════════════════════════════════════ */}
+      <section id="how-it-works" className="py-28 md:py-36 px-5 md:px-8">
+        <div className="max-w-7xl mx-auto">
+          <FadeIn>
+            <div className="mb-20">
+              <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: ACCENT }}>
+                How it works
+              </p>
+              <h2
+                className="font-[family-name:var(--font-syne)] font-extrabold leading-[0.92] tracking-tight"
+                style={{ fontSize: 'clamp(2.25rem, 4vw, 3.5rem)', color: TEXT }}
+              >
+                Three steps.
+                <br />
+                Zero friction.
+              </h2>
+            </div>
+          </FadeIn>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+            {STEPS.map((step, i) => (
+              <FadeIn key={step.n} delay={i * 0.12}>
+                <div
+                  className="relative py-10 md:py-0"
+                  style={{
+                    paddingRight: i < 2 ? '48px' : '0',
+                    paddingLeft: i > 0 ? '48px' : '0',
+                    borderRight: i < 2 ? `1px solid ${BORDER}` : 'none',
+                  }}
+                >
+                  {/* Step number — large ghosted */}
+                  <div
+                    className="font-[family-name:var(--font-syne)] font-extrabold text-[6rem] leading-none select-none mb-6 absolute top-0 left-0 pointer-events-none"
+                    style={{
+                      color: 'rgba(255,255,255,0.03)',
+                      fontSize: '8rem',
+                      paddingLeft: i > 0 ? '48px' : '0',
+                    }}
+                  >
+                    {step.n}
+                  </div>
+
+                  {/* Step indicator */}
+                  <div
+                    className="inline-flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm mb-6"
+                    style={{ background: GRADIENT, color: '#fff', fontFamily: 'var(--font-syne)' }}
+                  >
+                    {step.n}
+                  </div>
+
+                  <h3
+                    className="font-[family-name:var(--font-syne)] font-bold text-2xl mb-3"
+                    style={{ color: TEXT }}
+                  >
+                    {step.title}
                   </h3>
-                  <p className="text-sm text-[var(--muted)] leading-relaxed">
-                    {feature.description}
+                  <p className="text-base leading-relaxed" style={{ color: MUTED }}>
+                    {step.text}
                   </p>
                 </div>
               </FadeIn>
@@ -422,218 +785,302 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════
-          SECTION 4 — HOW IT WORKS
-      ══════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 px-4">
-        <div className="max-w-5xl mx-auto">
+      {/* ═══════════════════════════════════════════════
+          GALLERY STRIP
+      ═══════════════════════════════════════════════ */}
+      <section
+        className="py-20 overflow-hidden"
+        style={{ borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, background: SURFACE2 }}
+      >
+        <FadeIn className="px-5 md:px-8 mb-10">
+          <div className="max-w-7xl mx-auto flex items-end justify-between">
+            <div>
+              <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: ACCENT }}>
+                Gallery
+              </p>
+              <h2
+                className="font-[family-name:var(--font-syne)] font-extrabold leading-tight"
+                style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: TEXT }}
+              >
+                What will <span style={{ color: ACCENT }}>you</span> create?
+              </h2>
+            </div>
+            <Link
+              href="/login"
+              style={{ color: MUTED }}
+              className="hidden sm:flex items-center gap-2 text-sm font-medium hover:text-[#F0EAE0] transition-colors duration-200 cursor-pointer"
+            >
+              See your gallery
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </FadeIn>
+
+        {/* Auto-scrolling strip */}
+        <div className="relative">
+          <div className="flex gap-4 animate-gallery-scroll" style={{ width: 'max-content' }}>
+            {GALLERY_IMAGES.map((img, i) => (
+              <div
+                key={i}
+                className="relative shrink-0 rounded-2xl overflow-hidden cursor-pointer group"
+                style={{
+                  width: '320px',
+                  height: '220px',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                }}
+              >
+                <Image
+                  src={img.src}
+                  alt={img.prompt}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  sizes="320px"
+                />
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4"
+                  style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%)' }}
+                >
+                  <p className="text-sm font-medium text-white/90">&ldquo;{img.prompt}&rdquo;</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Edge fades */}
+          <div
+            className="absolute inset-y-0 left-0 w-24 pointer-events-none"
+            style={{ background: `linear-gradient(to right, ${SURFACE2}, transparent)` }}
+          />
+          <div
+            className="absolute inset-y-0 right-0 w-24 pointer-events-none"
+            style={{ background: `linear-gradient(to left, ${SURFACE2}, transparent)` }}
+          />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          STATS ROW
+      ═══════════════════════════════════════════════ */}
+      <section className="py-20 px-5 md:px-8">
+        <div className="max-w-7xl mx-auto">
           <FadeIn>
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-syne)]">
-                Three steps. <span className="text-gradient">Zero friction.</span>
+            <div
+              className="grid grid-cols-2 md:grid-cols-4 gap-8 rounded-3xl p-10 md:p-14"
+              style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+            >
+              {[
+                { value: '25+', label: 'AI Models' },
+                { value: '<15s', label: 'Per Image' },
+                { value: '100%', label: 'Free to Start' },
+                { value: '24/7', label: 'Always On' },
+              ].map(({ value, label }) => (
+                <div key={label} className="text-center">
+                  <div
+                    className="font-[family-name:var(--font-syne)] font-extrabold mb-2"
+                    style={{
+                      fontSize: 'clamp(2.25rem, 4vw, 3rem)',
+                      background: GRADIENT,
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                    }}
+                  >
+                    {value}
+                  </div>
+                  <div
+                    className="text-sm font-semibold uppercase tracking-widest"
+                    style={{ color: MUTED }}
+                  >
+                    {label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          MODEL HIGHLIGHT — Image vs Video
+      ═══════════════════════════════════════════════ */}
+      <section className="py-28 md:py-36 px-5 md:px-8" style={{ background: SURFACE2 }}>
+        <div className="max-w-7xl mx-auto">
+          <FadeIn>
+            <div className="mb-16">
+              <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: ACCENT }}>
+                Model library
+              </p>
+              <h2
+                className="font-[family-name:var(--font-syne)] font-extrabold leading-[0.92] tracking-tight"
+                style={{ fontSize: 'clamp(2.25rem, 4vw, 3.5rem)', color: TEXT }}
+              >
+                Image models.
+                <br />
+                <span style={{ color: ACCENT }}>Video models.</span>
               </h2>
             </div>
           </FadeIn>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            {[
-              {
-                step: '01',
-                title: 'Describe',
-                text: 'Type your vision — a scene, a style, an idea. Be as creative or precise as you want.',
-              },
-              {
-                step: '02',
-                title: 'Choose',
-                text: 'Pick your AI model. Gemini Flash for speed, GPT-5 Image for maximum quality.',
-              },
-              {
-                step: '03',
-                title: 'Generate',
-                text: 'Hit generate and your image appears in seconds. Download, share, or create more.',
-              },
-            ].map((item, i) => (
-              <FadeIn key={i} delay={i * 0.15}>
-                <div className="relative text-center md:text-left">
-                  <div className="text-6xl md:text-7xl font-extrabold font-[family-name:var(--font-syne)] text-white/[0.04] absolute -top-4 -left-2 select-none">
-                    {item.step}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Image Models card */}
+            <FadeIn delay={0.05}>
+              <div
+                className="rounded-2xl p-7 h-full"
+                style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+              >
+                <div className="flex items-center gap-3 mb-7">
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)' }}
+                  >
+                    <ImageIcon className="w-5 h-5" style={{ color: '#4ADE80' }} />
                   </div>
-                  <div className="relative pt-8">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-sm font-bold text-white mb-4">
-                      {item.step}
-                    </div>
-                    <h3 className="text-xl font-bold font-[family-name:var(--font-syne)] mb-2">
-                      {item.title}
+                  <div>
+                    <h3 className="font-[family-name:var(--font-syne)] font-bold text-lg" style={{ color: TEXT }}>
+                      Image Generation
                     </h3>
-                    <p className="text-[var(--muted)] leading-relaxed">
-                      {item.text}
+                    <p className="text-xs" style={{ color: MUTED }}>
+                      10+ frontier models
                     </p>
                   </div>
                 </div>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════
-          SECTION 5 — STATS
-      ══════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 px-4 relative">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="animate-aurora-3 absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full bg-cyan-500/10 blur-[150px]" />
-          <div className="animate-aurora-1 absolute top-0 right-0 h-[300px] w-[300px] rounded-full bg-pink-500/10 blur-[120px]" />
-        </div>
-
-        <div className="max-w-5xl mx-auto relative z-10">
-          <div className="glass rounded-3xl p-10 md:p-16">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4">
-              {STATS.map((stat, i) => (
-                <AnimatedStat key={i} {...stat} />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════
-          SECTION 6 — MODEL COMPARISON
-      ══════════════════════════════════════════════ */}
-      <section className="py-24 md:py-32 px-4">
-        <div className="max-w-5xl mx-auto">
-          <FadeIn>
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold font-[family-name:var(--font-syne)]">
-                Two world-class <span className="text-gradient">models</span>
-              </h2>
-              <p className="mt-4 text-[var(--muted)] text-lg max-w-xl mx-auto">
-                Pick the perfect engine for your creative vision.
-              </p>
-            </div>
-          </FadeIn>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Gemini Card */}
-            <FadeIn delay={0}>
-              <div className="glass rounded-2xl p-8 hover:border-cyan-500/30 transition-all duration-300 cursor-pointer group h-full">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center group-hover:from-cyan-500/30 group-hover:to-blue-500/30 transition-colors">
-                    <Zap className="w-6 h-6 text-cyan-400" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold font-[family-name:var(--font-syne)]">
-                      Gemini Flash
-                    </h3>
-                    <p className="text-xs text-[var(--muted)]">by Google</p>
-                  </div>
+                <div className="flex flex-wrap gap-2">
+                  {MODELS.filter((m) => m.tag === 'Image').map((m) => (
+                    <span
+                      key={m.name}
+                      className="text-xs px-3 py-1.5 rounded-full font-medium"
+                      style={{
+                        background: m.hot ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.04)',
+                        border: `1px solid ${m.hot ? 'rgba(34,197,94,0.25)' : BORDER}`,
+                        color: m.hot ? '#4ADE80' : MUTED,
+                      }}
+                    >
+                      {m.hot && '★ '}
+                      {m.name}
+                    </span>
+                  ))}
                 </div>
-                <ul className="space-y-3 text-sm text-[var(--muted)]">
-                  <li className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-cyan-400 shrink-0" />
-                    Blazing fast generation
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-cyan-400 shrink-0" />
-                    Great for rapid iteration
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-cyan-400 shrink-0" />
-                    Strong with creative prompts
-                  </li>
-                </ul>
               </div>
             </FadeIn>
 
-            {/* GPT-5 Card */}
+            {/* Video Models card */}
             <FadeIn delay={0.1}>
-              <div className="glass rounded-2xl p-8 hover:border-purple-500/30 transition-all duration-300 cursor-pointer group h-full">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center group-hover:from-purple-500/30 group-hover:to-pink-500/30 transition-colors">
-                    <Sparkles className="w-6 h-6 text-purple-400" />
+              <div
+                className="rounded-2xl p-7 h-full"
+                style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+              >
+                <div className="flex items-center gap-3 mb-7">
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.2)' }}
+                  >
+                    <Film className="w-5 h-5" style={{ color: '#818CF8' }} />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold font-[family-name:var(--font-syne)]">
-                      GPT-5 Image
+                    <h3 className="font-[family-name:var(--font-syne)] font-bold text-lg" style={{ color: TEXT }}>
+                      Video Generation
                     </h3>
-                    <p className="text-xs text-[var(--muted)]">by OpenAI</p>
+                    <p className="text-xs" style={{ color: MUTED }}>
+                      15+ video models · text-to-video &amp; image-to-video
+                    </p>
                   </div>
                 </div>
-                <ul className="space-y-3 text-sm text-[var(--muted)]">
-                  <li className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-purple-400 shrink-0" />
-                    Highest quality output
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-purple-400 shrink-0" />
-                    Excellent prompt adherence
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-purple-400 shrink-0" />
-                    Superior detail & realism
-                  </li>
-                </ul>
+                <div className="flex flex-wrap gap-2">
+                  {MODELS.filter((m) => m.tag === 'Video').map((m) => (
+                    <span
+                      key={m.name}
+                      className="text-xs px-3 py-1.5 rounded-full font-medium"
+                      style={{
+                        background: m.hot ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.04)',
+                        border: `1px solid ${m.hot ? 'rgba(99,102,241,0.3)' : BORDER}`,
+                        color: m.hot ? '#818CF8' : MUTED,
+                      }}
+                    >
+                      {m.hot && '★ '}
+                      {m.name}
+                    </span>
+                  ))}
+                </div>
               </div>
             </FadeIn>
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════
-          SECTION 7 — FINAL CTA
-      ══════════════════════════════════════════════ */}
-      <section className="py-24 md:py-40 px-4 relative">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="animate-aurora-1 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-purple-600/15 blur-[180px]" />
-        </div>
+      {/* ═══════════════════════════════════════════════
+          FINAL CTA
+      ═══════════════════════════════════════════════ */}
+      <section className="py-32 md:py-44 px-5 md:px-8 relative overflow-hidden">
+        {/* Ambient orange glow */}
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full blur-[120px] pointer-events-none"
+          style={{ background: GRAD_GLOW }}
+        />
 
-        <div className="max-w-3xl mx-auto text-center relative z-10">
+        <div className="max-w-4xl mx-auto text-center relative z-10">
           <FadeIn>
-            <h2 className="text-4xl md:text-6xl lg:text-7xl font-extrabold font-[family-name:var(--font-syne)] leading-[0.95]">
-              Ready to bring your
+            <h2
+              className="font-[family-name:var(--font-syne)] font-extrabold leading-[0.92] tracking-tight"
+              style={{ fontSize: 'clamp(2.75rem, 5.5vw, 5rem)', color: TEXT }}
+            >
+              Ready to create
               <br />
-              <span className="text-gradient-shimmer">imagination to life?</span>
+              <span
+                  style={{
+                    background: GRADIENT,
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}
+                >extraordinary</span> content?
             </h2>
           </FadeIn>
-          <FadeIn delay={0.15}>
-            <p className="mt-6 text-lg text-[var(--muted)] max-w-lg mx-auto">
-              Sign in with Google and start generating stunning AI images in
-              seconds. No credit card needed.
+
+          <FadeIn delay={0.12}>
+            <p className="mt-6 text-lg leading-relaxed max-w-lg mx-auto" style={{ color: MUTED }}>
+              Sign in with Google and start generating AI images and videos in seconds.
+              No credit card. No setup. Just create.
             </p>
           </FadeIn>
-          <FadeIn delay={0.25}>
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+
+          <FadeIn delay={0.22}>
+            <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/login"
-                className="px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-full font-semibold text-lg transition-all duration-200 animate-pulse-glow cursor-pointer text-white flex items-center justify-center gap-2"
+                style={{ background: GRADIENT, color: '#fff' }}
+                className="inline-flex items-center justify-center gap-2 px-10 py-4 rounded-2xl font-semibold text-lg cursor-pointer hover:opacity-90 transition-opacity duration-200 animate-brand-glow"
               >
                 Get Started Free
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
+            <p className="mt-5 text-sm" style={{ color: '#4A4540' }}>
+              No credit card &middot; Sign in with Google &middot; Instant access
+            </p>
           </FadeIn>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════
+      {/* ═══════════════════════════════════════════════
           FOOTER
-      ══════════════════════════════════════════════ */}
-      <footer className="border-t border-white/[0.06] py-10 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-[var(--muted)]">
+      ═══════════════════════════════════════════════ */}
+      <footer
+        className="py-10 px-5 md:px-8"
+        style={{ borderTop: `1px solid ${BORDER}` }}
+      >
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
           <Link href="/" className="cursor-pointer shrink-0">
-            <Image
-              src="/Iart.png"
-              alt="InstaArt"
-              width={120}
-              height={30}
-              className="h-7 w-auto"
-            />
+            <Image src="/Iart.png" alt="InstaArt" width={120} height={30} className="h-7 w-auto" />
           </Link>
-          <p>&copy; {new Date().getFullYear()} InstaArt. All rights reserved.</p>
-          <div className="flex gap-6">
-            <Link href="/login" className="hover:text-white transition-colors cursor-pointer">
+
+          <p className="text-sm" style={{ color: '#4A4540' }}>
+            &copy; {new Date().getFullYear()} InstaArt. All rights reserved.
+          </p>
+
+          <div className="flex gap-6 text-sm" style={{ color: MUTED }}>
+            <Link href="/login" className="hover:text-[#F0EAE0] transition-colors cursor-pointer">
               Sign In
             </Link>
-            <Link href="/dashboard" className="hover:text-white transition-colors cursor-pointer">
+            <Link href="/dashboard" className="hover:text-[#F0EAE0] transition-colors cursor-pointer">
               Dashboard
             </Link>
           </div>

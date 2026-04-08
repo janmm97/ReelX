@@ -8,22 +8,28 @@ export const maxDuration = 300
 
 type VideoModel =
   | 'runway_turbo' | 'runway_aleph'
-  | 'veo3_fast' | 'veo3' | 'veo3_audio'
+  | 'veo3_fast' | 'veo3' | 'veo3_audio' | 'veo3_lite'
+  | 'kling21_std' | 'kling21_pro'
+  | 'kling25_turbo'
   | 'kling26' | 'kling3' | 'kling3_audio'
-  | 'seedance2' | 'seedance2_fast'
+  | 'seedance2' | 'seedance2_fast' | 'seedance15_pro'
   | 'hailuo_pro' | 'hailuo_std'
   | 'sora2' | 'sora2_pro' | 'sora2_audio'
-  | 'wan26'
+  | 'wan26' | 'wan27'
+  | 'bytedance_v1_pro' | 'bytedance_v1_lite'
   | 'grok_t2v'
 
 const RUNWAY_MODELS = new Set<VideoModel>(['runway_turbo', 'runway_aleph'])
-const VEO_MODELS    = new Set<VideoModel>(['veo3_fast', 'veo3', 'veo3_audio'])
+const VEO_MODELS    = new Set<VideoModel>(['veo3_fast', 'veo3', 'veo3_audio', 'veo3_lite'])
 const GENERIC_MODELS = new Set<VideoModel>([
+  'kling21_std', 'kling21_pro', 'kling25_turbo',
   'kling26', 'kling3', 'kling3_audio',
-  'seedance2', 'seedance2_fast',
+  'seedance2', 'seedance2_fast', 'seedance15_pro',
   'hailuo_pro', 'hailuo_std',
   'sora2', 'sora2_pro', 'sora2_audio',
-  'wan26', 'grok_t2v',
+  'wan26', 'wan27',
+  'bytedance_v1_pro', 'bytedance_v1_lite',
+  'grok_t2v',
 ])
 const ALL_MODELS = new Set<VideoModel>([
   ...RUNWAY_MODELS, ...VEO_MODELS, ...GENERIC_MODELS,
@@ -67,6 +73,7 @@ interface KieVeoStatus {
   data?: {
     successFlag?: number  // 0 generating | 1 success | 2/3 failed
     resultUrls?:  string[]
+    resultJson?:  string   // some versions embed the URL here instead
   }
 }
 
@@ -84,34 +91,56 @@ function buildT2VTaskBody(
   model: VideoModel,
   prompt: string,
   aspectRatio: string | undefined,
+  duration: string,
 ) {
   const ar = aspectRatio ?? '16:9'
+  const dur = duration ?? '5'
 
   switch (model) {
+    case 'kling21_std':
+      return {
+        model: 'kling-2.1/text-to-video',
+        input: { prompt, sound: false, mode: 'std', duration: dur, aspect_ratio: ar },
+      }
+    case 'kling21_pro':
+      return {
+        model: 'kling-2.1/text-to-video',
+        input: { prompt, sound: false, mode: 'pro', duration: dur, aspect_ratio: ar },
+      }
+    case 'kling25_turbo':
+      return {
+        model: 'kling-2.5-turbo/text-to-video-pro',
+        input: { prompt, sound: false, duration: dur, aspect_ratio: ar },
+      }
     case 'kling26':
       return {
         model: 'kling-2.6/text-to-video',
-        input: { prompt, sound: true, aspect_ratio: ar, duration: '5' },
+        input: { prompt, sound: true, aspect_ratio: ar, duration: dur },
       }
     case 'kling3':
       return {
         model: 'kling-3.0/video',
-        input: { prompt, sound: false, mode: 'std', duration: '5', aspect_ratio: ar, multi_shots: false },
+        input: { prompt, sound: false, mode: 'std', duration: dur, aspect_ratio: ar, multi_shots: false },
       }
     case 'kling3_audio':
       return {
         model: 'kling-3.0/video',
-        input: { prompt, sound: true, mode: 'pro', duration: '5', aspect_ratio: ar, multi_shots: false },
+        input: { prompt, sound: true, mode: 'pro', duration: dur, aspect_ratio: ar, multi_shots: false },
       }
     case 'seedance2':
       return {
         model: 'bytedance/seedance-2',
-        input: { prompt, resolution: '720p', aspect_ratio: ar, duration: 8, generate_audio: true },
+        input: { prompt, resolution: '720p', aspect_ratio: ar, duration: parseInt(dur, 10), generate_audio: true },
       }
     case 'seedance2_fast':
       return {
         model: 'bytedance/seedance-2-fast',
-        input: { prompt, resolution: '720p', aspect_ratio: ar, duration: 8, generate_audio: true },
+        input: { prompt, resolution: '720p', aspect_ratio: ar, duration: parseInt(dur, 10), generate_audio: true },
+      }
+    case 'seedance15_pro':
+      return {
+        model: 'bytedance/seedance-1-5-pro',
+        input: { prompt, resolution: '720p', aspect_ratio: ar, duration: parseInt(dur, 10), generate_audio: true },
       }
     case 'hailuo_pro':
       return {
@@ -141,12 +170,27 @@ function buildT2VTaskBody(
     case 'wan26':
       return {
         model: 'wan/2-6-text-to-video',
-        input: { prompt, audio: true, duration: '5', resolution: '720p' },
+        input: { prompt, audio: true, duration: dur, resolution: '720p' },
+      }
+    case 'wan27':
+      return {
+        model: 'wan/2-7-text-to-video',
+        input: { prompt, audio: true, duration: dur, resolution: '720p', aspect_ratio: ar },
+      }
+    case 'bytedance_v1_pro':
+      return {
+        model: 'bytedance/v1-pro-text-to-video',
+        input: { prompt, resolution: '720p', aspect_ratio: ar, duration: parseInt(dur, 10), generate_audio: true },
+      }
+    case 'bytedance_v1_lite':
+      return {
+        model: 'bytedance/v1-lite-text-to-video',
+        input: { prompt, resolution: '720p', aspect_ratio: ar, duration: parseInt(dur, 10), generate_audio: true },
       }
     case 'grok_t2v':
       return {
         model: 'grok-imagine/text-to-video',
-        input: { prompt, aspect_ratio: ar, mode: 'normal', duration: '6', resolution: '720p' },
+        input: { prompt, aspect_ratio: ar, mode: 'normal', duration: dur, resolution: '720p' },
       }
     default:
       throw new Error(`Unsupported generic model: ${model}`)
@@ -188,7 +232,7 @@ async function submitVeo(
   aspectRatio: string | undefined,
   apiKey: string,
 ): Promise<string> {
-  const veoId = model === 'veo3_fast' ? 'veo3_fast' : 'veo3'
+  const veoId = model === 'veo3_fast' ? 'veo3_fast' : model === 'veo3_lite' ? 'veo3_lite' : 'veo3'
   const body: Record<string, unknown> = {
     prompt,
     model: veoId,
@@ -260,8 +304,17 @@ async function pollVeo(taskId: string, apiKey: string): Promise<string> {
     console.log('[generate-video] veo poll successFlag:', flag)
 
     if (flag === 1) {
-      const url = data.data?.resultUrls?.[0]
-      if (!url) throw new Error('Veo completed but no video URL returned')
+      let url = data.data?.resultUrls?.[0]
+      if (!url && data.data?.resultJson) {
+        try {
+          const parsed = JSON.parse(data.data.resultJson) as { resultUrls?: string[] }
+          url = parsed.resultUrls?.[0]
+        } catch { /* ignore parse error */ }
+      }
+      if (!url) {
+        console.error('[generate-video] veo response missing URL:', JSON.stringify(data).slice(0, 400))
+        throw new Error('Veo completed but no video URL returned')
+      }
       return url
     }
     if (flag === 2 || flag === 3) throw new Error('Veo video generation failed')
@@ -303,10 +356,16 @@ export async function POST(request: NextRequest) {
 
   // 2. Validate body
   const body = await request.json().catch(() => ({})) as {
-    prompt?: unknown; model?: unknown; aspectRatio?: unknown
-    narrationScript?: unknown; voiceId?: unknown; keepBackgroundAudio?: unknown
+    prompt?: unknown; model?: unknown; aspectRatio?: unknown; duration?: unknown
+    narrationScript?: unknown; voiceId?: unknown
+    voiceStability?: unknown; voiceSimilarity?: unknown; voiceStyle?: unknown; voiceSpeed?: unknown
   }
-  const { prompt, model, aspectRatio, narrationScript, voiceId, keepBackgroundAudio } = body
+  const {
+    prompt, model, aspectRatio,
+    narrationScript, voiceId,
+    voiceStability, voiceSimilarity, voiceStyle, voiceSpeed,
+  } = body
+  const duration = typeof body.duration === 'string' ? body.duration : '5'
 
   // Validate voice params — must provide both or neither
   const hasScript = typeof narrationScript === 'string' && narrationScript.trim().length > 0
@@ -380,7 +439,7 @@ export async function POST(request: NextRequest) {
     } else if (isVeo) {
       taskId = await submitVeo(prompt.trim(), vm, ar, apiKey)
     } else {
-      const taskBody = buildT2VTaskBody(vm, prompt.trim(), ar)
+      const taskBody = buildT2VTaskBody(vm, prompt.trim(), ar, duration)
       taskId = await submitGenericTask(taskBody, apiKey)
     }
 
@@ -407,7 +466,12 @@ export async function POST(request: NextRequest) {
         {
           voiceId:         (voiceId as string).trim(),
           narrationScript: (narrationScript as string).trim(),
-          keepBackground:  keepBackgroundAudio === true,
+          voiceSettings: {
+            stability:        typeof voiceStability === 'number' ? voiceStability : undefined,
+            similarity_boost: typeof voiceSimilarity === 'number' ? voiceSimilarity : undefined,
+            style:            typeof voiceStyle === 'number' ? voiceStyle : undefined,
+            speed:            typeof voiceSpeed === 'number' ? voiceSpeed : undefined,
+          },
         },
         elevenKey,
         service,
