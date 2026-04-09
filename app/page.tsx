@@ -1,1091 +1,578 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
-  ArrowRight,
-  Wand2,
-  Zap,
-  Clock,
-  Download,
-  Shield,
-  Film,
-  CheckCircle,
-  Users,
-  Building2,
-  ImageIcon,
-  Star,
+  ArrowRight, ImageIcon, Film, Zap, Users, Building2,
+  CheckCircle, Layers, History, Video, Mic, LayoutGrid,
 } from 'lucide-react'
 
-/* ══════════════════════════════════════════════════════════════
-   DESIGN TOKENS — Brand palette (matches Iart icon)
-   Purple (#8B5CF6) → Cyan (#06B6D4) → Pink (#EC4899) + Gold star
-══════════════════════════════════════════════════════════════ */
-const BG       = '#060510'      // near-black with deep purple tint
-const SURFACE  = '#0F0D1A'      // dark surface with purple undertone
-const SURFACE2 = '#09070F'      // slightly deeper surface
-const TEXT     = '#F0EDE8'      // warm off-white
-const MUTED    = '#7A7492'      // muted with subtle purple tint
-const BORDER   = 'rgba(139,92,246,0.14)'   // purple-tinted border
+/* ── Motion helpers ─────────────────────────────────────────── */
+const fadeRise = {
+  hidden: { opacity: 0, y: 20 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.25, 0.1, 0.25, 1] as const } },
+}
+const stagger = { show: { transition: { staggerChildren: 0.08 } } }
 
-// Brand accent (primary — purple)
-const PURPLE      = '#8B5CF6'
-const PURPLE_DIM  = 'rgba(139,92,246,0.14)'
-const PURPLE_BDR  = 'rgba(139,92,246,0.28)'
+/* ── Header ─────────────────────────────────────────────────── */
+function Header() {
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 24)
+    window.addEventListener('scroll', fn, { passive: true })
+    return () => window.removeEventListener('scroll', fn)
+  }, [])
 
-// Brand gradient (purple → cyan → pink — matches icon exactly)
-const GRADIENT    = 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 55%, #ec4899 100%)'
-const GRAD_GLOW   = 'linear-gradient(135deg, rgba(139,92,246,0.35) 0%, rgba(6,182,212,0.2) 55%, rgba(236,72,153,0.2) 100%)'
-
-// Accent aliases for readability
-const GOLD  = '#fbbf24'         // star/highlight accent (matches icon's star)
-const CYAN  = '#06b6d4'
-const PINK  = '#ec4899'
-
-// Legacy alias used in the file
-const ACCENT       = PURPLE
-const ACCENT_DIM   = PURPLE_DIM
-const ACCENT_BORDER = PURPLE_BDR
-
-/* ══════════════════════════════════════════════════════════════
-   DATA
-══════════════════════════════════════════════════════════════ */
-
-const MODELS = [
-  { name: 'GPT-5 Image', tag: 'Image', hot: true },
-  { name: 'Gemini 3.1 Flash', tag: 'Image', hot: false },
-  { name: 'FLUX.2 Max', tag: 'Image', hot: false },
-  { name: 'Veo 3.1 Fast', tag: 'Video', hot: true },
-  { name: 'Sora 2', tag: 'Video', hot: true },
-  { name: 'Kling 3.0', tag: 'Video', hot: false },
-  { name: 'Runway Aleph', tag: 'Video', hot: false },
-  { name: 'Seedance 2.0', tag: 'Video', hot: false },
-  { name: 'FLUX.2 Pro', tag: 'Image', hot: false },
-  { name: 'Hailuo Pro', tag: 'Video', hot: false },
-  { name: 'Gemini 3 Pro', tag: 'Image', hot: true },
-  { name: 'Seedream 4.5', tag: 'Image', hot: false },
-  { name: 'Kling 2.6', tag: 'Video', hot: false },
-  { name: 'Wan 2.6', tag: 'Video', hot: false },
-  { name: 'Runway Gen4 Turbo', tag: 'Video', hot: false },
-  { name: 'Grok T2V', tag: 'Video', hot: false },
-  { name: 'FLUX.2 Klein', tag: 'Image', hot: false },
-  { name: 'Riverflow v2 Max', tag: 'Image', hot: false },
-  { name: 'CogVideoX-5B', tag: 'Video', hot: false },
-  { name: 'Gemini 2.5 Flash', tag: 'Image', hot: false },
-  { name: 'GPT-5 Image Mini', tag: 'Image', hot: false },
-  { name: 'FLUX.2 Flex', tag: 'Image', hot: false },
-  { name: 'Seedance 2.0 Fast', tag: 'Video', hot: false },
-  { name: 'Hailuo Standard', tag: 'Video', hot: false },
-  { name: 'Riverflow v2 Fast', tag: 'Image', hot: false },
-]
-
-const FEATURES = [
-  {
-    icon: Wand2,
-    title: 'Text to Image',
-    desc: 'Describe anything. Get studio-quality visuals in seconds from the world\'s best image models.',
-    col: 'lg:col-span-1',
-  },
-  {
-    icon: Film,
-    title: 'Image to Video',
-    desc: 'One click breathes life into any image — cinematic clips from your stills, instantly.',
-    col: 'lg:col-span-1',
-  },
-  {
-    icon: Zap,
-    title: '25+ AI Models in One Place',
-    desc: 'GPT-5, Gemini, FLUX, Veo 3.1, Sora 2, Kling, Runway and 18+ more — all under one roof. Switch models instantly. Star your favourites. No API keys needed.',
-    col: 'lg:col-span-2',
-    accent: true,
-  },
-  {
-    icon: Clock,
-    title: 'History & Gallery',
-    desc: 'Every creation auto-saved. Star-rate and curate your growing visual library.',
-    col: 'lg:col-span-1',
-  },
-  {
-    icon: Download,
-    title: 'HD Downloads',
-    desc: 'Full-resolution exports, ready for social, print, or client presentations.',
-    col: 'lg:col-span-1',
-  },
-  {
-    icon: Shield,
-    title: 'Private & Secure',
-    desc: 'Enterprise-grade Google OAuth. Your work stays yours — never used for model training.',
-    col: 'lg:col-span-2',
-  },
-]
-
-const CREATOR_USES = [
-  'Social media content at scale',
-  'Personal brand & portfolio visuals',
-  'YouTube thumbnails & channel art',
-  'Concept art & mood boards',
-  'Animated video clips from photos',
-  'Product showcase imagery',
-]
-
-const TEAM_USES = [
-  'Campaign visuals across all channels',
-  'On-brand imagery in minutes',
-  'Ad creative A/B test variations',
-  'Product visualization',
-  'Presentation & pitch deck graphics',
-  'Video ads from static brand assets',
-]
-
-const STEPS = [
-  {
-    n: '01',
-    title: 'Describe',
-    text: 'Type your vision — a scene, a mood, an emotion. Be specific or go abstract.',
-  },
-  {
-    n: '02',
-    title: 'Choose',
-    text: 'Pick from 25+ frontier AI models. Star your favourites for instant recall.',
-  },
-  {
-    n: '03',
-    title: 'Publish',
-    text: 'Generate in seconds. Download HD images or turn any image into video.',
-  },
-]
-
-const GALLERY_IMAGES = [
-  { src: '/Ethereal forest with bioluminescent mushrooms and fireflies.png', prompt: 'Ethereal bioluminescent forest' },
-  { src: '/A cyberpunk city at sunset with neon reflections on wet streets.png', prompt: 'Cyberpunk city at sunset' },
-  { src: '/Watercolor painting of a Japanese garden in autumn.png', prompt: 'Japanese garden in autumn' },
-  { src: '/Surreal floating islands above clouds at golden hour.png', prompt: 'Floating islands, golden hour' },
-  { src: '/Macro photograph of morning dew on a spider web.png', prompt: 'Morning dew macro' },
-  { src: '/Abstract liquid chrome sculpture of Donald Trump\'s face with its half covered in a spiderman venom type mask in a void, studio lighting.png', prompt: 'Abstract liquid chrome sculpture' },
-  // duplicate for seamless loop
-  { src: '/Ethereal forest with bioluminescent mushrooms and fireflies.png', prompt: 'Ethereal bioluminescent forest' },
-  { src: '/A cyberpunk city at sunset with neon reflections on wet streets.png', prompt: 'Cyberpunk city at sunset' },
-  { src: '/Watercolor painting of a Japanese garden in autumn.png', prompt: 'Japanese garden in autumn' },
-  { src: '/Surreal floating islands above clouds at golden hour.png', prompt: 'Floating islands, golden hour' },
-  { src: '/Macro photograph of morning dew on a spider web.png', prompt: 'Morning dew macro' },
-  { src: '/Abstract liquid chrome sculpture of Donald Trump\'s face with its half covered in a spiderman venom type mask in a void, studio lighting.png', prompt: 'Abstract liquid chrome sculpture' },
-]
-
-/* ══════════════════════════════════════════════════════════════
-   UTILITIES
-══════════════════════════════════════════════════════════════ */
-
-function FadeIn({
-  children,
-  delay = 0,
-  className = '',
-}: {
-  children: React.ReactNode
-  delay?: number
-  className?: string
-}) {
-  const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-60px' })
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 32 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
+    <header style={{
+      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+      background: scrolled ? 'rgba(11,15,20,0.88)' : 'transparent',
+      backdropFilter: scrolled ? 'blur(14px)' : 'none',
+      borderBottom: scrolled ? '1px solid #273242' : '1px solid transparent',
+      transition: 'all 0.3s cubic-bezier(0.25,0.1,0.25,1)',
+      padding: '0 32px',
+    }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Link href="/">
+          <Image src="/For Rebranding/reelsy-logo-white-txt.png" alt="Reelsy" width={112} height={32} style={{ objectFit: 'contain' }} />
+        </Link>
+        <nav style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
+          {['Product', 'Studio', 'Examples', 'Pricing', 'Enterprise'].map(n => (
+            <Link key={n} href="#" style={{ color: '#A7B4C2', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#F4F8FB')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#A7B4C2')}>
+              {n}
+            </Link>
+          ))}
+        </nav>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <Link href="/login" style={{ color: '#A7B4C2', fontSize: 14, textDecoration: 'none' }}>Log in</Link>
+          <Link href="/login" className="btn-primary" style={{ padding: '8px 20px', fontSize: 13 }}>Start free</Link>
+        </div>
+      </div>
+    </header>
   )
 }
 
-function ModelPill({ m }: { m: (typeof MODELS)[0] }) {
+/* ── Hero ────────────────────────────────────────────────────── */
+const FEATURE_CHIPS = [
+  'Text to image', 'Text to video', 'Image to video', 'Avatar to video', 'Multi-model workflow',
+]
+
+function Hero() {
   return (
-    <div
-      className="inline-flex items-center gap-2 px-4 py-2 rounded-full shrink-0 select-none"
-      style={{
-        background: m.hot ? ACCENT_DIM : 'rgba(255,255,255,0.04)',
-        border: `1px solid ${m.hot ? ACCENT_BORDER : BORDER}`,
-      }}
-    >
-      {m.hot && <Star className="w-3 h-3" style={{ color: GOLD }} />}
-      <span className="text-sm font-medium" style={{ color: m.hot ? GOLD : TEXT }}>
-        {m.name}
-      </span>
-      <span
-        className="text-[0.6rem] font-semibold px-1.5 py-0.5 rounded-full"
-        style={{
-          background: m.tag === 'Video' ? 'rgba(99,102,241,0.15)' : 'rgba(34,197,94,0.1)',
-          color: m.tag === 'Video' ? '#818CF8' : '#4ADE80',
-        }}
-      >
-        {m.tag}
-      </span>
+    <section style={{
+      minHeight: '100vh', display: 'flex', alignItems: 'center',
+      background: '#0B0F14', position: 'relative', overflow: 'hidden',
+      padding: '120px 32px 80px',
+    }}>
+      {/* Cyan radial bloom */}
+      <div style={{
+        position: 'absolute', top: '20%', right: '10%',
+        width: 600, height: 600, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(0,196,204,0.08) 0%, transparent 70%)',
+        pointerEvents: 'none',
+      }} />
+      {/* Grid overlay */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        backgroundImage: 'linear-gradient(#273242 1px, transparent 1px), linear-gradient(90deg, #273242 1px, transparent 1px)',
+        backgroundSize: '48px 48px', opacity: 0.04, pointerEvents: 'none',
+      }} />
+
+      <div style={{ maxWidth: 1280, margin: '0 auto', width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
+        {/* Left */}
+        <motion.div variants={stagger} initial="hidden" animate="show" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <motion.h1 variants={fadeRise} style={{
+            fontFamily: 'var(--font-syne)', fontSize: 'clamp(44px,5vw,72px)',
+            fontWeight: 800, color: '#F4F8FB', lineHeight: 1.08, margin: 0,
+          }}>
+            Create images and videos{' '}
+            <span className="text-gradient">at the speed of content</span>
+          </motion.h1>
+
+          <motion.p variants={fadeRise} style={{ color: '#A7B4C2', fontSize: 18, lineHeight: 1.6, margin: 0, maxWidth: 520 }}>
+            Reelsy is an AI creative studio for generating images, videos, and avatar content
+            with fast workflows, flexible models, and production-ready output.
+          </motion.p>
+
+          <motion.div variants={fadeRise} style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            <Link href="/login" className="btn-primary">
+              Start free <ArrowRight size={15} />
+            </Link>
+            <button className="btn-secondary">Watch demo</button>
+          </motion.div>
+
+          <motion.div variants={fadeRise} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {FEATURE_CHIPS.map(chip => (
+              <span key={chip} style={{
+                background: '#141D28', border: '1px solid #273242',
+                borderRadius: 99, padding: '5px 12px', fontSize: 12, color: '#A7B4C2',
+              }}>{chip}</span>
+            ))}
+          </motion.div>
+        </motion.div>
+
+        {/* Right — decorative panel stack */}
+        <motion.div
+          initial={{ opacity: 0, x: 24 }}
+          animate={{ opacity: 1, x: 0, transition: { duration: 0.7, ease: [0.25, 0.1, 0.25, 1], delay: 0.2 } }}
+          style={{ position: 'relative', height: 420 }}
+        >
+          {/* Main prompt panel */}
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0,
+            background: '#141D28', border: '1px solid #273242', borderRadius: 16, padding: 20,
+          }}>
+            <div style={{ fontSize: 11, color: '#738295', marginBottom: 10 }}>PROMPT</div>
+            <div style={{ background: '#101722', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#A7B4C2', border: '1px solid #273242' }}>
+              A cinematic close-up of a founder presenting to a camera, professional studio lighting…
+            </div>
+            <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
+              <span style={{ background: 'rgba(0,196,204,0.12)', color: '#00C4CC', borderRadius: 6, padding: '4px 10px', fontSize: 11 }}>GPT-5 Image</span>
+              <span style={{ background: '#101722', border: '1px solid #273242', color: '#738295', borderRadius: 6, padding: '4px 10px', fontSize: 11 }}>1024×1024</span>
+            </div>
+          </div>
+
+          {/* Image preview card */}
+          <div style={{
+            position: 'absolute', top: 130, right: -20,
+            width: 180, background: '#141D28', border: '1px solid #273242',
+            borderRadius: 12, overflow: 'hidden',
+          }}>
+            <div style={{ height: 100, background: 'linear-gradient(135deg, #141D28, #1a2535)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <ImageIcon size={24} color="#273242" />
+            </div>
+            <div style={{ padding: '6px 10px', fontSize: 11, color: '#738295' }}>Generated · 1.2s</div>
+          </div>
+
+          {/* Model switcher */}
+          <div style={{
+            position: 'absolute', bottom: 90, left: -8,
+            background: '#141D28', border: '1px solid #00C4CC',
+            borderRadius: 10, padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 8,
+          }}>
+            <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#00C4CC', boxShadow: '0 0 6px #00C4CC' }} />
+            <span style={{ fontSize: 12, color: '#F4F8FB' }}>Veo 3.1 Fast</span>
+          </div>
+
+          {/* Studio chip */}
+          <div style={{
+            position: 'absolute', bottom: 0, right: 0,
+            background: '#141D28', border: '1px solid #273242',
+            borderRadius: 10, padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 6,
+          }}>
+            <Mic size={13} color="#00C4CC" />
+            <span style={{ fontSize: 12, color: '#A7B4C2' }}>/studio · avatar video</span>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+/* ── Trust strip ─────────────────────────────────────────────── */
+const TRUST_ITEMS = [
+  'Built for creators', 'Designed for marketers', 'Flexible model access',
+  'Avatar video workflows', 'Fast production-ready output',
+]
+
+function TrustStrip() {
+  return (
+    <div style={{
+      background: '#101722', borderTop: '1px solid #273242', borderBottom: '1px solid #273242',
+      padding: '14px 32px', overflow: 'hidden',
+    }}>
+      <div style={{ display: 'flex', gap: 48, whiteSpace: 'nowrap' }} className="animate-marquee">
+        {[...TRUST_ITEMS, ...TRUST_ITEMS].map((item, i) => (
+          <span key={i} style={{ fontSize: 13, color: '#738295', flexShrink: 0 }}>
+            <span style={{ color: '#00C4CC', marginRight: 8 }}>·</span>{item}
+          </span>
+        ))}
+      </div>
     </div>
   )
 }
 
-/* ══════════════════════════════════════════════════════════════
-   MAIN PAGE
-══════════════════════════════════════════════════════════════ */
+/* ── Capabilities grid ───────────────────────────────────────── */
+const CAPABILITIES = [
+  { icon: <ImageIcon size={20} />, label: 'Text to Image', desc: 'Generate production-ready images from any prompt with 15+ models.' },
+  { icon: <Film size={20} />, label: 'Text to Video', desc: 'Turn descriptions into cinematic video clips in seconds.' },
+  { icon: <Video size={20} />, label: 'Image to Video', desc: 'Animate any still into a smooth, high-quality video sequence.' },
+  { icon: <Layers size={20} />, label: 'Multi-Model Workflow', desc: 'Switch between providers mid-project without leaving your workspace.' },
+  { icon: <History size={20} />, label: 'Gallery & History', desc: 'Every output saved, searchable, and ready to remix or export.' },
+  { icon: <Mic size={20} />, label: 'Studio Avatar-to-Video', desc: 'Upload a portrait, add a script, and render a talking avatar video.' },
+]
 
+function CapabilitiesGrid() {
+  return (
+    <section style={{ padding: '96px 32px', background: '#0B0F14' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+        <motion.h2
+          variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
+          style={{ fontFamily: 'var(--font-syne)', fontSize: 'clamp(32px,4vw,48px)', fontWeight: 700, color: '#F4F8FB', textAlign: 'center', marginBottom: 48 }}
+        >
+          One studio, every format
+        </motion.h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
+          {CAPABILITIES.map(c => (
+            <motion.div key={c.label}
+              variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
+              style={{
+                background: '#141D28', border: '1px solid #273242', borderRadius: 14, padding: 24,
+                transition: 'border-color 0.2s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = '#00C4CC')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = '#273242')}
+            >
+              <div style={{ color: '#00C4CC', marginBottom: 12 }}>{c.icon}</div>
+              <div style={{ fontFamily: 'var(--font-syne)', fontWeight: 600, fontSize: 16, color: '#F4F8FB', marginBottom: 8 }}>{c.label}</div>
+              <div style={{ fontSize: 14, color: '#738295', lineHeight: 1.6 }}>{c.desc}</div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ── Workflow ─────────────────────────────────────────────────── */
+const WORKFLOW_STEPS = [
+  { n: '01', label: 'Describe or upload', desc: 'Write a prompt or drop in a reference image.' },
+  { n: '02', label: 'Generate with the right model', desc: 'Pick from 20+ image and video models.' },
+  { n: '03', label: 'Refine and compare', desc: 'Run variants, adjust, and compare side by side.' },
+  { n: '04', label: 'Export and publish', desc: 'Download in full quality or push to your pipeline.' },
+]
+
+function Workflow() {
+  return (
+    <section style={{ padding: '96px 32px', background: '#101722', borderTop: '1px solid #273242' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+        <motion.h2
+          variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
+          style={{ fontFamily: 'var(--font-syne)', fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 700, color: '#F4F8FB', textAlign: 'center', marginBottom: 64 }}
+        >
+          From idea to output in four steps
+        </motion.h2>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 0 }}>
+          {WORKFLOW_STEPS.map((s, i) => (
+            <div key={s.n} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+              {i < WORKFLOW_STEPS.length - 1 && (
+                <div style={{ position: 'absolute', top: 20, left: '50%', right: '-50%', height: 1, background: 'linear-gradient(90deg,#00C4CC,#273242)', zIndex: 0 }} />
+              )}
+              <motion.div variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
+                style={{ textAlign: 'center', position: 'relative', zIndex: 1, padding: '0 16px' }}>
+                <div style={{
+                  width: 40, height: 40, borderRadius: '50%', margin: '0 auto 16px',
+                  background: 'linear-gradient(135deg,#00C4CC,#00F2FE)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontFamily: 'var(--font-syne)', fontWeight: 700, fontSize: 13, color: '#0B0F14',
+                }}>{s.n}</div>
+                <div style={{ fontWeight: 600, color: '#F4F8FB', marginBottom: 8, fontSize: 15 }}>{s.label}</div>
+                <div style={{ fontSize: 13, color: '#738295', lineHeight: 1.6 }}>{s.desc}</div>
+              </motion.div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ── Studio spotlight ─────────────────────────────────────────── */
+const STUDIO_BULLETS = [
+  'Upload any front-facing portrait photo',
+  'Write the exact script to be spoken',
+  'Choose a cloned ElevenLabs voice',
+  'Download a lip-synced talking video',
+]
+
+function StudioSpotlight() {
+  return (
+    <section style={{ padding: '96px 32px', background: '#0D1520', borderTop: '1px solid #273242' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
+        <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}
+          style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <motion.h2 variants={fadeRise} style={{ fontFamily: 'var(--font-syne)', fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 700, color: '#F4F8FB', margin: 0 }}>
+            Turn your avatar into video
+          </motion.h2>
+          <motion.ul variants={stagger} style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {STUDIO_BULLETS.map(b => (
+              <motion.li key={b} variants={fadeRise} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 15, color: '#A7B4C2' }}>
+                <CheckCircle size={16} color="#00C4CC" style={{ flexShrink: 0 }} />{b}
+              </motion.li>
+            ))}
+          </motion.ul>
+          <motion.div variants={fadeRise}>
+            <Link href="/studio" className="btn-primary">Open Studio <ArrowRight size={15} /></Link>
+          </motion.div>
+        </motion.div>
+
+        {/* Studio UI preview */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          whileInView={{ opacity: 1, x: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } }}
+          viewport={{ once: true }}
+          style={{
+            background: '#141D28', border: '1px solid #273242', borderRadius: 16, padding: 24,
+            boxShadow: '0 0 60px rgba(0,196,204,0.08)',
+          }}
+        >
+          <div style={{ fontSize: 11, color: '#738295', marginBottom: 16, textTransform: 'uppercase', letterSpacing: 1 }}>Reelsy Studio</div>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 40, marginBottom: 16 }}>
+            {[14, 22, 32, 28, 40, 36, 28, 20, 32, 24, 18, 30, 24, 16].map((h, i) => (
+              <div key={i} className="waveform-bar" style={{ height: h, animationDelay: `${i * 60}ms` }} />
+            ))}
+          </div>
+          <div style={{ background: '#101722', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#A7B4C2', marginBottom: 12, lineHeight: 1.5 }}>
+            "Hello, I'm excited to share what we've been building…"
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <span style={{ background: 'rgba(0,196,204,0.1)', color: '#00C4CC', borderRadius: 6, padding: '4px 10px', fontSize: 11 }}>Voice: Rachel</span>
+            <span style={{ background: '#101722', border: '1px solid #273242', color: '#738295', borderRadius: 6, padding: '4px 10px', fontSize: 11 }}>9:16 Vertical</span>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+/* ── Audience ─────────────────────────────────────────────────── */
+const AUDIENCE = [
+  { icon: <Zap size={22} />, label: 'Marketers', desc: 'Produce ad creatives, product visuals, and campaign content without a production team.' },
+  { icon: <Users size={22} />, label: 'Creators', desc: 'Scale your content output without compromising your visual quality.' },
+  { icon: <Building2 size={22} />, label: 'Agencies', desc: 'Run multiple brands from a single workspace with full output history.' },
+  { icon: <LayoutGrid size={22} />, label: 'Founders', desc: 'Create investor decks, demos, and launch visuals on a startup timeline.' },
+]
+
+function AudienceSection() {
+  return (
+    <section style={{ padding: '96px 32px', background: '#101722', borderTop: '1px solid #273242' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+        <motion.h2
+          variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
+          style={{ fontFamily: 'var(--font-syne)', fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 700, color: '#F4F8FB', textAlign: 'center', marginBottom: 12 }}
+        >
+          Built for modern content teams
+        </motion.h2>
+        <p style={{ textAlign: 'center', color: '#738295', marginBottom: 48, fontSize: 16 }}>
+          Whether you create alone or run a full team, Reelsy fits your workflow.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 20 }}>
+          {AUDIENCE.map(a => (
+            <motion.div key={a.label}
+              variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
+              style={{ background: '#141D28', border: '1px solid #273242', borderRadius: 14, padding: 24 }}>
+              <div style={{ color: '#00C4CC', marginBottom: 12 }}>{a.icon}</div>
+              <div style={{ fontFamily: 'var(--font-syne)', fontWeight: 600, fontSize: 16, color: '#F4F8FB', marginBottom: 8 }}>{a.label}</div>
+              <div style={{ fontSize: 14, color: '#738295', lineHeight: 1.6 }}>{a.desc}</div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ── Why Reelsy ───────────────────────────────────────────────── */
+const COMPARE_ROWS = [
+  { label: 'Image generation',        traditional: '✓', single: '✓', reelsy: '✓' },
+  { label: 'Video generation',        traditional: '—', single: '✓', reelsy: '✓' },
+  { label: 'Avatar talking video',    traditional: '—', single: '—', reelsy: '✓' },
+  { label: 'Multi-model switching',   traditional: '—', single: '—', reelsy: '✓' },
+  { label: 'Output history & search', traditional: '—', single: '—', reelsy: '✓' },
+  { label: 'Single workspace',        traditional: '—', single: '—', reelsy: '✓' },
+]
+
+function WhyReelsy() {
+  return (
+    <section style={{ padding: '96px 32px', background: '#0B0F14', borderTop: '1px solid #273242' }}>
+      <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        <motion.h2
+          variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
+          style={{ fontFamily: 'var(--font-syne)', fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 700, color: '#F4F8FB', textAlign: 'center', marginBottom: 48 }}
+        >
+          Why Reelsy
+        </motion.h2>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr>
+              <th style={{ padding: '14px 20px', textAlign: 'left', color: '#738295', fontSize: 13, fontWeight: 500, borderBottom: '1px solid #273242' }}>Capability</th>
+              <th style={{ padding: '14px 20px', textAlign: 'center', color: '#738295', fontSize: 13, fontWeight: 500, borderBottom: '1px solid #273242' }}>Traditional stack</th>
+              <th style={{ padding: '14px 20px', textAlign: 'center', color: '#738295', fontSize: 13, fontWeight: 500, borderBottom: '1px solid #273242' }}>Single-purpose tool</th>
+              <th style={{ padding: '14px 20px', textAlign: 'center', fontSize: 13, fontWeight: 700, borderBottom: '2px solid #00C4CC', color: '#00C4CC' }}>Reelsy</th>
+            </tr>
+          </thead>
+          <tbody>
+            {COMPARE_ROWS.map((r, i) => (
+              <tr key={r.label} style={{ borderBottom: '1px solid #273242', background: i % 2 === 0 ? 'transparent' : 'rgba(20,29,40,0.4)' }}>
+                <td style={{ padding: '14px 20px', fontSize: 14, color: '#A7B4C2' }}>{r.label}</td>
+                <td style={{ padding: '14px 20px', textAlign: 'center', fontSize: 14, color: '#738295' }}>{r.traditional}</td>
+                <td style={{ padding: '14px 20px', textAlign: 'center', fontSize: 14, color: '#738295' }}>{r.single}</td>
+                <td style={{ padding: '14px 20px', textAlign: 'center', fontSize: 14, color: '#00C4CC', fontWeight: 600 }}>{r.reelsy}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  )
+}
+
+/* ── Pricing teaser ───────────────────────────────────────────── */
+const PLANS = [
+  {
+    name: 'Starter', price: 'Free', desc: 'For individuals exploring AI content creation.',
+    features: ['50 image credits/mo', '10 video credits/mo', '1 workspace', 'Community support'],
+    highlight: false,
+  },
+  {
+    name: 'Pro', price: '$29', period: '/mo', desc: 'For creators and marketers shipping at scale.',
+    features: ['500 image credits/mo', '100 video credits/mo', 'Studio access', 'Priority generation'],
+    highlight: true,
+  },
+  {
+    name: 'Teams', price: '$99', period: '/mo', desc: 'For agencies and content teams with volume needs.',
+    features: ['Unlimited images', '500 video credits/mo', '5 seats', 'API access'],
+    highlight: false,
+  },
+]
+
+function PricingTeaser() {
+  return (
+    <section style={{ padding: '96px 32px', background: '#101722', borderTop: '1px solid #273242' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+        <motion.h2
+          variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
+          style={{ fontFamily: 'var(--font-syne)', fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 700, color: '#F4F8FB', textAlign: 'center', marginBottom: 12 }}
+        >
+          Simple, transparent pricing
+        </motion.h2>
+        <p style={{ textAlign: 'center', color: '#738295', marginBottom: 48, fontSize: 16 }}>Start free, scale as you grow.</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}>
+          {PLANS.map(p => (
+            <motion.div key={p.name}
+              variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
+              style={{
+                background: '#141D28',
+                border: p.highlight ? '1px solid #00C4CC' : '1px solid #273242',
+                borderRadius: 16, padding: 28,
+                boxShadow: p.highlight ? '0 0 40px rgba(0,196,204,0.12)' : 'none',
+              }}
+            >
+              {p.highlight && <div style={{ color: '#00C4CC', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Most popular</div>}
+              <div style={{ fontFamily: 'var(--font-syne)', fontWeight: 700, fontSize: 20, color: '#F4F8FB', marginBottom: 4 }}>{p.name}</div>
+              <div style={{ marginBottom: 8 }}>
+                <span style={{ fontFamily: 'var(--font-syne)', fontWeight: 800, fontSize: 32, color: '#F4F8FB' }}>{p.price}</span>
+                {'period' in p && p.period && <span style={{ color: '#738295', fontSize: 14 }}>{p.period}</span>}
+              </div>
+              <p style={{ fontSize: 14, color: '#738295', marginBottom: 20, lineHeight: 1.5 }}>{p.desc}</p>
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {p.features.map(f => (
+                  <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: '#A7B4C2' }}>
+                    <CheckCircle size={14} color="#00C4CC" style={{ flexShrink: 0 }} />{f}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/login" className={p.highlight ? 'btn-primary' : 'btn-secondary'} style={{ display: 'block', textAlign: 'center' }}>
+                {p.name === 'Starter' ? 'Start free' : 'Get started'}
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ── Final CTA ────────────────────────────────────────────────── */
+function FinalCTA() {
+  return (
+    <section style={{ padding: '96px 32px', background: '#0B0F14', borderTop: '1px solid #273242', textAlign: 'center' }}>
+      <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}
+        style={{ maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24, alignItems: 'center' }}>
+        <motion.h2 variants={fadeRise} style={{ fontFamily: 'var(--font-syne)', fontSize: 'clamp(28px,4vw,52px)', fontWeight: 800, color: '#F4F8FB', margin: 0 }}>
+          Start your next visual in Reelsy
+        </motion.h2>
+        <motion.p variants={fadeRise} style={{ color: '#738295', fontSize: 17, lineHeight: 1.6, margin: 0 }}>
+          No design skills required. No credit card to start.
+        </motion.p>
+        <motion.div variants={fadeRise} style={{ display: 'flex', gap: 12 }}>
+          <Link href="/login" className="btn-primary">Start free <ArrowRight size={15} /></Link>
+          <button className="btn-secondary">Book a demo</button>
+        </motion.div>
+      </motion.div>
+    </section>
+  )
+}
+
+/* ── Footer ───────────────────────────────────────────────────── */
+const FOOTER_COLS = [
+  { heading: 'Product', links: ['Generate', 'Video', 'Gallery', 'History'] },
+  { heading: 'Studio', links: ['Avatar video', 'Voice sync', 'Templates', 'Pricing'] },
+  { heading: 'Resources', links: ['Docs', 'API', 'Examples', 'Blog'] },
+  { heading: 'Company', links: ['Enterprise', 'Legal', 'Privacy', 'Terms'] },
+]
+
+function Footer() {
+  return (
+    <footer style={{ background: '#101722', borderTop: '1px solid #273242', padding: '64px 32px 32px' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', gap: 48, marginBottom: 48 }}>
+          <div>
+            <Image src="/For Rebranding/reelsy-logo-white-txt.png" alt="Reelsy" width={100} height={28} style={{ objectFit: 'contain', marginBottom: 16 }} />
+            <p style={{ fontSize: 13, color: '#738295', lineHeight: 1.6, maxWidth: 240 }}>
+              AI creative studio for images, videos, and avatar content.
+            </p>
+          </div>
+          {FOOTER_COLS.map(col => (
+            <div key={col.heading}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#A7B4C2', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }}>{col.heading}</div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {col.links.map(l => (
+                  <li key={l}>
+                    <Link href="#" style={{ fontSize: 13, color: '#738295', textDecoration: 'none', transition: 'color 0.2s' }}
+                      onMouseEnter={e => (e.currentTarget.style.color = '#A7B4C2')}
+                      onMouseLeave={e => (e.currentTarget.style.color = '#738295')}>
+                      {l}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <div style={{ borderTop: '1px solid #273242', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 12, color: '#738295' }}>© 2026 Reelsy. All rights reserved.</span>
+          <div style={{ display: 'flex', gap: 16 }}>
+            {['Twitter', 'LinkedIn', 'YouTube'].map(s => (
+              <Link key={s} href="#" style={{ fontSize: 12, color: '#738295', textDecoration: 'none' }}>{s}</Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+/* ── Main export ──────────────────────────────────────────────── */
 export default function LandingPage() {
   return (
-    <main
-      style={{ background: BG, color: TEXT }}
-      className="relative overflow-hidden font-[family-name:var(--font-manrope)]"
-    >
-      {/* ═══════════════════════════════════════════════
-          NAVBAR
-      ═══════════════════════════════════════════════ */}
-      <nav
-        style={{
-          background: 'rgba(10,8,5,0.88)',
-          borderBottom: `1px solid ${BORDER}`,
-        }}
-        className="fixed top-0 left-0 right-0 z-50 px-5 md:px-8 py-4 flex items-center justify-between backdrop-blur-xl"
-      >
-        <Link href="/" className="cursor-pointer shrink-0">
-          <Image src="/Iart.png" alt="InstaArt" width={140} height={35} className="h-8 w-auto" priority />
-        </Link>
-
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium" style={{ color: MUTED }}>
-          <Link href="#features" className="hover:text-[#F0EAE0] transition-colors duration-200 cursor-pointer">
-            Features
-          </Link>
-          <Link href="#models" className="hover:text-[#F0EAE0] transition-colors duration-200 cursor-pointer">
-            Models
-          </Link>
-          <Link href="#how-it-works" className="hover:text-[#F0EAE0] transition-colors duration-200 cursor-pointer">
-            How It Works
-          </Link>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Link
-            href="/login"
-            style={{ color: MUTED }}
-            className="hidden sm:inline-flex px-4 py-2 text-sm font-medium hover:text-[#F0EAE0] transition-colors duration-200 cursor-pointer"
-          >
-            Sign In
-          </Link>
-          <Link
-            href="/login"
-            style={{ background: GRADIENT, color: '#fff' }}
-            className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-opacity duration-200 hover:opacity-90 cursor-pointer flex items-center gap-1.5"
-          >
-            Get Started
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-      </nav>
-
-      {/* ═══════════════════════════════════════════════
-          HERO
-      ═══════════════════════════════════════════════ */}
-      <section className="min-h-screen flex items-center pt-20 px-5 md:px-8 lg:px-12">
-        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-12 lg:gap-8 items-center py-20 lg:py-28">
-
-          {/* ── Left: Text ── */}
-          <div className="relative z-10">
-            <motion.div
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-8 text-xs font-semibold tracking-wide"
-              style={{ background: ACCENT_DIM, color: ACCENT, border: `1px solid ${ACCENT_BORDER}` }}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-              25+ AI Models &middot; Image &amp; Video Generation
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.75, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-              className="font-[family-name:var(--font-syne)] font-extrabold leading-[0.9] tracking-tight"
-              style={{ fontSize: 'clamp(3rem, 5.5vw, 5.25rem)', color: TEXT }}
-            >
-              From Prompt
-              <br />
-              <span
-              style={{
-                background: GRADIENT,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              to Published.
-            </span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-6 text-lg leading-relaxed max-w-[440px]"
-              style={{ color: MUTED }}
-            >
-              The AI creative studio for content creators and marketing teams
-              who demand extraordinary results — in seconds, not hours.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-10 flex flex-col sm:flex-row gap-3"
-            >
-              <Link
-                href="/login"
-                style={{ background: GRADIENT, color: '#fff' }}
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-semibold text-base cursor-pointer hover:opacity-90 transition-opacity duration-200 animate-brand-glow"
-              >
-                Start Creating — It&apos;s Free
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href="/dashboard"
-                style={{ color: TEXT, border: `1px solid ${BORDER}`, background: 'rgba(255,255,255,0.04)' }}
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-semibold text-base cursor-pointer hover:bg-white/[0.07] transition-colors duration-200"
-              >
-                View Dashboard
-              </Link>
-            </motion.div>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.7, delay: 0.42 }}
-              className="mt-5 text-sm"
-              style={{ color: '#4A4540' }}
-            >
-              No credit card needed &middot; Google sign-in &middot; Instant access
-            </motion.p>
-          </div>
-
-          {/* ── Right: Floating image constellation ── */}
-          <div className="relative h-[520px] lg:h-[620px] hidden lg:block">
-            {/* Ambient glow */}
-            <div
-              className="absolute top-1/3 left-1/3 w-72 h-72 rounded-full blur-[100px] pointer-events-none"
-              style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(6,182,212,0.08) 60%, rgba(236,72,153,0.07) 100%)' }}
-            />
-
-            {/* Image A — top-left, landscape, rotate left */}
-            <motion.div
-              initial={{ opacity: 0, x: 40, rotate: -3 }}
-              animate={{ opacity: 1, x: 0, rotate: -3 }}
-              transition={{ duration: 0.95, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute top-0 left-0 w-[62%] aspect-video rounded-2xl overflow-hidden animate-float-a cursor-pointer group"
-              style={{
-                boxShadow: '0 24px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.07)',
-              }}
-            >
-              <Image
-                src="/A cyberpunk city at sunset with neon reflections on wet streets.png"
-                alt="AI generated cyberpunk city"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-                sizes="400px"
-              />
-              <div
-                className="absolute inset-x-0 bottom-0 px-3 py-2.5"
-                style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75), transparent)' }}
-              >
-                <p className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                  Cyberpunk city at sunset
-                </p>
-              </div>
-            </motion.div>
-
-            {/* Image B — center-right, portrait, rotate right */}
-            <motion.div
-              initial={{ opacity: 0, x: -28, rotate: 2.5 }}
-              animate={{ opacity: 1, x: 0, rotate: 2.5 }}
-              transition={{ duration: 0.95, delay: 0.52, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute top-[22%] right-0 w-[46%] aspect-[3/4] rounded-2xl overflow-hidden animate-float-b cursor-pointer group"
-              style={{
-                boxShadow: '0 24px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.07)',
-              }}
-            >
-              <Image
-                src="/Ethereal forest with bioluminescent mushrooms and fireflies.png"
-                alt="AI generated ethereal forest"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-                sizes="300px"
-              />
-              <div
-                className="absolute inset-x-0 bottom-0 px-3 py-2.5"
-                style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75), transparent)' }}
-              >
-                <p className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                  Ethereal bioluminescent forest
-                </p>
-              </div>
-            </motion.div>
-
-            {/* Image C — bottom-left, landscape */}
-            <motion.div
-              initial={{ opacity: 0, y: 32, rotate: 1 }}
-              animate={{ opacity: 1, y: 0, rotate: 1 }}
-              transition={{ duration: 0.95, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute bottom-0 left-[8%] w-[58%] aspect-video rounded-2xl overflow-hidden animate-float-c cursor-pointer group"
-              style={{
-                boxShadow: '0 24px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.07)',
-              }}
-            >
-              <Image
-                src="/Surreal floating islands above clouds at golden hour.png"
-                alt="AI generated floating islands"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-                sizes="380px"
-              />
-              <div
-                className="absolute inset-x-0 bottom-0 px-3 py-2.5"
-                style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75), transparent)' }}
-              >
-                <p className="text-xs font-medium" style={{ color: 'rgba(255,255,255,0.55)' }}>
-                  Floating islands, golden hour
-                </p>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════
-          MODEL MARQUEE
-      ═══════════════════════════════════════════════ */}
-      <section
-        id="models"
-        className="py-10 overflow-hidden"
-        style={{
-          borderTop: `1px solid ${BORDER}`,
-          borderBottom: `1px solid ${BORDER}`,
-          background: SURFACE2,
-        }}
-      >
-        {/* Header row */}
-        <div className="flex items-center gap-4 px-5 md:px-8 mb-6">
-          <span
-            className="text-xs font-semibold tracking-widest uppercase shrink-0"
-            style={{ color: '#3A3530' }}
-          >
-            Frontier AI Models
-          </span>
-          <div className="h-px flex-1" style={{ background: BORDER }} />
-          <span
-            className="text-xs font-bold px-2.5 py-1 rounded-full shrink-0"
-            style={{ background: PURPLE_DIM, color: PURPLE, border: `1px solid ${PURPLE_BDR}` }}
-          >
-            25+ Available
-          </span>
-        </div>
-
-        {/* Marquee row — scrolls left */}
-        <div className="relative overflow-hidden mb-3">
-          <div
-            className="flex gap-3 animate-marquee"
-            style={{ width: 'max-content' }}
-          >
-            {[...MODELS, ...MODELS].map((m, i) => (
-              <ModelPill key={`a-${i}`} m={m} />
-            ))}
-          </div>
-          <div
-            className="absolute inset-y-0 left-0 w-20 pointer-events-none"
-            style={{ background: `linear-gradient(to right, ${SURFACE2}, transparent)` }}
-          />
-          <div
-            className="absolute inset-y-0 right-0 w-20 pointer-events-none"
-            style={{ background: `linear-gradient(to left, ${SURFACE2}, transparent)` }}
-          />
-        </div>
-
-        {/* Marquee row 2 — scrolls right */}
-        <div className="relative overflow-hidden">
-          <div
-            className="flex gap-3 animate-marquee-reverse"
-            style={{ width: 'max-content' }}
-          >
-            {[...MODELS.slice(8), ...MODELS.slice(0, 8), ...MODELS.slice(8), ...MODELS.slice(0, 8)].map((m, i) => (
-              <ModelPill key={`b-${i}`} m={m} />
-            ))}
-          </div>
-          <div
-            className="absolute inset-y-0 left-0 w-20 pointer-events-none"
-            style={{ background: `linear-gradient(to right, ${SURFACE2}, transparent)` }}
-          />
-          <div
-            className="absolute inset-y-0 right-0 w-20 pointer-events-none"
-            style={{ background: `linear-gradient(to left, ${SURFACE2}, transparent)` }}
-          />
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════
-          DUAL AUDIENCE
-      ═══════════════════════════════════════════════ */}
-      <section className="py-28 md:py-36 px-5 md:px-8">
-        <div className="max-w-7xl mx-auto">
-          <FadeIn>
-            <div className="mb-16">
-              <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: ACCENT }}>
-                Built for creators &amp; teams
-              </p>
-              <h2
-                className="font-[family-name:var(--font-syne)] font-extrabold leading-[0.92] tracking-tight"
-                style={{ fontSize: 'clamp(2.25rem, 4vw, 3.5rem)', color: TEXT }}
-              >
-                One studio.
-                <br />
-                Two superpowers.
-              </h2>
-            </div>
-          </FadeIn>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Content Creators */}
-            <FadeIn delay={0.05}>
-              <div
-                className="relative rounded-3xl p-8 md:p-10 h-full"
-                style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
-              >
-                <div
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-8"
-                  style={{ background: 'rgba(99,102,241,0.12)', color: '#818CF8', border: '1px solid rgba(99,102,241,0.2)' }}
-                >
-                  <Users className="w-3.5 h-3.5" />
-                  Content Creators
-                </div>
-
-                <h3
-                  className="font-[family-name:var(--font-syne)] font-bold text-2xl md:text-3xl mb-4"
-                  style={{ color: TEXT }}
-                >
-                  Make content that stops the scroll
-                </h3>
-                <p className="text-base mb-8 leading-relaxed" style={{ color: MUTED }}>
-                  From YouTube thumbnails to TikTok animations — generate visuals your audience has
-                  never seen before. Faster than hiring a designer.
-                </p>
-
-                <ul className="space-y-3">
-                  {CREATOR_USES.map((use) => (
-                    <li key={use} className="flex items-center gap-3 text-sm" style={{ color: '#C0B8B0' }}>
-                      <CheckCircle className="w-4 h-4 shrink-0" style={{ color: '#818CF8' }} />
-                      {use}
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-10">
-                  <Link
-                    href="/login"
-                    className="inline-flex items-center gap-2 text-sm font-semibold cursor-pointer hover:opacity-80 transition-opacity duration-200"
-                    style={{ color: '#818CF8' }}
-                  >
-                    Start as a creator
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-            </FadeIn>
-
-            {/* Marketing Teams */}
-            <FadeIn delay={0.12}>
-              <div
-                className="relative rounded-3xl p-8 md:p-10 h-full"
-                style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
-              >
-                <div
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-8"
-                  style={{ background: PURPLE_DIM, color: PURPLE, border: `1px solid ${PURPLE_BDR}` }}
-                >
-                  <Building2 className="w-3.5 h-3.5" />
-                  Marketing Teams
-                </div>
-
-                <h3
-                  className="font-[family-name:var(--font-syne)] font-bold text-2xl md:text-3xl mb-4"
-                  style={{ color: TEXT }}
-                >
-                  Produce campaign assets at velocity
-                </h3>
-                <p className="text-base mb-8 leading-relaxed" style={{ color: MUTED }}>
-                  Brief the AI like you brief a creative team. Get on-brand imagery, ad variants,
-                  and video content — without the agency timeline or price tag.
-                </p>
-
-                <ul className="space-y-3">
-                  {TEAM_USES.map((use) => (
-                    <li key={use} className="flex items-center gap-3 text-sm" style={{ color: '#C0B8B0' }}>
-                      <CheckCircle className="w-4 h-4 shrink-0" style={{ color: PURPLE }} />
-                      {use}
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-10">
-                  <Link
-                    href="/login"
-                    className="inline-flex items-center gap-2 text-sm font-semibold cursor-pointer hover:opacity-80 transition-opacity duration-200"
-                    style={{ color: PURPLE }}
-                  >
-                    Start as a team
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-            </FadeIn>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════
-          FEATURES BENTO
-      ═══════════════════════════════════════════════ */}
-      <section
-        id="features"
-        className="py-28 md:py-36 px-5 md:px-8"
-        style={{ background: SURFACE2 }}
-      >
-        <div className="max-w-7xl mx-auto">
-          <FadeIn>
-            <div className="mb-16">
-              <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: ACCENT }}>
-                What you get
-              </p>
-              <h2
-                className="font-[family-name:var(--font-syne)] font-extrabold leading-[0.92] tracking-tight"
-                style={{ fontSize: 'clamp(2.25rem, 4vw, 3.5rem)', color: TEXT }}
-              >
-                Everything you need.
-                <br />
-                Nothing you don&apos;t.
-              </h2>
-            </div>
-          </FadeIn>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-fr">
-            {FEATURES.map((f, i) => {
-              const Icon = f.icon
-              return (
-                <FadeIn key={f.title} delay={i * 0.07} className={f.col}>
-                  <div
-                    className="relative h-full rounded-2xl p-7 group cursor-default transition-all duration-300 hover:-translate-y-0.5"
-                    style={{
-                      background: f.accent ? `linear-gradient(135deg, rgba(255,101,0,0.1) 0%, rgba(245,166,35,0.06) 100%)` : SURFACE,
-                      border: `1px solid ${f.accent ? ACCENT_BORDER : BORDER}`,
-                    }}
-                  >
-                    {f.accent && (
-                      <div
-                        className="absolute top-0 right-0 bottom-0 left-0 rounded-2xl pointer-events-none"
-                        style={{ background: 'radial-gradient(ellipse 80% 80% at 80% 20%, rgba(255,101,0,0.05), transparent)' }}
-                      />
-                    )}
-                    <div
-                      className="w-11 h-11 rounded-xl flex items-center justify-center mb-5"
-                      style={{
-                        background: f.accent ? ACCENT_DIM : 'rgba(255,255,255,0.05)',
-                        border: `1px solid ${f.accent ? ACCENT_BORDER : BORDER}`,
-                      }}
-                    >
-                      <Icon className="w-5 h-5" style={{ color: f.accent ? ACCENT : MUTED }} />
-                    </div>
-                    <h3
-                      className="font-[family-name:var(--font-syne)] font-bold text-lg mb-2.5"
-                      style={{ color: TEXT }}
-                    >
-                      {f.title}
-                    </h3>
-                    <p className="text-sm leading-relaxed" style={{ color: MUTED }}>
-                      {f.desc}
-                    </p>
-                  </div>
-                </FadeIn>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════
-          HOW IT WORKS
-      ═══════════════════════════════════════════════ */}
-      <section id="how-it-works" className="py-28 md:py-36 px-5 md:px-8">
-        <div className="max-w-7xl mx-auto">
-          <FadeIn>
-            <div className="mb-20">
-              <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: ACCENT }}>
-                How it works
-              </p>
-              <h2
-                className="font-[family-name:var(--font-syne)] font-extrabold leading-[0.92] tracking-tight"
-                style={{ fontSize: 'clamp(2.25rem, 4vw, 3.5rem)', color: TEXT }}
-              >
-                Three steps.
-                <br />
-                Zero friction.
-              </h2>
-            </div>
-          </FadeIn>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
-            {STEPS.map((step, i) => (
-              <FadeIn key={step.n} delay={i * 0.12}>
-                <div
-                  className="relative py-10 md:py-0"
-                  style={{
-                    paddingRight: i < 2 ? '48px' : '0',
-                    paddingLeft: i > 0 ? '48px' : '0',
-                    borderRight: i < 2 ? `1px solid ${BORDER}` : 'none',
-                  }}
-                >
-                  {/* Step number — large ghosted */}
-                  <div
-                    className="font-[family-name:var(--font-syne)] font-extrabold text-[6rem] leading-none select-none mb-6 absolute top-0 left-0 pointer-events-none"
-                    style={{
-                      color: 'rgba(255,255,255,0.03)',
-                      fontSize: '8rem',
-                      paddingLeft: i > 0 ? '48px' : '0',
-                    }}
-                  >
-                    {step.n}
-                  </div>
-
-                  {/* Step indicator */}
-                  <div
-                    className="inline-flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm mb-6"
-                    style={{ background: GRADIENT, color: '#fff', fontFamily: 'var(--font-syne)' }}
-                  >
-                    {step.n}
-                  </div>
-
-                  <h3
-                    className="font-[family-name:var(--font-syne)] font-bold text-2xl mb-3"
-                    style={{ color: TEXT }}
-                  >
-                    {step.title}
-                  </h3>
-                  <p className="text-base leading-relaxed" style={{ color: MUTED }}>
-                    {step.text}
-                  </p>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════
-          GALLERY STRIP
-      ═══════════════════════════════════════════════ */}
-      <section
-        className="py-20 overflow-hidden"
-        style={{ borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, background: SURFACE2 }}
-      >
-        <FadeIn className="px-5 md:px-8 mb-10">
-          <div className="max-w-7xl mx-auto flex items-end justify-between">
-            <div>
-              <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: ACCENT }}>
-                Gallery
-              </p>
-              <h2
-                className="font-[family-name:var(--font-syne)] font-extrabold leading-tight"
-                style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', color: TEXT }}
-              >
-                What will <span style={{ color: ACCENT }}>you</span> create?
-              </h2>
-            </div>
-            <Link
-              href="/login"
-              style={{ color: MUTED }}
-              className="hidden sm:flex items-center gap-2 text-sm font-medium hover:text-[#F0EAE0] transition-colors duration-200 cursor-pointer"
-            >
-              See your gallery
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </FadeIn>
-
-        {/* Auto-scrolling strip */}
-        <div className="relative">
-          <div className="flex gap-4 animate-gallery-scroll" style={{ width: 'max-content' }}>
-            {GALLERY_IMAGES.map((img, i) => (
-              <div
-                key={i}
-                className="relative shrink-0 rounded-2xl overflow-hidden cursor-pointer group"
-                style={{
-                  width: '320px',
-                  height: '220px',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-                }}
-              >
-                <Image
-                  src={img.src}
-                  alt={img.prompt}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  sizes="320px"
-                />
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4"
-                  style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%)' }}
-                >
-                  <p className="text-sm font-medium text-white/90">&ldquo;{img.prompt}&rdquo;</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* Edge fades */}
-          <div
-            className="absolute inset-y-0 left-0 w-24 pointer-events-none"
-            style={{ background: `linear-gradient(to right, ${SURFACE2}, transparent)` }}
-          />
-          <div
-            className="absolute inset-y-0 right-0 w-24 pointer-events-none"
-            style={{ background: `linear-gradient(to left, ${SURFACE2}, transparent)` }}
-          />
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════
-          STATS ROW
-      ═══════════════════════════════════════════════ */}
-      <section className="py-20 px-5 md:px-8">
-        <div className="max-w-7xl mx-auto">
-          <FadeIn>
-            <div
-              className="grid grid-cols-2 md:grid-cols-4 gap-8 rounded-3xl p-10 md:p-14"
-              style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
-            >
-              {[
-                { value: '25+', label: 'AI Models' },
-                { value: '<15s', label: 'Per Image' },
-                { value: '100%', label: 'Free to Start' },
-                { value: '24/7', label: 'Always On' },
-              ].map(({ value, label }) => (
-                <div key={label} className="text-center">
-                  <div
-                    className="font-[family-name:var(--font-syne)] font-extrabold mb-2"
-                    style={{
-                      fontSize: 'clamp(2.25rem, 4vw, 3rem)',
-                      background: GRADIENT,
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                    }}
-                  >
-                    {value}
-                  </div>
-                  <div
-                    className="text-sm font-semibold uppercase tracking-widest"
-                    style={{ color: MUTED }}
-                  >
-                    {label}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════
-          MODEL HIGHLIGHT — Image vs Video
-      ═══════════════════════════════════════════════ */}
-      <section className="py-28 md:py-36 px-5 md:px-8" style={{ background: SURFACE2 }}>
-        <div className="max-w-7xl mx-auto">
-          <FadeIn>
-            <div className="mb-16">
-              <p className="text-xs font-semibold tracking-widest uppercase mb-4" style={{ color: ACCENT }}>
-                Model library
-              </p>
-              <h2
-                className="font-[family-name:var(--font-syne)] font-extrabold leading-[0.92] tracking-tight"
-                style={{ fontSize: 'clamp(2.25rem, 4vw, 3.5rem)', color: TEXT }}
-              >
-                Image models.
-                <br />
-                <span style={{ color: ACCENT }}>Video models.</span>
-              </h2>
-            </div>
-          </FadeIn>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Image Models card */}
-            <FadeIn delay={0.05}>
-              <div
-                className="rounded-2xl p-7 h-full"
-                style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
-              >
-                <div className="flex items-center gap-3 mb-7">
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center"
-                    style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)' }}
-                  >
-                    <ImageIcon className="w-5 h-5" style={{ color: '#4ADE80' }} />
-                  </div>
-                  <div>
-                    <h3 className="font-[family-name:var(--font-syne)] font-bold text-lg" style={{ color: TEXT }}>
-                      Image Generation
-                    </h3>
-                    <p className="text-xs" style={{ color: MUTED }}>
-                      10+ frontier models
-                    </p>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {MODELS.filter((m) => m.tag === 'Image').map((m) => (
-                    <span
-                      key={m.name}
-                      className="text-xs px-3 py-1.5 rounded-full font-medium"
-                      style={{
-                        background: m.hot ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.04)',
-                        border: `1px solid ${m.hot ? 'rgba(34,197,94,0.25)' : BORDER}`,
-                        color: m.hot ? '#4ADE80' : MUTED,
-                      }}
-                    >
-                      {m.hot && '★ '}
-                      {m.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </FadeIn>
-
-            {/* Video Models card */}
-            <FadeIn delay={0.1}>
-              <div
-                className="rounded-2xl p-7 h-full"
-                style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
-              >
-                <div className="flex items-center gap-3 mb-7">
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center"
-                    style={{ background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.2)' }}
-                  >
-                    <Film className="w-5 h-5" style={{ color: '#818CF8' }} />
-                  </div>
-                  <div>
-                    <h3 className="font-[family-name:var(--font-syne)] font-bold text-lg" style={{ color: TEXT }}>
-                      Video Generation
-                    </h3>
-                    <p className="text-xs" style={{ color: MUTED }}>
-                      15+ video models · text-to-video &amp; image-to-video
-                    </p>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {MODELS.filter((m) => m.tag === 'Video').map((m) => (
-                    <span
-                      key={m.name}
-                      className="text-xs px-3 py-1.5 rounded-full font-medium"
-                      style={{
-                        background: m.hot ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.04)',
-                        border: `1px solid ${m.hot ? 'rgba(99,102,241,0.3)' : BORDER}`,
-                        color: m.hot ? '#818CF8' : MUTED,
-                      }}
-                    >
-                      {m.hot && '★ '}
-                      {m.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </FadeIn>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════
-          FINAL CTA
-      ═══════════════════════════════════════════════ */}
-      <section className="py-32 md:py-44 px-5 md:px-8 relative overflow-hidden">
-        {/* Ambient orange glow */}
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full blur-[120px] pointer-events-none"
-          style={{ background: GRAD_GLOW }}
-        />
-
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <FadeIn>
-            <h2
-              className="font-[family-name:var(--font-syne)] font-extrabold leading-[0.92] tracking-tight"
-              style={{ fontSize: 'clamp(2.75rem, 5.5vw, 5rem)', color: TEXT }}
-            >
-              Ready to create
-              <br />
-              <span
-                  style={{
-                    background: GRADIENT,
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                  }}
-                >extraordinary</span> content?
-            </h2>
-          </FadeIn>
-
-          <FadeIn delay={0.12}>
-            <p className="mt-6 text-lg leading-relaxed max-w-lg mx-auto" style={{ color: MUTED }}>
-              Sign in with Google and start generating AI images and videos in seconds.
-              No credit card. No setup. Just create.
-            </p>
-          </FadeIn>
-
-          <FadeIn delay={0.22}>
-            <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/login"
-                style={{ background: GRADIENT, color: '#fff' }}
-                className="inline-flex items-center justify-center gap-2 px-10 py-4 rounded-2xl font-semibold text-lg cursor-pointer hover:opacity-90 transition-opacity duration-200 animate-brand-glow"
-              >
-                Get Started Free
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-            </div>
-            <p className="mt-5 text-sm" style={{ color: '#4A4540' }}>
-              No credit card &middot; Sign in with Google &middot; Instant access
-            </p>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════
-          FOOTER
-      ═══════════════════════════════════════════════ */}
-      <footer
-        className="py-10 px-5 md:px-8"
-        style={{ borderTop: `1px solid ${BORDER}` }}
-      >
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
-          <Link href="/" className="cursor-pointer shrink-0">
-            <Image src="/Iart.png" alt="InstaArt" width={120} height={30} className="h-7 w-auto" />
-          </Link>
-
-          <p className="text-sm" style={{ color: '#4A4540' }}>
-            &copy; {new Date().getFullYear()} InstaArt. All rights reserved.
-          </p>
-
-          <div className="flex gap-6 text-sm" style={{ color: MUTED }}>
-            <Link href="/login" className="hover:text-[#F0EAE0] transition-colors cursor-pointer">
-              Sign In
-            </Link>
-            <Link href="/dashboard" className="hover:text-[#F0EAE0] transition-colors cursor-pointer">
-              Dashboard
-            </Link>
-          </div>
-        </div>
-      </footer>
-    </main>
+    <>
+      <Header />
+      <main>
+        <Hero />
+        <TrustStrip />
+        <CapabilitiesGrid />
+        <Workflow />
+        <StudioSpotlight />
+        <AudienceSection />
+        <WhyReelsy />
+        <PricingTeaser />
+        <FinalCTA />
+      </main>
+      <Footer />
+    </>
   )
 }
