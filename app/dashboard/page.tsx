@@ -1,10 +1,11 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useEffect, useState, useCallback, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 type Tab = 'image' | 'video'
 
@@ -167,7 +168,7 @@ const MODELS: {
     label: 'FLUX.2 Flex',
     badge: 'Black Forest',
     desc: 'Flexible FLUX model with high context window and quality output.',
-    color: 'from-violet-500 to-purple-400',
+    color: 'from-violet-500 to-[#00F2FE]',
     tier: 'standard',
     cost: '$14.65/M',
   },
@@ -176,7 +177,7 @@ const MODELS: {
     label: 'FLUX.2 Max',
     badge: 'Black Forest',
     desc: 'Maximum quality FLUX generation — ultra-sharp details.',
-    color: 'from-purple-500 to-violet-600',
+    color: 'from-[#00C4CC] to-violet-600',
     tier: 'standard',
     cost: '$17.09/M',
   },
@@ -321,7 +322,7 @@ const VIDEO_MODELS: VideoModelDef[] = [
     label: 'Runway Aleph',
     badge: 'Runway',
     desc: 'Advanced Runway model — high-fidelity scenes with complex motion.',
-    color: 'from-violet-500 to-purple-400',
+    color: 'from-violet-500 to-[#00F2FE]',
     tier: 'standard',
   },
   {
@@ -394,7 +395,7 @@ const VIDEO_MODELS: VideoModelDef[] = [
     label: 'Veo 3.1 with Audio',
     badge: 'Google',
     desc: 'Veo 3.1 Quality with synchronised background audio.',
-    color: 'from-blue-600 to-purple-500',
+    color: 'from-blue-600 to-[#00F2FE]',
     tier: 'premium',
   },
   {
@@ -402,7 +403,7 @@ const VIDEO_MODELS: VideoModelDef[] = [
     label: 'Kling 3.0 with Audio',
     badge: 'Kuaishou',
     desc: 'Kling 3.0 pro mode with sound effects enabled. Up to 1080p.',
-    color: 'from-purple-600 to-indigo-500',
+    color: 'from-[#00C4CC] to-indigo-500',
     tier: 'premium',
   },
   {
@@ -442,7 +443,7 @@ const VIDEO_MODELS: VideoModelDef[] = [
     label: 'Kling 2.5 Turbo',
     badge: 'Kuaishou',
     desc: 'Kling 2.5 Turbo Pro — fast generation with high visual quality.',
-    color: 'from-violet-500 to-purple-500',
+    color: 'from-violet-500 to-[#00F2FE]',
     tier: 'standard',
   },
   {
@@ -579,7 +580,7 @@ const I2V_MODELS: I2VModelDef[] = [
     label: 'Kling 3.0 with Audio',
     badge: 'Kuaishou',
     desc: 'Kling 3.0 pro mode with sound effects. Up to 1080p.',
-    color: 'from-purple-600 to-indigo-500',
+    color: 'from-[#00C4CC] to-indigo-500',
     tier: 'premium',
   },
   {
@@ -611,7 +612,7 @@ const I2V_MODELS: I2VModelDef[] = [
     label: 'Kling 2.5 Turbo',
     badge: 'Kuaishou',
     desc: 'Kling 2.5 Turbo Pro image-to-video — fast with high fidelity.',
-    color: 'from-violet-500 to-purple-500',
+    color: 'from-violet-500 to-[#00F2FE]',
     tier: 'standard',
   },
   {
@@ -704,9 +705,82 @@ async function downloadImage(url: string, filename = 'instaart.png') {
 }
 
 // ── Main component ───────────────────────────────────────────────────────────
-export default function DashboardPage() {
+const ONBOARDING_STEPS = [
+  { heading: 'What brings you to Reelsy?', options: ['Marketing', 'Content creation', 'Agency work', 'Founder'] },
+  { heading: 'What do you want to create?', options: ['Images', 'Videos', 'Avatar videos', 'All of the above'] },
+  { heading: "You're ready.", options: [], ctas: true },
+] as const
+
+function OnboardingOverlay({
+  step, selections, onSelect, onNext, onFinish,
+}: {
+  step: number
+  selections: Record<number, string>
+  onSelect: (s: string) => void
+  onNext: () => void
+  onFinish: (route: string) => void
+}) {
+  const current = ONBOARDING_STEPS[step]
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, background: 'rgba(11,15,20,0.92)',
+      backdropFilter: 'blur(8px)', zIndex: 100,
+      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
+    }}>
+      <div style={{
+        background: '#141D28', border: '1px solid #273242', borderRadius: 20,
+        padding: 40, width: '100%', maxWidth: 520,
+        display: 'flex', flexDirection: 'column', gap: 24,
+      }}>
+        <div style={{ display: 'flex', gap: 6 }}>
+          {ONBOARDING_STEPS.map((_, i) => (
+            <div key={i} style={{
+              height: 3, flex: 1, borderRadius: 99,
+              background: i <= step ? 'linear-gradient(135deg,#00C4CC,#00F2FE)' : '#273242',
+              transition: 'background 0.3s',
+            }} />
+          ))}
+        </div>
+        <h2 style={{ fontFamily: 'var(--font-syne)', fontSize: 22, fontWeight: 700, color: '#F4F8FB', margin: 0 }}>
+          {current.heading}
+        </h2>
+        {current.options.length > 0 && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            {(current.options as readonly string[]).map(opt => {
+              const selected = selections[step] === opt
+              return (
+                <button key={opt} onClick={() => onSelect(opt)} style={{
+                  background: selected ? 'rgba(0,196,204,0.12)' : '#101722',
+                  border: selected ? '1px solid #00C4CC' : '1px solid #273242',
+                  borderRadius: 12, padding: '14px 16px', textAlign: 'left',
+                  color: selected ? '#F4F8FB' : '#A7B4C2', fontSize: 14, cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  boxShadow: selected ? '0 0 16px rgba(0,196,204,0.2)' : 'none',
+                }}>{opt}</button>
+              )
+            })}
+          </div>
+        )}
+        {'ctas' in current && current.ctas ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <button className="btn-primary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => onFinish('/dashboard')}>Start creating</button>
+            <button className="btn-secondary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => onFinish('/studio')}>Open Studio</button>
+            <button className="btn-tertiary" style={{ justifyContent: 'center' }} onClick={() => onFinish('/dashboard')}>Explore examples →</button>
+          </div>
+        ) : (
+          <button className="btn-primary" disabled={!selections[step]} style={{ alignSelf: 'flex-end', opacity: selections[step] ? 1 : 0.4 }} onClick={onNext}>
+            Continue
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function DashboardInner() {
   const supabase = createClient()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { toasts, push, dismiss } = useToasts()
 
   const [user, setUser] = useState<UserProfile | null>(null)
@@ -730,6 +804,18 @@ export default function DashboardPage() {
   const [historyLoading, setHistoryLoading] = useState(true)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [videoDuration, setVideoDuration] = useState('5')
+  const [onboardingStep, setOnboardingStep] = useState<number | null>(
+    searchParams.get('welcome') === 'true' ? 0 : null
+  )
+  const [onboardingSelections, setOnboardingSelections] = useState<Record<number, string>>({})
+
+  function handleOnboardingFinish(route: string) {
+    setOnboardingStep(null)
+    const url = new URL(window.location.href)
+    url.searchParams.delete('welcome')
+    window.history.replaceState({}, '', url.toString())
+    if (route !== '/dashboard') router.push(route)
+  }
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user: u } }) => {
@@ -1002,7 +1088,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-[#0d0d14] text-white overflow-hidden">
+    <div className="flex flex-col h-screen text-white overflow-hidden" style={{ background: '#0B0F14' }}>
 
       {/* ── Toast stack ── */}
       <div className="fixed bottom-5 right-5 z-[100] flex flex-col gap-2 items-end pointer-events-none">
@@ -1024,41 +1110,101 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* ── Nav ── */}
-      <header className="flex items-center justify-between px-6 py-3 border-b border-white/[0.07] shrink-0 bg-[#0d0d14]/80 backdrop-blur-md z-10">
-        <Image src="/Iart.png" alt="InstaArt" width={120} height={30} className="h-7 w-auto" />
-        {user && (
-          <div className="flex items-center gap-3">
-            {user.avatar_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={user.avatar_url} alt={user.name ?? ''} className="w-8 h-8 rounded-full ring-2 ring-purple-500/40" />
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-sm font-bold">
-                {(user.name ?? user.email)[0].toUpperCase()}
-              </div>
-            )}
-            <span className="text-sm text-slate-400 hidden sm:block">{user.email}</span>
-            <Link
-              href="/studio"
-              className="text-xs text-purple-400 hover:text-purple-300 border border-purple-500/30 hover:border-purple-400/50 px-3 py-1.5 rounded-lg transition-all hidden sm:block"
-            >
-              Talking Video
-            </Link>
-            <button
-              onClick={handleSignOut}
-              className="text-xs text-slate-500 hover:text-white border border-white/10 hover:border-white/30 px-3 py-1.5 rounded-lg transition-all"
-            >
-              Sign out
-            </button>
-          </div>
-        )}
+      {/* ── Top header ── */}
+      <header style={{
+        height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 20px', background: '#101722', borderBottom: '1px solid #273242',
+        flexShrink: 0, zIndex: 40,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Image src="/For Rebranding/reelsy-icon.png" alt="Reelsy" width={26} height={26} style={{ objectFit: 'contain' }} />
+        </div>
+        {/* Search bar */}
+        <div style={{
+          flex: 1, maxWidth: 420, margin: '0 24px',
+          background: '#141D28', border: '1px solid #273242',
+          borderRadius: 10, padding: '6px 14px', display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="7" stroke="#738295" strokeWidth="2"/>
+            <path d="M16.5 16.5L21 21" stroke="#738295" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+          <input
+            placeholder="Search your creations…"
+            style={{ background: 'none', border: 'none', outline: 'none', color: '#F4F8FB', fontSize: 13, width: '100%' }}
+          />
+        </div>
+        {/* Right controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {user && (
+            <>
+              {user.avatar_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={user.avatar_url} alt={user.name ?? ''} style={{ width: 30, height: 30, borderRadius: '50%', objectFit: 'cover' }} />
+              ) : (
+                <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#141D28', border: '1px solid #273242', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#738295' }}>
+                  {(user.name ?? user.email)[0].toUpperCase()}
+                </div>
+              )}
+              <button
+                onClick={handleSignOut}
+                style={{ fontSize: 12, color: '#738295', background: 'none', border: 'none', cursor: 'pointer' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#F4F8FB')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#738295')}
+              >Sign out</button>
+            </>
+          )}
+        </div>
       </header>
 
       {/* ── Main ── */}
       <div className="flex flex-1 overflow-hidden">
 
+        {/* ── Sidebar nav ── */}
+        <nav style={{
+          width: 200, background: '#101722', borderRight: '1px solid #273242',
+          display: 'flex', flexDirection: 'column', flexShrink: 0,
+          overflowY: 'auto',
+        }}>
+          <div style={{ flex: 1, paddingTop: 8 }}>
+            {([
+              { label: 'Generate', icon: '✦', active: true },
+              { label: 'Video',    icon: '▶' },
+              { label: 'Studio',   icon: '◈', href: '/studio' },
+              { label: 'History',  icon: '↺' },
+              { label: 'Projects', icon: '⊞' },
+              { label: 'Billing',  icon: '$' },
+              { label: 'Settings', icon: '⚙' },
+            ] as { label: string; icon: string; href?: string; active?: boolean }[]).map(item => (
+              <a
+                key={item.label}
+                href={item.href ?? '#'}
+                onClick={item.href ? undefined : (e) => e.preventDefault()}
+                className={item.active ? 'sidebar-active' : ''}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '9px 20px', fontSize: 13,
+                  color: item.active ? '#F4F8FB' : '#738295',
+                  textDecoration: 'none', transition: 'color 0.15s',
+                  borderLeft: item.active ? undefined : '3px solid transparent',
+                }}
+                onMouseEnter={e => { if (!item.active) e.currentTarget.style.color = '#A7B4C2' }}
+                onMouseLeave={e => { if (!item.active) e.currentTarget.style.color = '#738295' }}
+              >
+                <span style={{ fontSize: 13, width: 16, textAlign: 'center' }}>{item.icon}</span>
+                {item.label}
+              </a>
+            ))}
+          </div>
+          <div style={{ padding: '16px 16px', borderTop: '1px solid #273242' }}>
+            <Link href="/login" className="btn-primary" style={{ display: 'block', textAlign: 'center', fontSize: 12, padding: '7px 0' }}>
+              Upgrade
+            </Link>
+          </div>
+        </nav>
+
         {/* ── Left Panel ── */}
-        <aside className="w-[340px] shrink-0 flex flex-col border-r border-white/[0.07] overflow-y-auto bg-[#0d0d18]">
+        <aside className="w-[340px] shrink-0 flex flex-col border-r overflow-y-auto" style={{ borderColor: '#273242', background: '#101722' }}>
 
           {/* Header */}
           <div className="px-5 pt-5 pb-4 border-b border-white/[0.06]">
@@ -1134,7 +1280,7 @@ export default function DashboardPage() {
                       value={model}
                       onChange={(e) => setModel(e.target.value as Model)}
                       disabled={loading}
-                      className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-purple-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
+                      className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
                     >
                       <optgroup label="★" className="bg-[#1a1a2e]">
                         {MODELS.filter((m) => m.tier === 'budget').map((m) => (
@@ -1261,12 +1407,12 @@ export default function DashboardPage() {
                               setUploadedImages(prev => prev.map((x, idx) => idx === i ? { ...x, description: val } : x))
                             }}
                             placeholder="describe…"
-                            className="w-20 bg-white/[0.05] border border-white/[0.08] rounded px-1.5 py-1 text-[10px] text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-purple-500/50"
+                            className="w-20 bg-white/[0.05] border border-white/[0.08] rounded px-1.5 py-1 text-[10px] text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50"
                           />
                         </div>
                       ))}
                       {/* Add image tile */}
-                      <label className="shrink-0 w-20 h-20 rounded-lg border-2 border-dashed border-white/[0.1] hover:border-purple-500/40 transition-colors flex flex-col items-center justify-center gap-1 cursor-pointer">
+                      <label className="shrink-0 w-20 h-20 rounded-lg border-2 border-dashed border-white/[0.1] hover:border-[#00C4CC]/40 transition-colors flex flex-col items-center justify-center gap-1 cursor-pointer">
                         <UploadIcon />
                         <span className="text-[9px] text-slate-500">Add image</span>
                         <input
@@ -1292,7 +1438,7 @@ export default function DashboardPage() {
                         value={videoModel}
                         onChange={(e) => setVideoModel(e.target.value as VideoModel)}
                         disabled={loading}
-                        className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-purple-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
+                        className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
                       >
                         <optgroup label="★" className="bg-[#1a1a2e]">
                           {VIDEO_MODELS.filter((m) => m.tier === 'budget').map((m) => (
@@ -1315,7 +1461,7 @@ export default function DashboardPage() {
                         value={i2vModel}
                         onChange={(e) => setI2vModel(e.target.value as I2VModel)}
                         disabled={loading}
-                        className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-purple-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
+                        className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
                       >
                         <optgroup label="★" className="bg-[#1a1a2e]">
                           {I2V_MODELS.filter((m) => m.tier === 'budget').map((m) => (
@@ -1408,7 +1554,7 @@ export default function DashboardPage() {
                 </PanelRow>
 
                 {parseInt(videoDuration, 10) >= 30 && (
-                  <p className="text-[10px] text-purple-400/70 px-1">
+                  <p className="text-[10px] text-[#00C4CC]/70 px-1">
                     Long video: {Math.ceil(parseInt(videoDuration, 10) / 10)} × 10 s clips stitched. Use Kling 3.0, Wan 2.7, or ByteDance V1.
                   </p>
                 )}
@@ -1434,7 +1580,7 @@ export default function DashboardPage() {
             <button
               onClick={handleGenerate}
               disabled={loading || !prompt.trim() || (tab === 'video' && videoMode === 'image' && uploadedImages.length === 0)}
-              className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-purple-600 via-violet-600 to-purple-600 hover:from-purple-500 hover:via-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_0_24px_rgba(139,92,246,0.35)] hover:shadow-[0_0_36px_rgba(139,92,246,0.55)] active:scale-[0.98] flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#00C4CC] via-violet-600 to-[#00F2FE] hover:from-[#00C4CC] hover:via-violet-500 hover:to-[#00F2FE] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_0_24px_rgba(139,92,246,0.35)] hover:shadow-[0_0_36px_rgba(139,92,246,0.55)] active:scale-[0.98] flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -1464,9 +1610,9 @@ export default function DashboardPage() {
             {loading ? (
               <div className="flex flex-col items-center gap-4">
                 <div className="relative w-24 h-24">
-                  <div className="absolute inset-0 rounded-full border-2 border-purple-500/30 animate-ping" />
-                  <div className="absolute inset-2 rounded-full border-2 border-purple-400/50 animate-spin" style={{ animationDuration: '2s' }} />
-                  <div className="absolute inset-4 rounded-full border-2 border-violet-300/40 animate-spin" style={{ animationDuration: '1.5s', animationDirection: 'reverse' }} />
+                  <div className="absolute inset-0 rounded-full border-2 border-[#00C4CC]/30 animate-ping" />
+                  <div className="absolute inset-2 rounded-full border-2 border-[#00C4CC]/50 animate-spin" style={{ animationDuration: '2s' }} />
+                  <div className="absolute inset-4 rounded-full border-2 border-[#00F2FE]/40 animate-spin" style={{ animationDuration: '1.5s', animationDirection: 'reverse' }} />
                   <div className="absolute inset-0 flex items-center justify-center text-2xl">✦</div>
                 </div>
                 <p className="text-sm text-slate-400 animate-pulse">
@@ -1547,7 +1693,7 @@ export default function DashboardPage() {
                 </div>
                 <button
                   onClick={() => useImageForVideo(currentImage.url, currentImage.prompt)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-500/15 border border-purple-500/30 text-purple-300 hover:bg-purple-500/25 hover:text-purple-200 transition-all text-xs font-medium"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#141D28]/15 border border-[#00C4CC]/30 text-[#00F2FE] hover:bg-[#141D28]/25 hover:text-[#00C4CC] transition-all text-xs font-medium"
                 >
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none" className="shrink-0">
                     <rect x="1" y="2.5" width="7" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
@@ -1582,7 +1728,7 @@ export default function DashboardPage() {
             ) : (
               <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-none">
                 {history.map((item) => (
-                  <div key={item.id} className="group shrink-0 w-28 relative rounded-xl overflow-hidden ring-1 ring-white/10 hover:ring-purple-500/50 hover:scale-105 transition-all duration-200">
+                  <div key={item.id} className="group shrink-0 w-28 relative rounded-xl overflow-hidden ring-1 ring-white/10 hover:ring-[#00C4CC]/50 hover:scale-105 transition-all duration-200">
                     <button onClick={() => setExpanded(item)} className="block w-full">
                       {item.kind === 'image' ? (
                         <>
@@ -1594,7 +1740,7 @@ export default function DashboardPage() {
                         </>
                       ) : (
                         <div className="w-28 h-28 bg-black/40 flex flex-col items-center justify-center gap-1">
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-purple-400">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-[#00C4CC]">
                             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
                             <path d="M10 8.5l6 3.5-6 3.5V8.5z" fill="currentColor" />
                           </svg>
@@ -1635,7 +1781,7 @@ export default function DashboardPage() {
           onClick={() => setExpanded(null)}
         >
           <div
-            className="relative bg-[#13131f] border border-white/10 rounded-2xl overflow-hidden max-w-2xl w-full shadow-2xl"
+            className="relative bg-[#141D28] border border-white/10 rounded-2xl overflow-hidden max-w-2xl w-full shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             {expanded.kind === 'image' ? (
@@ -1684,7 +1830,25 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+
+      {onboardingStep !== null && (
+        <OnboardingOverlay
+          step={onboardingStep}
+          selections={onboardingSelections}
+          onSelect={(s) => setOnboardingSelections(prev => ({ ...prev, [onboardingStep]: s }))}
+          onNext={() => setOnboardingStep(prev => (prev ?? 0) + 1)}
+          onFinish={handleOnboardingFinish}
+        />
+      )}
     </div>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={null}>
+      <DashboardInner />
+    </Suspense>
   )
 }
 
@@ -1721,7 +1885,7 @@ function PanelSelect({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-purple-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
+        className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value} className="bg-[#1a1a2e] text-white">
@@ -1822,12 +1986,7 @@ function SparkleIcon() {
 }
 
 function Spinner() {
-  return (
-    <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-    </svg>
-  )
+  return <div className="loader-ribbon" style={{ width: 80 }} />
 }
 
 function TrashIcon({ size = 14 }: { size?: number }) {
