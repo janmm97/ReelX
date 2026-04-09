@@ -56,7 +56,7 @@ export default function VoiceSelector({ value, onChange, disabled }: Props) {
         value={value ?? ''}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className="w-full appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-purple-500/50 disabled:opacity-50 cursor-pointer"
+        className="w-full appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50 disabled:opacity-50 cursor-pointer"
       >
         <option value="">Select a cloned voice</option>
         {voices.map((v) => (
@@ -72,7 +72,7 @@ export default function VoiceSelector({ value, onChange, disabled }: Props) {
           <button
             type="button"
             onClick={() => new Audio(v.previewUrl).play()}
-            className="text-[11px] text-purple-400 hover:text-purple-300 text-left transition-colors"
+            className="text-[11px] text-[#00C4CC] hover:text-[#00F2FE] text-left transition-colors"
           >
             ▶ Preview voice
           </button>

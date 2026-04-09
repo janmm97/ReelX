@@ -171,7 +171,7 @@ export default function VideoGeneratorForm({ userId }: Props) {
       {/* Portrait image upload */}
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-medium text-slate-300">Portrait Image</label>
-        <label className="relative flex flex-col items-center justify-center w-full h-40 rounded-xl border-2 border-dashed border-white/[0.12] hover:border-purple-500/40 transition-colors cursor-pointer bg-white/[0.02]">
+        <label className="relative flex flex-col items-center justify-center w-full h-40 rounded-xl border-2 border-dashed border-white/[0.12] hover:border-[#00C4CC]/40 transition-colors cursor-pointer bg-white/[0.02]">
           {imagePreview ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={imagePreview} alt="Preview" className="w-full h-full object-contain rounded-xl" />
@@ -202,7 +202,7 @@ export default function VideoGeneratorForm({ userId }: Props) {
           placeholder="Write the full script that will be spoken…"
           rows={4}
           disabled={isLoading}
-          className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-600 resize-none focus:outline-none focus:ring-1 focus:ring-purple-500/50 disabled:opacity-50"
+          className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-600 resize-none focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50 disabled:opacity-50"
         />
       </div>
 
@@ -215,7 +215,7 @@ export default function VideoGeneratorForm({ userId }: Props) {
           onChange={(e) => setMotionPrompt(e.target.value)}
           placeholder="e.g. speak naturally with slight head movement"
           disabled={isLoading}
-          className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-purple-500/50 disabled:opacity-50"
+          className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50 disabled:opacity-50"
         />
       </div>
 
@@ -229,7 +229,7 @@ export default function VideoGeneratorForm({ userId }: Props) {
       {isLoading && (
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-sm text-slate-300">
-            <svg className="w-4 h-4 animate-spin text-purple-400 shrink-0" viewBox="0 0 24 24" fill="none">
+            <svg className="w-4 h-4 animate-spin text-[#00C4CC] shrink-0" viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="31.4" strokeDashoffset="10" />
             </svg>
             <span>{STEP_LABELS[step.id]}</span>
@@ -238,7 +238,7 @@ export default function VideoGeneratorForm({ userId }: Props) {
             <div className="flex flex-col gap-1">
               <div className="w-full h-1.5 rounded-full bg-white/[0.08] overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-purple-500 transition-all duration-500"
+                  className="h-full rounded-full bg-gradient-to-r from-[#00C4CC] to-[#00F2FE] transition-all duration-500"
                   style={{ width: `${(step.completed / step.total) * 100}%` }}
                 />
               </div>
@@ -260,7 +260,7 @@ export default function VideoGeneratorForm({ userId }: Props) {
       <button
         type="submit"
         disabled={!canSubmit}
-        className="py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-purple-600 via-violet-600 to-purple-600 hover:from-purple-500 hover:via-violet-500 hover:to-purple-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_0_24px_rgba(139,92,246,0.35)] hover:shadow-[0_0_36px_rgba(139,92,246,0.55)] active:scale-[0.98]"
+        className="btn-primary py-3 w-full rounded-xl font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
       >
         {isLoading ? STEP_LABELS[step.id] : 'Generate Talking Video'}
       </button>

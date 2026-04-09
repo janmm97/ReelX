@@ -79,7 +79,7 @@ export default function ConnectElevenLabsButton({ userId, onConnected }: Props) 
     <button
       onClick={open}
       disabled={saving}
-      className="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white text-xs font-semibold transition-colors"
+      className="btn-primary px-4 py-2 rounded-lg text-xs font-semibold disabled:opacity-50"
     >
       {saving ? 'Saving…' : 'Connect ElevenLabs'}
     </button>
