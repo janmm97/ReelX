@@ -30,5 +30,8 @@ export async function GET(request: NextRequest) {
     { onConflict: 'auth_id' }
   )
 
-  return NextResponse.redirect(`${origin}${next}`)
+  const createdAt = new Date(user.created_at).getTime()
+  const isNewUser = Date.now() - createdAt < 60_000
+  const destination = isNewUser ? `${origin}/dashboard?welcome=true` : `${origin}${next}`
+  return NextResponse.redirect(destination)
 }
