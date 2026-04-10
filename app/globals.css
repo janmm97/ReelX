@@ -150,6 +150,10 @@ body {
 @keyframes gallery-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 .animate-gallery-scroll { animation: gallery-scroll 40s linear infinite; }
 
+/* ── Gallery scroll reverse ── */
+@keyframes gallery-scroll-reverse { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
+.animate-marquee-reverse { animation: gallery-scroll-reverse 40s linear infinite; }
+
 /* ── Glow (teal) ── */
 @keyframes teal-glow {
   0%, 100% { box-shadow: 0 0 20px rgba(0,196,204,0.3); }
