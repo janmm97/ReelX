@@ -3,8 +3,9 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, ImageIcon, Film, Mic, CheckCircle } from 'lucide-react'
+import { ArrowRight, ImageIcon, Film, Mic, CheckCircle, Sparkles, SendHorizonal } from 'lucide-react'
 
 /* ── Motion helpers ──────────────────────────────────────────── */
 const fadeRise = {
@@ -78,59 +79,168 @@ function Header() {
 }
 
 /* ── Hero ────────────────────────────────────────────────────── */
+const HERO_CHIPS = [
+  'Generate a product image',
+  'Create a brand video',
+  'Make an avatar video',
+  'Design social media content',
+]
+
 function Hero() {
+  const router = useRouter()
+  const [prompt, setPrompt] = useState('')
+  const [focused, setFocused] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  function handleSubmit(e?: React.FormEvent) {
+    e?.preventDefault()
+    router.push('/login')
+  }
+
+  function handleChip(chip: string) {
+    setPrompt(chip)
+    inputRef.current?.focus()
+    router.push('/login')
+  }
+
   return (
     <section style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
       background: '#0B0F14', position: 'relative', overflow: 'hidden',
       padding: '140px 32px 80px', textAlign: 'center',
     }}>
-      {/* Centre bloom */}
+      {/* ── Background layers ── */}
+
+      {/* Top-center teal spotlight — the main colour drama */}
       <div style={{
-        position: 'absolute', top: '38%', left: '50%', transform: 'translate(-50%,-50%)',
-        width: 900, height: 900, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(0,196,204,0.055) 0%, transparent 58%)',
+        position: 'absolute', top: 0, left: 0, right: 0, height: '75%',
+        background: 'radial-gradient(ellipse 70% 60% at 50% -5%, rgba(0,196,204,0.18) 0%, rgba(0,196,204,0.06) 40%, transparent 70%)',
         pointerEvents: 'none',
+      }} />
+      {/* Secondary cyan bloom — bottom-left accent */}
+      <div style={{
+        position: 'absolute', bottom: '-8%', left: '-6%',
+        width: 520, height: 520, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(0,242,254,0.07) 0%, transparent 65%)',
+        pointerEvents: 'none',
+      }} />
+      {/* Tertiary bloom — right mid */}
+      <div style={{
+        position: 'absolute', top: '40%', right: '-4%',
+        width: 380, height: 380, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(0,196,204,0.055) 0%, transparent 60%)',
+        pointerEvents: 'none',
+      }} />
+      {/* Horizontal light band at the very top */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: 2,
+        background: 'linear-gradient(90deg, transparent 0%, #00C4CC 30%, #00F2FE 50%, #00C4CC 70%, transparent 100%)',
+        opacity: 0.5, pointerEvents: 'none',
       }} />
       {/* Grid overlay */}
       <div style={{
         position: 'absolute', inset: 0,
-        backgroundImage: 'linear-gradient(#273242 1px, transparent 1px), linear-gradient(90deg, #273242 1px, transparent 1px)',
-        backgroundSize: '48px 48px', opacity: 0.035, pointerEvents: 'none',
+        backgroundImage: 'linear-gradient(rgba(39,50,66,0.7) 1px, transparent 1px), linear-gradient(90deg, rgba(39,50,66,0.7) 1px, transparent 1px)',
+        backgroundSize: '48px 48px', opacity: 0.045, pointerEvents: 'none',
+      }} />
+      {/* Vignette — keeps edges dark */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'radial-gradient(ellipse 90% 90% at 50% 50%, transparent 40%, rgba(11,15,20,0.7) 100%)',
+        pointerEvents: 'none',
       }} />
 
+      {/* ── Content ── */}
       <motion.div variants={stagger} initial="hidden" animate="show"
-        style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 28, maxWidth: 800 }}>
+        style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, maxWidth: 720, width: '100%' }}>
 
+        {/* Eyebrow pill */}
         <motion.div variants={fadeRise} style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
-          background: 'rgba(0,196,204,0.07)', border: '1px solid rgba(0,196,204,0.2)',
+          background: 'rgba(0,196,204,0.08)', border: '1px solid rgba(0,196,204,0.22)',
           borderRadius: 99, padding: '5px 14px',
         }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00C4CC', display: 'inline-block' }} />
-          <span style={{ fontSize: 12, color: '#00C4CC', fontWeight: 500, letterSpacing: '0.02em' }}>AI Creative Studio</span>
+          <Sparkles size={12} color="#00C4CC" />
+          <span style={{ fontSize: 12, color: '#00C4CC', fontWeight: 500, letterSpacing: '0.03em' }}>AI Creative Studio</span>
         </motion.div>
 
+        {/* Headline */}
         <motion.h1 variants={fadeRise} style={{
-          fontFamily: 'var(--font-syne)', fontSize: 'clamp(52px,6.5vw,88px)',
-          fontWeight: 800, color: '#F4F8FB', lineHeight: 1.05, margin: 0,
+          fontFamily: 'var(--font-syne)', fontSize: 'clamp(44px,6vw,80px)',
+          fontWeight: 800, color: '#F4F8FB', lineHeight: 1.06, margin: 0,
         }}>
-          Creative production,<br />reimagined
+          Your Own Creative Studio,<br />
+          <span style={{
+            background: 'linear-gradient(90deg, #00C4CC 0%, #00F2FE 60%, #A7E8FF 100%)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+          }}>Beyond Limits!</span>
         </motion.h1>
 
-        <motion.p variants={fadeRise} style={{
-          color: '#A7B4C2', fontSize: 18, lineHeight: 1.65, margin: 0, maxWidth: 600,
-        }}>
-          One AI studio for images, videos, and avatars—powered by flexible models, fast workflows, and production-ready output.
+        {/* Subheadline */}
+        <motion.p variants={fadeRise} style={{ color: '#A7B4C2', fontSize: 17, lineHeight: 1.65, margin: 0, maxWidth: 540 }}>
+          Generate images, videos, and avatar content with flexible AI models — all from one workspace.
         </motion.p>
 
-        <motion.div variants={fadeRise}>
-          <Link href="/login" style={whiteBtnStyle}
-            onMouseEnter={e => whiteBtnHover(e.currentTarget, true)}
-            onMouseLeave={e => whiteBtnHover(e.currentTarget, false)}
-          >
-            Try it for Free <ArrowRight size={16} />
-          </Link>
+        {/* ── Chat input ── */}
+        <motion.form variants={fadeRise} onSubmit={handleSubmit} style={{ width: '100%', maxWidth: 620 }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 0,
+            background: 'rgba(20,29,40,0.85)', backdropFilter: 'blur(16px)',
+            border: `1px solid ${focused ? 'rgba(0,196,204,0.45)' : 'rgba(39,50,66,0.9)'}`,
+            borderRadius: 16, padding: '6px 6px 6px 18px',
+            boxShadow: focused ? '0 0 0 3px rgba(0,196,204,0.08), 0 8px 32px rgba(0,0,0,0.4)' : '0 4px 24px rgba(0,0,0,0.3)',
+            transition: 'border-color 0.2s, box-shadow 0.2s',
+          }}>
+            <Sparkles size={16} color={focused ? '#00C4CC' : '#3A4A5C'} style={{ flexShrink: 0, transition: 'color 0.2s', marginRight: 12 }} />
+            <input
+              ref={inputRef}
+              value={prompt}
+              onChange={e => setPrompt(e.target.value)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              onKeyDown={e => { if (e.key === 'Enter') handleSubmit() }}
+              placeholder="What do you want to create today?"
+              style={{
+                flex: 1, background: 'none', border: 'none', outline: 'none',
+                fontSize: 15, color: '#F4F8FB', padding: '10px 0',
+                caretColor: '#00C4CC',
+              }}
+            />
+            <button type="submit" style={{
+              flexShrink: 0, width: 40, height: 40, borderRadius: 10, border: 'none', cursor: 'pointer',
+              background: prompt.trim()
+                ? 'linear-gradient(135deg, #00C4CC, #00F2FE)'
+                : 'rgba(39,50,66,0.7)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'background 0.2s, box-shadow 0.2s',
+              boxShadow: prompt.trim() ? '0 0 14px rgba(0,196,204,0.35)' : 'none',
+            }}>
+              <SendHorizonal size={16} color={prompt.trim() ? '#0B0F14' : '#3A4A5C'} />
+            </button>
+          </div>
+        </motion.form>
+
+        {/* Suggestion chips */}
+        <motion.div variants={fadeRise} style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+          {HERO_CHIPS.map(chip => (
+            <button key={chip} onClick={() => handleChip(chip)} style={{
+              background: 'rgba(20,29,40,0.7)', border: '1px solid #273242',
+              backdropFilter: 'blur(8px)',
+              borderRadius: 99, padding: '7px 16px', fontSize: 13, color: '#A7B4C2',
+              cursor: 'pointer', transition: 'border-color 0.2s, color 0.2s, background 0.2s',
+            }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = 'rgba(0,196,204,0.4)'
+                e.currentTarget.style.color = '#F4F8FB'
+                e.currentTarget.style.background = 'rgba(0,196,204,0.07)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = '#273242'
+                e.currentTarget.style.color = '#A7B4C2'
+                e.currentTarget.style.background = 'rgba(20,29,40,0.7)'
+              }}
+            >{chip}</button>
+          ))}
         </motion.div>
       </motion.div>
     </section>
