@@ -3,6 +3,10 @@
 // stitching them together with FFmpeg.  Optionally overlays ElevenLabs narration.
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import {
+  getUserSub, canAffordAmount, getModelCost, deductCreditsAmount,
+  refundCreditsAmount, affordErrorMessage,
+} from '@/lib/credits'
 import ffmpeg from 'fluent-ffmpeg'
 import ffmpegStatic from 'ffmpeg-static'
 import { promises as fs } from 'fs'
@@ -348,11 +352,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Daily video limit reached' }, { status: 429 })
   }
 
-  const ar         = aspectRatio ? (AR_MAP[aspectRatio] ?? '16:9') : '16:9'
-  const numClips   = Math.ceil(totalDuration / CLIP_DURATION_S)
-  const promptStr  = prompt!.trim()
+  const ar        = aspectRatio ? (AR_MAP[aspectRatio] ?? '16:9') : '16:9'
+  const numClips  = Math.ceil(totalDuration / CLIP_DURATION_S)
+  const promptStr = prompt!.trim()
+  const modelKey  = (mode === 'text' ? videoModel : i2vModel)!
 
-  // 4. Insert pending row
+  // 4. Credit / plan gate (long video is paid-only — no free tier path)
+  const sub  = await getUserSub(user.id)
+  const plan = sub?.plan ?? 'free'
+
+  if (plan === 'free') {
+    return NextResponse.json({ error: 'Long video generation requires a Creator plan or higher.', upgrade: true }, { status: 403 })
+  }
+
+  const perClipCost = (await getModelCost(modelKey))?.credits ?? 0
+  const totalCost   = perClipCost * numClips
+
+  const check = await canAffordAmount(user.id, totalCost, modelKey)
+  if (!check.ok) {
+    return NextResponse.json({ error: affordErrorMessage(check.reason), upgrade: check.reason === 'upgrade_required' }, { status: 403 })
+  }
+
+  // 5. Insert pending row
   const { data: videoRow, error: insertErr } = await service.from('videos')
     .insert({ user_id: dbUser.id, prompt: promptStr, model: (mode === 'text' ? videoModel : i2vModel)!, status: 'pending', aspect_ratio: ar })
     .select('id').single()
@@ -361,8 +382,16 @@ export async function POST(request: NextRequest) {
   }
   const videoId: string = videoRow.id
 
+  // Deduct total credits upfront before any API calls
   try {
-    // 5. Build clip task bodies
+    await deductCreditsAmount(user.id, totalCost, modelKey, videoId, 'video')
+  } catch {
+    await service.from('videos').update({ status: 'failed' }).eq('id', videoId)
+    return NextResponse.json({ error: 'Credit deduction failed. Please try again.' }, { status: 500 })
+  }
+
+  try {
+    // Build clip task bodies
     const taskBodies = Array.from({ length: numClips }, () => {
       return mode === 'text'
         ? buildT2VBody(videoModel! as T2VModel, promptStr, ar)
@@ -426,11 +455,12 @@ export async function POST(request: NextRequest) {
     const videoUrl = urlData.publicUrl
 
     // 11. Mark done
-    await service.from('videos').update({ video_url: videoUrl, status: 'done' }).eq('id', videoId)
+    await service.from('videos').update({ video_url: videoUrl, status: 'done', credits_charged: totalCost }).eq('id', videoId)
     return NextResponse.json({ videoUrl, videoId })
 
   } catch (err) {
     await service.from('videos').update({ status: 'failed' }).eq('id', videoId)
+    await refundCreditsAmount(user.id, totalCost, videoId, 'video').catch(() => {})
     const message = err instanceof Error ? err.message : 'Long video generation failed'
     console.error('[long-video] error:', message)
     return NextResponse.json({ error: message }, { status: 502 })

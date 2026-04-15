@@ -5,14 +5,12 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import ConnectElevenLabsButton from '@/components/ConnectElevenLabsButton'
 import VideoGeneratorForm from '@/components/VideoGeneratorForm'
 
 function StudioShell() {
   const router = useRouter()
   const supabase = createClient()
   const [userId, setUserId] = useState<string | null>(null)
-  const [connected, setConnected] = useState(false)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -50,7 +48,6 @@ function StudioShell() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <ConnectElevenLabsButton userId={userId} onConnected={() => setConnected(true)} />
           <Link
             href="/dashboard"
             style={{ fontSize: 12, color: '#738295', textDecoration: 'none', padding: '6px 12px', border: '1px solid #273242', borderRadius: 8, transition: 'color 0.2s, border-color 0.2s' }}
@@ -70,15 +67,6 @@ function StudioShell() {
           <div>
             <p style={{ fontSize: 10, fontWeight: 700, color: '#738295', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 14 }}>Setup</p>
 
-            {!connected && (
-              <div style={{
-                marginBottom: 16, padding: '10px 14px', borderRadius: 10,
-                background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.2)',
-                fontSize: 12, color: '#FCD34D', lineHeight: 1.5,
-              }}>
-                Connect your ElevenLabs account (top right) to use your cloned voices.
-              </div>
-            )}
 
             <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid #273242', borderRadius: 14, padding: '16px 14px' }}>
               <VideoGeneratorForm userId={userId} />
@@ -93,16 +81,10 @@ function StudioShell() {
             background: '#141D28', border: '1px solid #273242', borderRadius: 16,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20,
           }}>
-            {/* Waveform idle state */}
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 48 }}>
-              {[0.4, 0.7, 1, 0.6, 0.9, 0.5, 0.8, 0.45, 0.75, 1, 0.55, 0.85].map((h, i) => (
-                <div
-                  key={i}
-                  className="waveform-bar"
-                  style={{ height: `${h * 100}%`, animationDelay: `${i * 0.12}s` }}
-                />
-              ))}
-            </div>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style={{ opacity: 0.25 }}>
+              <circle cx="12" cy="12" r="10" stroke="#738295" strokeWidth="1.5" />
+              <path d="M10 8l6 4-6 4V8z" fill="#738295" />
+            </svg>
             <p style={{ fontSize: 13, color: '#4A5568', textAlign: 'center', lineHeight: 1.5 }}>
               Generate a talking video to preview it here
             </p>

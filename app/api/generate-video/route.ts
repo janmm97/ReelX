@@ -1,6 +1,10 @@
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { applyVoiceToVideo } from '@/lib/apply-voice'
+import {
+  getUserSub, canAfford, deductCreditsAmount, refundCreditsAmount,
+  checkAndIncrementFreeCap, affordErrorMessage, FREE_VIDEO_MODELS,
+} from '@/lib/credits'
 
 export const maxDuration = 300
 
@@ -187,11 +191,14 @@ function buildT2VTaskBody(
         model: 'bytedance/v1-lite-text-to-video',
         input: { prompt, resolution: '720p', aspect_ratio: ar, duration: parseInt(dur, 10), generate_audio: true },
       }
-    case 'grok_t2v':
+    case 'grok_t2v': {
+      // Grok only supports 16:9 and 9:16; fall back to 16:9 for other ratios
+      const grokAr = ar === '9:16' ? '9:16' : '16:9'
       return {
         model: 'grok-imagine/text-to-video',
-        input: { prompt, aspect_ratio: ar, mode: 'normal', duration: dur, resolution: '720p' },
+        input: { prompt, aspect_ratio: grokAr, mode: 'normal', duration: parseInt(dur, 10), resolution: '720p' },
       }
+    }
     default:
       throw new Error(`Unsupported generic model: ${model}`)
   }
@@ -396,7 +403,28 @@ export async function POST(request: NextRequest) {
     .from('users').select('id').eq('auth_id', user.id).single()
   if (userErr || !dbUser) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-  // 4. Rate limit (videos table, separate from images)
+  // 4. Credit / plan gate
+  const sub  = await getUserSub(user.id)
+  const plan = sub?.plan ?? 'free'
+  let creditsCost = 0
+
+  if (plan === 'free') {
+    if (!FREE_VIDEO_MODELS.has(model as string)) {
+      return NextResponse.json({ error: 'Upgrade to Creator or higher to use this model.', upgrade: true }, { status: 403 })
+    }
+    const cap = await checkAndIncrementFreeCap(user.id, 'video')
+    if (!cap.ok) {
+      return NextResponse.json({ error: `Free tier limit reached (${cap.cap} videos/month). Upgrade for more.`, upgrade: true }, { status: 429 })
+    }
+  } else {
+    const check = await canAfford(user.id, model as string)
+    if (!check.ok) {
+      return NextResponse.json({ error: affordErrorMessage(check.reason), upgrade: check.reason === 'upgrade_required' }, { status: 403 })
+    }
+    creditsCost = check.credits
+  }
+
+  // 5. Rate limit (videos table, separate from images)
   const todayStart = new Date()
   todayStart.setHours(0, 0, 0, 0)
   const { count } = await service
@@ -427,12 +455,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to create video record' }, { status: 500 })
   }
   const videoId: string = videoRow.id
+
+  // Deduct credits upfront (paid users only)
+  if (plan !== 'free' && creditsCost > 0) {
+    try {
+      await deductCreditsAmount(user.id, creditsCost, model as string, videoId, 'video')
+    } catch {
+      await service.from('videos').update({ status: 'failed' }).eq('id', videoId)
+      return NextResponse.json({ error: 'Credit deduction failed. Please try again.' }, { status: 500 })
+    }
+  }
+
   const vm = model as VideoModel
   const isRunway = RUNWAY_MODELS.has(vm)
   const isVeo    = VEO_MODELS.has(vm)
 
   try {
-    // 6. Submit to kie.ai
+    // Submit to kie.ai
     let taskId: string
     if (isRunway) {
       taskId = await submitRunway(prompt.trim(), ar, apiKey)
@@ -482,13 +521,16 @@ export async function POST(request: NextRequest) {
     // 9. Mark done
     await service
       .from('videos')
-      .update({ video_url: videoUrl, status: 'done' })
+      .update({ video_url: videoUrl, status: 'done', credits_charged: creditsCost || null })
       .eq('id', videoId)
 
     return NextResponse.json({ videoUrl, videoId })
 
   } catch (err) {
     await service.from('videos').update({ status: 'failed' }).eq('id', videoId)
+    if (plan !== 'free' && creditsCost > 0) {
+      await refundCreditsAmount(user.id, creditsCost, videoId, 'video').catch(() => {})
+    }
     const message = err instanceof Error ? err.message : 'Video generation failed'
     console.error('[generate-video] error:', message)
     return NextResponse.json({ error: message }, { status: 502 })

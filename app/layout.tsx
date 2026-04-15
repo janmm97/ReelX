@@ -17,6 +17,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://reelsy.ai"),
   title: "Reelsy — AI Creative Studio",
   description:
     "Create images, videos, and avatar content at the speed of content. Reelsy is an AI creative studio with fast workflows, flexible models, and production-ready output.",

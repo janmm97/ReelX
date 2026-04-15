@@ -1,6 +1,10 @@
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { applyVoiceToVideo } from '@/lib/apply-voice'
+import {
+  getUserSub, canAfford, deductCreditsAmount, refundCreditsAmount,
+  checkAndIncrementFreeCap, affordErrorMessage, FREE_VIDEO_MODELS,
+} from '@/lib/credits'
 
 export const maxDuration = 300
 
@@ -83,9 +87,9 @@ function buildTaskBody(
         input: {
           image_urls: imageUrls,
           prompt,
+          mode: 'normal',
           resolution: quality === '1080p' ? '720p' : quality, // Grok max 720p
           aspect_ratio: ar,
-          duration: dur,
         },
       }
 
@@ -210,8 +214,7 @@ function buildTaskBody(
         input: {
           image_urls: imageUrls,
           prompt,
-          audio: true,
-          duration: dur,
+          duration: `${dur} seconds`,
           resolution: quality === '480p' ? '720p' : quality,
         },
       }
@@ -222,24 +225,24 @@ function buildTaskBody(
         input: {
           image_urls: imageUrls,
           prompt,
-          audio: true,
-          duration: dur,
+          duration: `${dur} seconds`,
           resolution: quality === '480p' ? '720p' : quality,
         },
       }
 
-    case 'wan27_i2v':
+    case 'wan27_i2v': {
+      // Wan 2.7 I2V: uses first_frame_url, numeric duration (2–10s), aspect_ratio auto from image
+      const wan27Dur = Math.min(10, Math.max(2, parseInt(dur, 10)))
       return {
         model: 'wan/2-7-image-to-video',
         input: {
-          image_urls: imageUrls,
+          first_frame_url: imageUrl,
           prompt,
-          audio: true,
-          duration: dur,
+          duration: wan27Dur,
           resolution: quality === '480p' ? '720p' : quality,
-          aspect_ratio: ar,
         },
       }
+    }
 
     case 'bytedance_v1_pro_i2v':
       return {
@@ -431,7 +434,10 @@ async function pollTask(taskId: string, apiKey: string): Promise<string> {
       if (!url) throw new Error('Task completed but no video URL in resultJson')
       return url
     }
-    if (state === 'fail') throw new Error('Video generation failed')
+    if (state === 'fail') {
+      console.error('[i2v] poll fail response:', JSON.stringify(data))
+      throw new Error('Video generation failed')
+    }
   }
   throw new Error('Video generation timed out — try again')
 }
@@ -535,7 +541,28 @@ export async function POST(request: NextRequest) {
     .from('users').select('id').eq('auth_id', user.id).single()
   if (userErr || !dbUser) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-  // 4. Rate limit (shared with videos)
+  // 4. Credit / plan gate
+  const sub  = await getUserSub(user.id)
+  const plan = sub?.plan ?? 'free'
+  let creditsCost = 0
+
+  if (plan === 'free') {
+    if (!FREE_VIDEO_MODELS.has(model as string)) {
+      return NextResponse.json({ error: 'Upgrade to Creator or higher to use this model.', upgrade: true }, { status: 403 })
+    }
+    const cap = await checkAndIncrementFreeCap(user.id, 'video')
+    if (!cap.ok) {
+      return NextResponse.json({ error: `Free tier limit reached (${cap.cap} videos/month). Upgrade for more.`, upgrade: true }, { status: 429 })
+    }
+  } else {
+    const check = await canAfford(user.id, model as string)
+    if (!check.ok) {
+      return NextResponse.json({ error: affordErrorMessage(check.reason), upgrade: check.reason === 'upgrade_required' }, { status: 403 })
+    }
+    creditsCost = check.credits
+  }
+
+  // 5. Rate limit (shared with videos)
   const todayStart = new Date()
   todayStart.setHours(0, 0, 0, 0)
   const { count } = await service
@@ -584,10 +611,20 @@ export async function POST(request: NextRequest) {
   }
   const videoId: string = videoRow.id
 
+  // Deduct credits upfront (paid users only)
+  if (plan !== 'free' && creditsCost > 0) {
+    try {
+      await deductCreditsAmount(user.id, creditsCost, model as string, videoId, 'video')
+    } catch {
+      await service.from('videos').update({ status: 'failed' }).eq('id', videoId)
+      return NextResponse.json({ error: 'Credit deduction failed. Please try again.' }, { status: 500 })
+    }
+  }
+
   const isVeoI2V = VEO_I2V_MODELS.has(model as I2VModel)
 
   try {
-    // 7. Submit to kie.ai
+    // Submit to kie.ai
     let taskId: string
     let videoUrl: string
 
@@ -598,6 +635,7 @@ export async function POST(request: NextRequest) {
       videoUrl = await pollVeoI2V(taskId, apiKey)
     } else {
       const taskBody = buildTaskBody(model as I2VModel, augmentedPrompt, imageUrls, quality as Quality, ar, duration)
+      console.log('[i2v] taskBody:', JSON.stringify(taskBody, null, 2))
       taskId = await submitTask(taskBody, apiKey)
       await service.from('videos').update({ job_id: taskId }).eq('id', videoId)
       console.log('[i2v] task ID:', taskId)
@@ -629,13 +667,16 @@ export async function POST(request: NextRequest) {
     // 9. Mark done
     await service
       .from('videos')
-      .update({ video_url: videoUrl, status: 'done' })
+      .update({ video_url: videoUrl, status: 'done', credits_charged: creditsCost || null })
       .eq('id', videoId)
 
     return NextResponse.json({ videoUrl, videoId })
 
   } catch (err) {
     await service.from('videos').update({ status: 'failed' }).eq('id', videoId)
+    if (plan !== 'free' && creditsCost > 0) {
+      await refundCreditsAmount(user.id, creditsCost, videoId, 'video').catch(() => {})
+    }
     const message = err instanceof Error ? err.message : 'Video generation failed'
     console.error('[i2v] error:', message)
     return NextResponse.json({ error: message }, { status: 502 })

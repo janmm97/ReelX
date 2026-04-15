@@ -14,8 +14,9 @@ export default function ConnectElevenLabsButton({ userId, onConnected }: Props) 
 
   // Check if already connected on mount
   useEffect(() => {
-    fetch('/api/elevenlabs/voices')
-      .then((r) => setConnected(r.ok))
+    fetch('/api/elevenlabs/voices?source=user')
+      .then((r) => r.json())
+      .then((data) => setConnected(!!data.connected))
       .catch(() => setConnected(false))
   }, [])
 

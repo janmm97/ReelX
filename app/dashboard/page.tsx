@@ -8,6 +8,8 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 type Tab = 'image' | 'video'
+type ImageMode = 'text' | 'blend'
+type BlendModel = 'gpt5mini' | 'gpt5' | 'gemini25flash' | 'gemini' | 'gemini3pro'
 
 type Model =
   | 'flux2klein'
@@ -243,6 +245,8 @@ const TIER_LABEL: Record<Tier, string> = {
   standard: '★★★',
   premium: '★★★★★',
 }
+
+const BLEND_MODEL_IDS = new Set<Model>(['gpt5mini', 'gpt5', 'gemini25flash', 'gemini', 'gemini3pro'])
 
 // ── Video models ─────────────────────────────────────────────────────────────
 
@@ -795,6 +799,9 @@ function DashboardInner() {
   const [i2vModel, setI2vModel] = useState<I2VModel>('grok')
   const [quality, setQuality] = useState<Quality>('720p')
   const [uploadedImages, setUploadedImages] = useState<{ file: File; preview: string; description: string }[]>([])
+  const [imageMode, setImageMode] = useState<ImageMode>('text')
+  const [blendImages, setBlendImages] = useState<{ file: File; preview: string }[]>([])
+  const [blendModel, setBlendModel] = useState<BlendModel>('gpt5mini')
   const [loading, setLoading] = useState(false)
   const [lastError, setLastError] = useState<string | null>(null)
   const [currentImage, setCurrentImage] = useState<{ url: string; prompt: string } | null>(null)
@@ -804,6 +811,9 @@ function DashboardInner() {
   const [historyLoading, setHistoryLoading] = useState(true)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [videoDuration, setVideoDuration] = useState('5')
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [promptExpanded, setPromptExpanded] = useState(false)
+  const [enhancingPrompt, setEnhancingPrompt] = useState(false)
   const [onboardingStep, setOnboardingStep] = useState<number | null>(
     searchParams.get('welcome') === 'true' ? 0 : null
   )
@@ -985,6 +995,42 @@ function DashboardInner() {
       }
       return
     }
+    // Image Blend mode
+    if (imageMode === 'blend') {
+      if (blendImages.length < 2) {
+        push('Upload at least 2 reference images to blend.', 'error')
+        setLoading(false)
+        return
+      }
+      setLastError(null)
+      try {
+        const form = new FormData()
+        form.append('prompt', prompt.trim())
+        form.append('model', blendModel)
+        blendImages.forEach((img) => form.append('images[]', img.file))
+        const res = await fetch('/api/generate-blend', { method: 'POST', body: form })
+        const data = await res.json()
+        if (!res.ok) {
+          const msg = res.status === 429
+            ? 'Daily limit reached — come back tomorrow!'
+            : (data.error ?? 'Blend failed, try again!')
+          setLastError(msg)
+          push(msg, 'error')
+          return
+        }
+        setCurrentImage({ url: data.imageUrl, prompt: prompt.trim() })
+        fetchHistory()
+        push('Blend image generated!', 'success', 2500)
+      } catch {
+        const msg = 'Something went wrong, try again!'
+        setLastError(msg)
+        push(msg, 'error')
+      } finally {
+        setLoading(false)
+      }
+      return
+    }
+
     setLastError(null)
 
     try {
@@ -1040,6 +1086,40 @@ function DashboardInner() {
     }
   }
 
+  async function handleDeleteVideo(id: string) {
+    setHistory((prev) => prev.filter((item) => item.id !== id))
+    if (expanded?.id === id) setExpanded(null)
+
+    const res = await fetch(`/api/videos/${id}`, { method: 'DELETE' })
+    if (!res.ok) {
+      fetchHistory()
+      push('Could not remove video, try again.', 'error')
+    }
+  }
+
+  async function handleEnhancePrompt() {
+    if (!prompt.trim() || enhancingPrompt) return
+    setEnhancingPrompt(true)
+    try {
+      const res = await fetch('/api/enhance-prompt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: prompt.trim(), type: tab }),
+      })
+      const data = await res.json() as { prompt?: string; error?: string }
+      if (res.ok && data.prompt) {
+        setPrompt(data.prompt)
+        push('Prompt enhanced!', 'success', 2500)
+      } else {
+        push(data.error ?? 'Failed to enhance prompt', 'error')
+      }
+    } catch {
+      push('Failed to enhance prompt', 'error')
+    } finally {
+      setEnhancingPrompt(false)
+    }
+  }
+
   function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? [])
     for (const file of files) {
@@ -1085,6 +1165,35 @@ function DashboardInner() {
       }
       setUploadedImages(prev => [...prev, { file, preview: URL.createObjectURL(file), description: '' }])
     }
+  }
+
+  function handleBlendImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? [])
+    let count = blendImages.length
+    for (const file of files) {
+      if (count >= 8) {
+        push('Maximum 8 reference images.', 'error')
+        break
+      }
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        push('Only JPEG, PNG, and WebP images are supported.', 'error')
+        continue
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        push('Image must be under 10 MB.', 'error')
+        continue
+      }
+      setBlendImages(prev => [...prev, { file, preview: URL.createObjectURL(file) }])
+      count++
+    }
+    e.target.value = ''
+  }
+
+  function removeBlendImage(index: number) {
+    setBlendImages(prev => {
+      URL.revokeObjectURL(prev[index].preview)
+      return prev.filter((_, i) => i !== index)
+    })
   }
 
   return (
@@ -1162,45 +1271,68 @@ function DashboardInner() {
 
         {/* ── Sidebar nav ── */}
         <nav style={{
-          width: 200, background: '#101722', borderRight: '1px solid #273242',
+          width: sidebarCollapsed ? 52 : 192, background: '#101722', borderRight: '1px solid #273242',
           display: 'flex', flexDirection: 'column', flexShrink: 0,
-          overflowY: 'auto',
+          overflowY: 'auto', transition: 'width 0.2s ease', overflow: 'hidden',
         }}>
-          <div style={{ flex: 1, paddingTop: 8 }}>
+          {/* Collapse toggle */}
+          <div style={{ display: 'flex', justifyContent: sidebarCollapsed ? 'center' : 'flex-end', padding: '10px 10px 4px' }}>
+            <button
+              onClick={() => setSidebarCollapsed(prev => !prev)}
+              title={sidebarCollapsed ? 'Expand panel' : 'Collapse panel'}
+              style={{
+                background: 'none', border: '1px solid #273242', borderRadius: 6,
+                width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', color: '#738295', flexShrink: 0,
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#F4F8FB')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#738295')}
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                {sidebarCollapsed
+                  ? <path d="M4 2l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  : <path d="M8 2L4 6l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                }
+              </svg>
+            </button>
+          </div>
+
+          <div style={{ flex: 1, paddingTop: 4 }}>
             {([
-              { label: 'Generate', icon: '✦', active: true },
-              { label: 'Video',    icon: '▶' },
-              { label: 'Studio',   icon: '◈', href: '/studio' },
-              { label: 'History',  icon: '↺' },
-              { label: 'Projects', icon: '⊞' },
-              { label: 'Billing',  icon: '$' },
-              { label: 'Settings', icon: '⚙' },
-            ] as { label: string; icon: string; href?: string; active?: boolean }[]).map(item => (
+              { label: 'Go to Studio', icon: '◈', href: '/studio' },
+              { label: 'Billing',      icon: '$', href: '/billing' },
+              { label: 'Settings',     icon: '⚙', href: '/settings' },
+            ] as { label: string; icon: string; href: string }[]).map(item => (
               <a
                 key={item.label}
-                href={item.href ?? '#'}
-                onClick={item.href ? undefined : (e) => e.preventDefault()}
-                className={item.active ? 'sidebar-active' : ''}
+                href={item.href}
+                title={sidebarCollapsed ? item.label : undefined}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  padding: '9px 20px', fontSize: 13,
-                  color: item.active ? '#F4F8FB' : '#738295',
+                  display: 'flex', alignItems: 'center',
+                  gap: sidebarCollapsed ? 0 : 10,
+                  padding: sidebarCollapsed ? '10px 0' : '9px 20px',
+                  justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
+                  fontSize: 13,
+                  color: '#738295',
                   textDecoration: 'none', transition: 'color 0.15s',
-                  borderLeft: item.active ? undefined : '3px solid transparent',
+                  whiteSpace: 'nowrap',
                 }}
-                onMouseEnter={e => { if (!item.active) e.currentTarget.style.color = '#A7B4C2' }}
-                onMouseLeave={e => { if (!item.active) e.currentTarget.style.color = '#738295' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#F4F8FB')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#738295')}
               >
-                <span style={{ fontSize: 13, width: 16, textAlign: 'center' }}>{item.icon}</span>
-                {item.label}
+                <span style={{ fontSize: 14, width: 16, textAlign: 'center', flexShrink: 0 }}>{item.icon}</span>
+                {!sidebarCollapsed && item.label}
               </a>
             ))}
           </div>
-          <div style={{ padding: '16px 16px', borderTop: '1px solid #273242' }}>
-            <Link href="/login" className="btn-primary" style={{ display: 'block', textAlign: 'center', fontSize: 12, padding: '7px 0' }}>
-              Upgrade
-            </Link>
-          </div>
+
+          {!sidebarCollapsed && (
+            <div style={{ padding: '16px 16px', borderTop: '1px solid #273242' }}>
+              <Link href="/pricing" className="btn-primary" style={{ display: 'block', textAlign: 'center', fontSize: 12, padding: '7px 0' }}>
+                Upgrade
+              </Link>
+            </div>
+          )}
         </nav>
 
         {/* ── Left Panel ── */}
@@ -1245,9 +1377,31 @@ function DashboardInner() {
                 <PromptIcon />
                 <span className="text-xs font-medium">Prompt</span>
               </div>
-              <button className="text-slate-600 hover:text-slate-300 transition-colors" title="Enhance prompt">
-                <MagicIcon />
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setPromptExpanded(true)}
+                  title="Expand prompt editor"
+                  className="text-slate-600 hover:text-slate-300 transition-colors p-0.5 rounded"
+                >
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <path d="M2 5l4.5-4.5L11 5M2 8l4.5 4.5L11 8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                <button
+                  onClick={handleEnhancePrompt}
+                  disabled={!prompt.trim() || enhancingPrompt || loading}
+                  title="Enhance prompt with AI"
+                  className={`transition-colors p-0.5 rounded ${enhancingPrompt ? 'text-[#00C4CC] animate-pulse' : 'text-slate-600 hover:text-[#00C4CC]'} disabled:opacity-40 disabled:cursor-not-allowed`}
+                >
+                  {enhancingPrompt ? (
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="animate-spin">
+                      <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="8 8" />
+                    </svg>
+                  ) : (
+                    <MagicIcon />
+                  )}
+                </button>
+              </div>
             </div>
             <textarea
               value={prompt}
@@ -1261,10 +1415,84 @@ function DashboardInner() {
               disabled={loading}
               className="w-full bg-transparent text-sm text-white placeholder-slate-600 resize-none focus:outline-none disabled:opacity-50 leading-relaxed"
             />
-            <div className="flex justify-end mt-1">
+            <div className="flex items-center justify-between mt-1">
+              <span className="text-[10px] text-slate-600">
+                {!prompt.trim() ? 'Click ✦ to enhance your prompt with AI' : ''}
+              </span>
               <span className="text-[10px] text-slate-600">{prompt.length} chars</span>
             </div>
           </div>
+
+          {/* Prompt expand modal */}
+          {promptExpanded && (
+            <div
+              className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[200] flex items-center justify-center p-6"
+              onClick={() => setPromptExpanded(false)}
+            >
+              <div
+                className="relative bg-[#141D28] border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col"
+                style={{ maxHeight: '80vh' }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.07]">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-white">
+                      {tab === 'video' ? 'Video Prompt' : 'Image Prompt'}
+                    </span>
+                    <button
+                      onClick={handleEnhancePrompt}
+                      disabled={!prompt.trim() || enhancingPrompt || loading}
+                      title="Enhance with AI"
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-all
+                        ${enhancingPrompt
+                          ? 'border-[#00C4CC]/40 text-[#00C4CC] bg-[#00C4CC]/10'
+                          : 'border-white/10 text-slate-400 hover:border-[#00C4CC]/40 hover:text-[#00C4CC] hover:bg-[#00C4CC]/5'
+                        } disabled:opacity-40 disabled:cursor-not-allowed`}
+                    >
+                      {enhancingPrompt ? (
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="animate-spin">
+                          <circle cx="6" cy="6" r="4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="7 7" />
+                        </svg>
+                      ) : (
+                        <MagicIcon />
+                      )}
+                      {enhancingPrompt ? 'Enhancing…' : 'Enhance'}
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => setPromptExpanded(false)}
+                    className="text-slate-400 hover:text-white bg-white/[0.06] hover:bg-white/[0.12] rounded-lg w-7 h-7 flex items-center justify-center transition-all text-xs"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="p-5 flex-1 overflow-hidden flex flex-col">
+                  <textarea
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    placeholder={
+                      tab === 'video'
+                        ? 'A timelapse of a neon-lit city at night, rain falling, people rushing by, cinematic 4K…'
+                        : 'A cosmic library floating in deep space, bookshelves carved from nebula clouds, golden light spilling between the stars…'
+                    }
+                    disabled={loading}
+                    className="flex-1 w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 resize-none focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50 disabled:opacity-50 leading-relaxed"
+                    style={{ minHeight: 280 }}
+                    autoFocus
+                  />
+                  <div className="flex items-center justify-between mt-3">
+                    <span className="text-[11px] text-slate-600">{prompt.length} chars</span>
+                    <button
+                      onClick={() => setPromptExpanded(false)}
+                      className="px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-[#00C4CC] to-[#00F2FE] text-[#0B0F14] hover:opacity-90 transition-opacity"
+                    >
+                      Done
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Advanced options */}
           <div className="px-5 py-4 flex flex-col gap-1 flex-1">
@@ -1272,31 +1500,64 @@ function DashboardInner() {
 
             {tab === 'image' ? (
               <>
-                {/* Image — AI Model */}
+                {/* Image sub-mode: Text to Image / Image Blend */}
+                <div className="flex gap-1 bg-white/[0.04] rounded-lg p-0.5 mb-3">
+                  {([
+                    { id: 'text' as ImageMode, label: 'Text to Image' },
+                    { id: 'blend' as ImageMode, label: 'Image Blend' },
+                  ]).map((m) => {
+                    const active = imageMode === m.id
+                    return (
+                      <button
+                        key={m.id}
+                        onClick={() => setImageMode(m.id)}
+                        className={`flex-1 py-1.5 rounded-md text-[11px] font-medium transition-all duration-200
+                          ${active
+                            ? 'bg-white/[0.1] text-white shadow-sm'
+                            : 'text-slate-500 hover:text-white'
+                          }`}
+                      >
+                        {m.label}
+                      </button>
+                    )
+                  })}
+                </div>
 
+                {/* AI Model */}
                 <PanelRow icon={<ModelIcon />} label="AI Model">
                   <div className="relative">
                     <select
-                      value={model}
-                      onChange={(e) => setModel(e.target.value as Model)}
+                      value={imageMode === 'blend' ? blendModel : model}
+                      onChange={(e) => imageMode === 'blend'
+                        ? setBlendModel(e.target.value as BlendModel)
+                        : setModel(e.target.value as Model)
+                      }
                       disabled={loading}
                       className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
                     >
-                      <optgroup label="★" className="bg-[#1a1a2e]">
-                        {MODELS.filter((m) => m.tier === 'budget').map((m) => (
+                      {imageMode === 'blend' ? (
+                        MODELS.filter((m) => BLEND_MODEL_IDS.has(m.id)).map((m) => (
                           <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
-                        ))}
-                      </optgroup>
-                      <optgroup label="★★★" className="bg-[#1a1a2e]">
-                        {MODELS.filter((m) => m.tier === 'standard').map((m) => (
-                          <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
-                        ))}
-                      </optgroup>
-                      <optgroup label="★★★★★" className="bg-[#1a1a2e]">
-                        {MODELS.filter((m) => m.tier === 'premium').map((m) => (
-                          <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
-                        ))}
-                      </optgroup>
+                        ))
+                      ) : (
+                        <>
+                          <optgroup label="★" className="bg-[#1a1a2e]">
+                            {MODELS.filter((m) => m.tier === 'budget').map((m) => (
+                              <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
+                            ))}
+                          </optgroup>
+                          <optgroup label="★★★" className="bg-[#1a1a2e]">
+                            {MODELS.filter((m) => m.tier === 'standard').map((m) => (
+                              <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
+                            ))}
+                          </optgroup>
+                          <optgroup label="★★★★★" className="bg-[#1a1a2e]">
+                            {MODELS.filter((m) => m.tier === 'premium').map((m) => (
+                              <option key={m.id} value={m.id} className="bg-[#1a1a2e] text-white">{m.label}</option>
+                            ))}
+                          </optgroup>
+                        </>
+                      )}
                     </select>
                     <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-500">
                       <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
@@ -1305,9 +1566,10 @@ function DashboardInner() {
                     </div>
                   </div>
                 </PanelRow>
-                {/* Selected image model info */}
+
+                {/* Selected model info */}
                 {(() => {
-                  const m = MODELS.find((x) => x.id === model)
+                  const m = MODELS.find((x) => x.id === (imageMode === 'blend' ? blendModel : model))
                   if (!m) return null
                   return (
                     <div className="mb-1 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.05] flex items-start gap-2">
@@ -1323,37 +1585,83 @@ function DashboardInner() {
                   )
                 })()}
 
-                {/* Resolution */}
-                <PanelRow icon={<ResolutionIcon />} label="Resolution">
-                  <PanelSelect
-                    value={resolution}
-                    onChange={(v) => setResolution(v as Resolution)}
-                    disabled={loading}
-                    options={[
-                      { value: '512×512', label: '512×512' },
-                      { value: '768×768', label: '768×768' },
-                      { value: '1024×1024', label: '1024×1024' },
-                      { value: '1024×1792', label: '1024×1792' },
-                      { value: '1792×1024', label: '1792×1024' },
-                    ]}
-                  />
-                </PanelRow>
+                {/* Blend — reference image upload grid */}
+                {imageMode === 'blend' && (
+                  <div className="mb-1">
+                    <p className="text-[10px] text-slate-500 mb-2">Reference images (2–8)</p>
+                    <div className="flex gap-2 flex-wrap">
+                      {blendImages.map((img, i) => (
+                        <div key={i} className="relative shrink-0 w-20 h-20 rounded-lg overflow-hidden border border-white/[0.1]">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={img.preview} alt={`Ref ${i + 1}`} className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => removeBlendImage(i)}
+                            className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white/80 hover:text-white flex items-center justify-center text-[10px]"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                      {blendImages.length < 8 && (
+                        <label className="shrink-0 w-20 h-20 rounded-lg border-2 border-dashed border-white/[0.1] hover:border-[#00C4CC]/40 transition-colors flex flex-col items-center justify-center gap-1 cursor-pointer">
+                          <UploadIcon />
+                          <span className="text-[9px] text-slate-500">Add image</span>
+                          <input
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            multiple
+                            onChange={handleBlendImageSelect}
+                            disabled={loading}
+                            className="hidden"
+                          />
+                        </label>
+                      )}
+                    </div>
+                    <p className="text-[9px] text-slate-600 mt-1.5">
+                      {blendImages.length < 2
+                        ? 'Upload at least 2 images · write a prompt describing the output'
+                        : `${blendImages.length} image${blendImages.length !== 1 ? 's' : ''} selected · Creator plan required`}
+                    </p>
+                  </div>
+                )}
 
-                {/* Aspect Ratio */}
-                <PanelRow icon={<AspectIcon />} label="Aspect Ratio">
-                  <PanelSelect
-                    value={aspectRatio}
-                    onChange={(v) => setAspectRatio(v as AspectRatio)}
-                    disabled={loading}
-                    options={[
-                      { value: '1:1 Square', label: '1:1 Square' },
-                      { value: '4:3 Landscape', label: '4:3 Landscape' },
-                      { value: '3:4 Portrait', label: '3:4 Portrait' },
-                      { value: '16:9 Widescreen', label: '16:9 Widescreen' },
-                      { value: '9:16 Vertical', label: '9:16 Vertical' },
-                    ]}
-                  />
-                </PanelRow>
+                {/* Resolution & Aspect Ratio — text mode only */}
+                {imageMode === 'text' && (
+                  <>
+                    {/* Resolution */}
+                    <PanelRow icon={<ResolutionIcon />} label="Resolution">
+                      <PanelSelect
+                        value={resolution}
+                        onChange={(v) => setResolution(v as Resolution)}
+                        disabled={loading}
+                        options={[
+                          { value: '512×512', label: '512×512' },
+                          { value: '768×768', label: '768×768' },
+                          { value: '1024×1024', label: '1024×1024' },
+                          { value: '1024×1792', label: '1024×1792' },
+                          { value: '1792×1024', label: '1792×1024' },
+                        ]}
+                      />
+                    </PanelRow>
+
+                    {/* Aspect Ratio */}
+                    <PanelRow icon={<AspectIcon />} label="Aspect Ratio">
+                      <PanelSelect
+                        value={aspectRatio}
+                        onChange={(v) => setAspectRatio(v as AspectRatio)}
+                        disabled={loading}
+                        options={[
+                          { value: '1:1 Square', label: '1:1 Square' },
+                          { value: '4:3 Landscape', label: '4:3 Landscape' },
+                          { value: '3:4 Portrait', label: '3:4 Portrait' },
+                          { value: '16:9 Widescreen', label: '16:9 Widescreen' },
+                          { value: '9:16 Vertical', label: '9:16 Vertical' },
+                        ]}
+                      />
+                    </PanelRow>
+                  </>
+                )}
               </>
             ) : (
               <>
@@ -1579,13 +1887,23 @@ function DashboardInner() {
           <div className="px-5 pb-5 pt-2 shrink-0">
             <button
               onClick={handleGenerate}
-              disabled={loading || !prompt.trim() || (tab === 'video' && videoMode === 'image' && uploadedImages.length === 0)}
+              disabled={
+                loading ||
+                !prompt.trim() ||
+                (tab === 'video' && videoMode === 'image' && uploadedImages.length === 0) ||
+                (tab === 'image' && imageMode === 'blend' && blendImages.length < 2)
+              }
               className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#00C4CC] via-violet-600 to-[#00F2FE] hover:from-[#00C4CC] hover:via-violet-500 hover:to-[#00F2FE] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_0_24px_rgba(139,92,246,0.35)] hover:shadow-[0_0_36px_rgba(139,92,246,0.55)] active:scale-[0.98] flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
                   <Spinner />
                   Generating…
+                </>
+              ) : tab === 'image' && imageMode === 'blend' ? (
+                <>
+                  <SparkleIcon />
+                  Blend Images
                 </>
               ) : tab === 'video' ? (
                 <>
@@ -1756,16 +2074,17 @@ function DashboardInner() {
                     >
                       {copiedId === item.id ? <CheckIcon size={10} /> : <CopyIcon size={10} />}
                     </button>
-                    {/* Delete from history — only images support soft delete */}
-                    {item.kind === 'image' && (
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleDelete(item.id) }}
-                        title="Remove from history"
-                        className="absolute top-1.5 left-1.5 p-1 rounded-md bg-black/60 text-white/50 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
-                      >
-                        <TrashIcon size={10} />
-                      </button>
-                    )}
+                    {/* Delete from history */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        item.kind === 'image' ? handleDelete(item.id) : handleDeleteVideo(item.id)
+                      }}
+                      title="Remove from history"
+                      className="absolute top-1.5 left-1.5 p-1 rounded-md bg-black/60 text-white/50 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                    >
+                      <TrashIcon size={10} />
+                    </button>
                   </div>
                 ))}
               </div>
@@ -1796,14 +2115,14 @@ function DashboardInner() {
                 <ModelBadge model={expanded.model} />
                 <span>{new Date(expanded.created_at).toLocaleString()}</span>
               </div>
-              <div className="flex gap-2 pt-1">
+              <div className="flex gap-2 pt-1 flex-wrap">
                 <button
                   onClick={() => copyPrompt(expanded.prompt, `modal-${expanded.id}`)}
                   className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white border border-white/10 hover:border-white/30 px-3 py-1.5 rounded-lg transition-all"
                 >
                   {copiedId === `modal-${expanded.id}` ? <><CheckIcon size={12} /> Copied!</> : <><CopyIcon size={12} /> Copy prompt</>}
                 </button>
-                {expanded.kind === 'image' && (
+                {expanded.kind === 'image' ? (
                   <>
                     <button
                       onClick={() => handleDownload(expanded.image_url, expanded.prompt)}
@@ -1815,7 +2134,25 @@ function DashboardInner() {
                       onClick={() => handleDelete(expanded.id)}
                       className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-red-400 border border-white/10 hover:border-red-500/30 px-3 py-1.5 rounded-lg transition-all ml-auto"
                     >
-                      <TrashIcon size={12} /> Remove
+                      <TrashIcon size={12} /> Delete
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <a
+                      href={expanded.video_url}
+                      download="reelsy-video.mp4"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white border border-white/10 hover:border-white/30 px-3 py-1.5 rounded-lg transition-all"
+                    >
+                      <DownloadIcon size={12} /> Download
+                    </a>
+                    <button
+                      onClick={() => handleDeleteVideo(expanded.id)}
+                      className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-red-400 border border-white/10 hover:border-red-500/30 px-3 py-1.5 rounded-lg transition-all ml-auto"
+                    >
+                      <TrashIcon size={12} /> Delete
                     </button>
                   </>
                 )}

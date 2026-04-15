@@ -2,9 +2,40 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { CheckCircle, ArrowRight, Zap, RotateCcw, Lock, Infinity } from 'lucide-react'
+import PublicHeader from '@/components/PublicHeader'
+import { CheckCircle, ArrowRight, Zap, RotateCcw, Lock } from 'lucide-react'
+
+// Maps plan name (lowercase) + billing cycle → priceKey expected by /api/billing/checkout
+const PLAN_PRICE_KEY: Record<string, Record<string, string>> = {
+  creator: { monthly: 'creator_monthly', annual: 'creator_annual' },
+  pro:     { monthly: 'pro_monthly',     annual: 'pro_annual'     },
+  premium: { monthly: 'premium_monthly', annual: 'premium_annual' },
+}
+
+async function startCheckout(priceKey: string): Promise<void> {
+  const res  = await fetch('/api/billing/checkout', {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ priceKey }),
+  })
+  if (res.status === 401) { window.location.href = '/login'; return }
+  const { url, error } = await res.json()
+  if (error) throw new Error(error)
+  window.location.href = url
+}
+
+async function startTopup(packId: string): Promise<void> {
+  const res  = await fetch('/api/credits/topup', {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ packId }),
+  })
+  if (res.status === 401) { window.location.href = '/login'; return }
+  const { url, error } = await res.json()
+  if (error) throw new Error(error)
+  window.location.href = url
+}
 
 /* ── Motion helpers ──────────────────────────────────────────── */
 const fadeRise = {
@@ -172,12 +203,13 @@ function formatPrice(plan: Plan, annual: boolean): string {
   return `$${price.toFixed(2)}`
 }
 
-function creditsInt(s: string): number {
-  return parseInt(s.replace(/[^0-9]/g, ''), 10) || 0
-}
-
 /* ── Plan card ───────────────────────────────────────────────── */
-function PlanCard({ plan, annual }: { plan: Plan; annual: boolean }) {
+function PlanCard({ plan, annual, loading, onCheckout }: {
+  plan: Plan
+  annual: boolean
+  loading: boolean
+  onCheckout: () => void
+}) {
   const price    = formatPrice(plan, annual)
   const save     = annual && plan.annualSave ? plan.annualSave : null
   const isFree   = plan.monthlyPrice === 0 && plan.annualPrice === 0
@@ -265,20 +297,42 @@ function PlanCard({ plan, annual }: { plan: Plan; annual: boolean }) {
       <p style={{ fontSize: 13, color: '#738295', lineHeight: 1.55, marginBottom: 18 }}>{plan.desc}</p>
 
       {/* CTA */}
-      <Link
-        href={plan.enterprise ? '#' : '/login'}
-        style={{
+      {plan.enterprise ? (
+        <Link href="mailto:sales@reelsy.ai" style={{
           background: '#F4F8FB', color: '#00C4CC',
           fontWeight: 700, fontSize: 14,
           padding: '11px 0', borderRadius: 10, textDecoration: 'none',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-          marginBottom: 22, transition: 'background 0.2s, box-shadow 0.2s',
-        }}
-        onMouseEnter={e => { e.currentTarget.style.background = '#e4ecf4'; e.currentTarget.style.boxShadow = '0 4px 18px rgba(244,248,251,0.08)' }}
-        onMouseLeave={e => { e.currentTarget.style.background = '#F4F8FB'; e.currentTarget.style.boxShadow = 'none' }}
-      >
-        {plan.cta} {!plan.enterprise && <ArrowRight size={14} />}
-      </Link>
+          marginBottom: 22,
+        }}>
+          {plan.cta}
+        </Link>
+      ) : isFree ? (
+        <Link href="/login" style={{
+          background: '#F4F8FB', color: '#00C4CC',
+          fontWeight: 700, fontSize: 14,
+          padding: '11px 0', borderRadius: 10, textDecoration: 'none',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+          marginBottom: 22,
+        }}>
+          {plan.cta} <ArrowRight size={14} />
+        </Link>
+      ) : (
+        <button
+          onClick={onCheckout}
+          disabled={loading}
+          style={{
+            background: '#F4F8FB', color: '#00C4CC',
+            fontWeight: 700, fontSize: 14, border: 'none', cursor: loading ? 'wait' : 'pointer',
+            padding: '11px 0', borderRadius: 10, width: '100%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            marginBottom: 22, transition: 'background 0.2s, box-shadow 0.2s',
+            opacity: loading ? 0.7 : 1,
+          }}
+        >
+          {loading ? 'Redirecting…' : <>{plan.cta} <ArrowRight size={14} /></>}
+        </button>
+      )}
 
       {/* Divider */}
       <div style={{ height: 1, background: '#1A2535', marginBottom: 18 }} />
@@ -324,34 +378,26 @@ function PlanCard({ plan, annual }: { plan: Plan; annual: boolean }) {
 
 /* ── Page ────────────────────────────────────────────────────── */
 export default function PricingPage() {
-  const [annual, setAnnual] = useState(true)
+  const [annual, setAnnual]       = useState(true)
+  const [loadingKey, setLoadingKey] = useState<string | null>(null)
+
+  async function handlePlanCheckout(planName: string) {
+    const cycle    = annual ? 'annual' : 'monthly'
+    const priceKey = PLAN_PRICE_KEY[planName.toLowerCase()]?.[cycle]
+    if (!priceKey) return
+    setLoadingKey(priceKey)
+    try { await startCheckout(priceKey) } finally { setLoadingKey(null) }
+  }
+
+  async function handleTopupCheckout(packId: string) {
+    setLoadingKey(`topup_${packId}`)
+    try { await startTopup(packId) } finally { setLoadingKey(null) }
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: '#0B0F14', color: '#F4F8FB' }}>
 
-      {/* ── Nav ── */}
-      <header style={{
-        position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(11,15,20,0.92)', backdropFilter: 'blur(14px)',
-        borderBottom: '1px solid #1E2A3A', padding: '0 32px',
-      }}>
-        <div style={{ maxWidth: 1400, margin: '0 auto', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link href="/">
-            <Image src="/For Rebranding/reelsy-logo-white-txt.png" alt="Reelsy" width={100} height={28} style={{ objectFit: 'contain' }} />
-          </Link>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            <Link href="/login" style={{ color: '#F4F8FB', fontSize: 14, textDecoration: 'none', fontWeight: 500 }}>Sign In</Link>
-            <Link href="/login" style={{
-              background: '#F4F8FB', color: '#0B0F14', fontWeight: 600, fontSize: 13,
-              padding: '8px 18px', borderRadius: 10, textDecoration: 'none',
-              display: 'inline-flex', alignItems: 'center', transition: 'background 0.2s',
-            }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#e4ecf4')}
-              onMouseLeave={e => (e.currentTarget.style.background = '#F4F8FB')}
-            >Get Started for Free</Link>
-          </div>
-        </div>
-      </header>
+      <PublicHeader />
 
       {/* ── Hero ── */}
       <section style={{ padding: '72px 32px 0', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
@@ -426,9 +472,19 @@ export default function PricingPage() {
             variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}
             style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 16, alignItems: 'start' }}
           >
-            {PLANS.map(plan => (
-              <PlanCard key={plan.name} plan={plan} annual={annual} />
-            ))}
+            {PLANS.map(plan => {
+              const cycle    = annual ? 'annual' : 'monthly'
+              const priceKey = PLAN_PRICE_KEY[plan.name.toLowerCase()]?.[cycle] ?? ''
+              return (
+                <PlanCard
+                  key={plan.name}
+                  plan={plan}
+                  annual={annual}
+                  loading={loadingKey === priceKey}
+                  onCheckout={() => handlePlanCheckout(plan.name)}
+                />
+              )
+            })}
           </motion.div>
 
           {annual && (
@@ -483,14 +539,21 @@ export default function PricingPage() {
                     <span style={{ fontSize: 14, color: '#00C4CC', fontWeight: 600 }}>{pack.credits.toLocaleString()} credits</span>
                     <span style={{ fontSize: 11, color: '#3A4A5C', marginLeft: 4 }}>· {pack.per}</span>
                   </div>
-                  <Link href="/login" style={{
-                    display: 'block', textAlign: 'center', textDecoration: 'none',
-                    background: '#F4F8FB', color: '#00C4CC', fontWeight: 700, fontSize: 13,
-                    padding: '9px 0', borderRadius: 8, transition: 'background 0.2s',
-                  }}
+                  <button
+                    onClick={() => handleTopupCheckout(pack.name.toLowerCase())}
+                    disabled={loadingKey === `topup_${pack.name.toLowerCase()}`}
+                    style={{
+                      display: 'block', width: '100%', textAlign: 'center', border: 'none',
+                      background: '#F4F8FB', color: '#00C4CC', fontWeight: 700, fontSize: 13,
+                      padding: '9px 0', borderRadius: 8, cursor: loadingKey === `topup_${pack.name.toLowerCase()}` ? 'wait' : 'pointer',
+                      opacity: loadingKey === `topup_${pack.name.toLowerCase()}` ? 0.7 : 1,
+                      transition: 'background 0.2s',
+                    }}
                     onMouseEnter={e => (e.currentTarget.style.background = '#e4ecf4')}
                     onMouseLeave={e => (e.currentTarget.style.background = '#F4F8FB')}
-                  >Buy pack</Link>
+                  >
+                    {loadingKey === `topup_${pack.name.toLowerCase()}` ? 'Redirecting…' : 'Buy pack'}
+                  </button>
                 </motion.div>
               ))}
             </motion.div>

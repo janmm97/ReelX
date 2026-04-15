@@ -1,17 +1,23 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import VoiceSelector from './VoiceSelector'
 import VideoPlayer from './VideoPlayer'
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024 // 10 MB
-const ALLOWED_TYPES  = new Set(['image/jpeg', 'image/png', 'image/webp'])
+const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
+
+const MAX_AUDIO_SIZE = 10 * 1024 * 1024 // 10 MB
+const ALLOWED_AUDIO_TYPES = new Set([
+  'audio/mpeg', 'audio/wav', 'audio/x-wav', 'audio/aac', 'audio/mp4', 'audio/ogg',
+])
 const POLL_INTERVAL  = 5000 // 5 s
+
+type ModelChoice = 'infinitalk' | 'kling-avatar'
 
 type Step =
   | { id: 'idle' }
   | { id: 'uploading-image' }
-  | { id: 'generating-tts' }
+  | { id: 'uploading-audio' }
   | { id: 'splitting-audio' }
   | { id: 'submitting-chunks' }
   | { id: 'processing'; completed: number; total: number }
@@ -20,15 +26,15 @@ type Step =
   | { id: 'error'; message: string }
 
 const STEP_LABELS: Record<Step['id'], string> = {
-  'idle':             '',
-  'uploading-image':  'Uploading image…',
-  'generating-tts':   'Generating voice…',
-  'splitting-audio':  'Splitting audio…',
+  'idle':              '',
+  'uploading-image':   'Uploading image…',
+  'uploading-audio':   'Uploading audio…',
+  'splitting-audio':   'Splitting audio…',
   'submitting-chunks': 'Submitting to AI…',
-  'processing':       'Generating video…',
-  'stitching':        'Stitching final video…',
-  'done':             'Done!',
-  'error':            'Error',
+  'processing':        'Generating video…',
+  'stitching':         'Stitching final video…',
+  'done':              'Done!',
+  'error':             'Error',
 }
 
 interface Props {
@@ -36,18 +42,18 @@ interface Props {
 }
 
 export default function VideoGeneratorForm({ userId }: Props) {
-  const [imageFile,   setImageFile]   = useState<File | null>(null)
+  const [model,        setModel]       = useState<ModelChoice>('infinitalk')
+  const [imageFile,    setImageFile]   = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [transcript,  setTranscript]  = useState('')
+  const [audioFile,    setAudioFile]   = useState<File | null>(null)
   const [motionPrompt, setMotionPrompt] = useState('')
-  const [voiceId,     setVoiceId]     = useState<string | null>(null)
-  const [step,        setStep]        = useState<Step>({ id: 'idle' })
+  const [step,         setStep]        = useState<Step>({ id: 'idle' })
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    if (!ALLOWED_TYPES.has(file.type)) {
+    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
       setStep({ id: 'error', message: 'Only JPEG, PNG, and WebP images are supported.' })
       return
     }
@@ -60,12 +66,27 @@ export default function VideoGeneratorForm({ userId }: Props) {
     if (step.id === 'error') setStep({ id: 'idle' })
   }
 
+  function handleAudioChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!ALLOWED_AUDIO_TYPES.has(file.type)) {
+      setStep({ id: 'error', message: 'Unsupported format. Allowed: MPEG, WAV, AAC, MP4, OGG.' })
+      return
+    }
+    if (file.size > MAX_AUDIO_SIZE) {
+      setStep({ id: 'error', message: 'Audio must be under 10 MB.' })
+      return
+    }
+    setAudioFile(file)
+    if (step.id === 'error') setStep({ id: 'idle' })
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!imageFile || !voiceId || !transcript.trim() || step.id !== 'idle') return
+    if (!imageFile || !audioFile || step.id !== 'idle') return
 
     try {
-      // Step 1: Upload image via server-side API (bypasses storage RLS)
+      // Step 1: Upload portrait image
       setStep({ id: 'uploading-image' })
       const uploadForm = new FormData()
       uploadForm.append('file', imageFile)
@@ -75,36 +96,47 @@ export default function VideoGeneratorForm({ userId }: Props) {
       if (!uploadRes.ok) throw new Error(uploadData.error ?? 'Image upload failed')
       const imageUrl: string = uploadData.publicUrl
 
-      // Step 2: Generate TTS audio
-      setStep({ id: 'generating-tts' })
-      const ttsRes  = await fetch('/api/elevenlabs/tts', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ voiceId, transcript: transcript.trim() }),
-      })
-      const ttsData = await ttsRes.json()
-      if (!ttsRes.ok) throw new Error(ttsData.error ?? 'TTS failed')
+      // Step 2: Upload audio file
+      setStep({ id: 'uploading-audio' })
+      const audioForm = new FormData()
+      audioForm.append('file', audioFile)
+      const audioRes  = await fetch('/api/upload-audio', { method: 'POST', body: audioForm })
+      const audioData = await audioRes.json()
+      if (!audioRes.ok) throw new Error(audioData.error ?? 'Audio upload failed')
 
-      // Step 3: Split audio into chunks
-      setStep({ id: 'splitting-audio' })
-      const splitRes  = await fetch('/api/video/split-audio', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ audioStoragePath: ttsData.audioStoragePath }),
-      })
-      const splitData = await splitRes.json()
-      if (!splitRes.ok) throw new Error(splitData.error ?? 'Audio split failed')
-      const { audioChunkUrls } = splitData as { audioChunkUrls: string[] }
+      // Step 3: Get audio chunk URLs
+      // InfiniteTalk: split into 13s chunks (model has per-chunk duration limits)
+      // Kling Avatar: pass the full audio URL directly — no splitting needed
+      let audioChunkUrls: string[]
+      if (model === 'kling-avatar') {
+        if (!audioData.audioUrl) throw new Error('Audio URL missing from upload response')
+        audioChunkUrls = [audioData.audioUrl]
+      } else {
+        setStep({ id: 'splitting-audio' })
+        const splitRes  = await fetch('/api/video/split-audio', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ audioStoragePath: audioData.audioStoragePath }),
+        })
+        const splitData = await splitRes.json()
+        if (!splitRes.ok) throw new Error(splitData.error ?? 'Audio split failed')
+        audioChunkUrls = (splitData as { audioChunkUrls: string[] }).audioChunkUrls
+      }
 
-      // Step 4: Submit to kie.ai InfiniteTalk
+      // Step 4: Submit to kie.ai
       setStep({ id: 'submitting-chunks' })
+      const defaultPrompt = model === 'kling-avatar'
+        ? ''
+        : 'speak naturally with slight head movement'
       const genRes  = await fetch('/api/video/generate', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({
           imageUrl,
           audioChunkUrls,
-          prompt: motionPrompt.trim() || 'speak naturally with slight head movement',
+          prompt:     motionPrompt.trim() || defaultPrompt,
+          model,
+          resolution: '720p',
         }),
       })
       const genData = await genRes.json()
@@ -164,10 +196,36 @@ export default function VideoGeneratorForm({ userId }: Props) {
   }
 
   const isLoading = !['idle', 'done', 'error'].includes(step.id)
-  const canSubmit = !!imageFile && !!voiceId && !!transcript.trim() && !isLoading
+  const canSubmit = !!imageFile && !!audioFile && !isLoading
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+
+      {/* Model selector */}
+      <div className="flex flex-col gap-1.5">
+        <label className="text-xs font-medium text-slate-300">Model</label>
+        <div className="grid grid-cols-2 gap-1.5 p-1 rounded-lg bg-white/[0.04] border border-white/[0.08]">
+          {([
+            { value: 'infinitalk',   label: 'InfiniteTalk' },
+            { value: 'kling-avatar', label: 'Kling Avatar' },
+          ] as { value: ModelChoice; label: string }[]).map(({ value, label }) => (
+            <button
+              key={value}
+              type="button"
+              disabled={isLoading}
+              onClick={() => setModel(value)}
+              className={`py-1.5 rounded-md text-xs font-semibold transition-all ${
+                model === value
+                  ? 'bg-gradient-to-r from-[#00C4CC] to-[#00F2FE] text-[#0B0F14]'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Portrait image upload */}
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-medium text-slate-300">Portrait Image</label>
@@ -176,11 +234,11 @@ export default function VideoGeneratorForm({ userId }: Props) {
             // eslint-disable-next-line @next/next/no-img-element
             <img src={imagePreview} alt="Preview" className="w-full h-full object-contain rounded-xl" />
           ) : (
-            <div className="flex flex-col items-center gap-2 text-slate-500">
-              <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none">
+            <div className="flex flex-col items-center gap-2 text-slate-500 px-6 text-center">
+              <svg className="w-8 h-8 shrink-0" viewBox="0 0 24 24" fill="none">
                 <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
-              <span className="text-xs">Upload portrait (JPEG, PNG, WebP · max 10 MB)</span>
+              <span className="text-xs leading-relaxed">Upload portrait (JPEG, PNG, WebP · max 10 MB)</span>
             </div>
           )}
           <input
@@ -193,17 +251,53 @@ export default function VideoGeneratorForm({ userId }: Props) {
         </label>
       </div>
 
-      {/* Transcript */}
+      {/* Audio upload */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-slate-300">Transcript</label>
-        <textarea
-          value={transcript}
-          onChange={(e) => setTranscript(e.target.value)}
-          placeholder="Write the full script that will be spoken…"
-          rows={4}
-          disabled={isLoading}
-          className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-600 resize-none focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50 disabled:opacity-50"
-        />
+        <label className="text-xs font-medium text-slate-300">Audio</label>
+        <label className={`relative flex flex-col items-center justify-center w-full rounded-xl border-2 border-dashed transition-colors cursor-pointer ${
+          audioFile
+            ? 'border-[#00C4CC]/40 bg-[#00C4CC]/5 py-3'
+            : 'border-white/[0.12] hover:border-[#00C4CC]/40 bg-white/[0.02] py-6'
+        } ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}>
+          {audioFile ? (
+            <div className="flex items-center gap-3 px-4 w-full">
+              <svg className="w-8 h-8 shrink-0 text-[#00C4CC]" viewBox="0 0 24 24" fill="none">
+                <path d="M9 18V5l12-2v13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="6" cy="18" r="3" stroke="currentColor" strokeWidth="1.5" />
+                <circle cx="18" cy="16" r="3" stroke="currentColor" strokeWidth="1.5" />
+              </svg>
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-medium text-white truncate">{audioFile.name}</span>
+                <span className="text-[11px] text-slate-500">{(audioFile.size / (1024 * 1024)).toFixed(2)} MB</span>
+              </div>
+              <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); setAudioFile(null) }}
+                className="ml-auto text-slate-500 hover:text-white transition-colors shrink-0"
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2 text-slate-500 px-6 text-center">
+              <svg className="w-7 h-7 shrink-0" viewBox="0 0 24 24" fill="none">
+                <path d="M9 18V5l12-2v13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="6" cy="18" r="3" stroke="currentColor" strokeWidth="1.5" />
+                <circle cx="18" cy="16" r="3" stroke="currentColor" strokeWidth="1.5" />
+              </svg>
+              <span className="text-xs leading-relaxed">Upload audio · MP3, WAV, AAC, MP4, OGG · max 10 MB</span>
+            </div>
+          )}
+          <input
+            type="file"
+            accept="audio/mpeg,audio/wav,audio/x-wav,audio/aac,audio/mp4,audio/ogg"
+            onChange={handleAudioChange}
+            disabled={isLoading}
+            className="hidden"
+          />
+        </label>
       </div>
 
       {/* Motion prompt */}
@@ -217,12 +311,6 @@ export default function VideoGeneratorForm({ userId }: Props) {
           disabled={isLoading}
           className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50 disabled:opacity-50"
         />
-      </div>
-
-      {/* Voice selector */}
-      <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-slate-300">Cloned Voice</label>
-        <VoiceSelector value={voiceId} onChange={setVoiceId} disabled={isLoading} />
       </div>
 
       {/* Status / progress */}
@@ -260,7 +348,7 @@ export default function VideoGeneratorForm({ userId }: Props) {
       <button
         type="submit"
         disabled={!canSubmit}
-        className="btn-primary py-3 w-full rounded-xl font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
+        className="btn-primary py-3 w-full rounded-xl font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] flex items-center justify-center"
       >
         {isLoading ? STEP_LABELS[step.id] : 'Generate Talking Video'}
       </button>
@@ -276,9 +364,8 @@ export default function VideoGeneratorForm({ userId }: Props) {
               setStep({ id: 'idle' })
               setImageFile(null)
               setImagePreview(null)
-              setTranscript('')
+              setAudioFile(null)
               setMotionPrompt('')
-              setVoiceId(null)
             }}
             className="text-xs text-slate-500 hover:text-white transition-colors"
           >

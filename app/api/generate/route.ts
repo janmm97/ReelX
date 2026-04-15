@@ -1,5 +1,9 @@
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import {
+  getUserSub, canAfford, deductCreditsAmount, refundCreditsAmount,
+  checkAndIncrementFreeCap, affordErrorMessage, FREE_IMAGE_MODEL,
+} from '@/lib/credits'
 
 const MODEL_MAP = {
   // ── Budget tier ──────────────────────────────────────────────
@@ -149,7 +153,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'User not found' }, { status: 404 })
   }
 
-  // 4. Rate limit: max DAILY_LIMIT generations per calendar day
+  // 4. Credit / plan gate
+  const sub  = await getUserSub(user.id)
+  const plan = sub?.plan ?? 'free'
+  let creditsCost = 0
+
+  if (plan === 'free') {
+    if ((model as string) !== FREE_IMAGE_MODEL) {
+      return NextResponse.json({ error: 'Upgrade to Creator or higher to use this model.', upgrade: true }, { status: 403 })
+    }
+    const cap = await checkAndIncrementFreeCap(user.id, 'image')
+    if (!cap.ok) {
+      return NextResponse.json({ error: `Free tier limit reached (${cap.cap} images/month). Upgrade for more.`, upgrade: true }, { status: 429 })
+    }
+  } else {
+    const check = await canAfford(user.id, model as string)
+    if (!check.ok) {
+      return NextResponse.json({ error: affordErrorMessage(check.reason), upgrade: check.reason === 'upgrade_required' }, { status: 403 })
+    }
+    creditsCost = check.credits
+  }
+
+  // 5. Rate limit: max DAILY_LIMIT generations per calendar day
   const todayStart = new Date()
   todayStart.setHours(0, 0, 0, 0)
 
@@ -164,7 +189,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Daily limit reached' }, { status: 429 })
   }
 
-  // 5. Insert pending row
+  // 6. Insert pending row
   const { data: imageRow, error: insertErr } = await service
     .from('images')
     .insert({ user_id: dbUser.id, prompt: prompt.trim(), model: model as string, status: 'pending' })
@@ -177,7 +202,17 @@ export async function POST(request: NextRequest) {
 
   const imageId: string = imageRow.id
 
-  // 6. Call OpenRouter with a 60s timeout
+  // 7. Deduct credits upfront (paid users only)
+  if (plan !== 'free' && creditsCost > 0) {
+    try {
+      await deductCreditsAmount(user.id, creditsCost, model as string, imageId, 'image')
+    } catch {
+      await service.from('images').update({ status: 'failed' }).eq('id', imageId)
+      return NextResponse.json({ error: 'Credit deduction failed. Please try again.' }, { status: 500 })
+    }
+  }
+
+  // 8. Call OpenRouter with a 60s timeout
   const orModel = MODEL_MAP[model as ModelKey]
   let imageUrl: string | null = null
 
@@ -211,14 +246,17 @@ export async function POST(request: NextRequest) {
 
   } catch (err) {
     await service.from('images').update({ status: 'failed' }).eq('id', imageId)
+    if (plan !== 'free' && creditsCost > 0) {
+      await refundCreditsAmount(user.id, creditsCost, imageId, 'image').catch(() => {})
+    }
     const message = err instanceof Error ? err.message : 'Image generation failed'
     return NextResponse.json({ error: message }, { status: 502 })
   }
 
-  // 7. Mark done
+  // 9. Mark done
   await service
     .from('images')
-    .update({ image_url: imageUrl, status: 'done' })
+    .update({ image_url: imageUrl, status: 'done', credits_charged: creditsCost || null })
     .eq('id', imageId)
 
   return NextResponse.json({ imageUrl, imageId })
