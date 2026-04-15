@@ -28,33 +28,33 @@ function Header() {
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
       background: scrolled ? 'rgba(11,15,20,0.88)' : 'transparent',
       backdropFilter: scrolled ? 'blur(14px)' : 'none',
-      borderBottom: scrolled ? '1px solid #273242' : '1px solid transparent',
+      borderBottom: scrolled ? '1px solid #183048' : '1px solid transparent',
       transition: 'all 0.3s cubic-bezier(0.25,0.1,0.25,1)',
       padding: '0 32px',
     }}>
       <div style={{ maxWidth: 1280, margin: '0 auto', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link href="/">
-          <Image src="/For Rebranding/reelsy-logo-white-txt.png" alt="Reelsy" width={112} height={32} style={{ objectFit: 'contain' }} />
+          <Image src="/brand/newlogo.png" alt="Reelx" width={112} height={32} style={{ objectFit: 'contain' }} />
         </Link>
         <nav style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
           {([['Product', '/products'], ['Pricing', '/pricing'], ['FAQ', '#faq']] as const).map(([n, href]) => (
             <Link key={n}
               href={href}
-              style={{ color: '#A7B4C2', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#F4F8FB')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#A7B4C2')}
+              style={{ color: '#00d8ec', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#dceaf4')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#00d8ec')}
             >{n}</Link>
           ))}
         </nav>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <Link href="/login" style={{ color: '#F4F8FB', fontSize: 14, textDecoration: 'none', fontWeight: 500 }}>Sign In</Link>
+          <Link href="/login" style={{ color: '#dceaf4', fontSize: 14, textDecoration: 'none', fontWeight: 500 }}>Sign In</Link>
           <Link href="/login" style={{
-            background: '#F4F8FB', color: '#0B0F14', fontWeight: 600, fontSize: 13,
+            background: '#dceaf4', color: '#070e1a', fontWeight: 600, fontSize: 13,
             padding: '8px 18px', borderRadius: 10, textDecoration: 'none',
             display: 'inline-flex', alignItems: 'center', transition: 'background 0.2s',
           }}
             onMouseEnter={e => (e.currentTarget.style.background = '#e4ecf4')}
-            onMouseLeave={e => (e.currentTarget.style.background = '#F4F8FB')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#dceaf4')}
           >Get Started</Link>
         </div>
       </div>
@@ -153,7 +153,7 @@ function HeroChatPanel() {
             display: 'flex', alignItems: 'center', gap: 6,
             padding: '6px 20px', borderRadius: 100, border: 'none', cursor: 'pointer',
             background: mode === m.id ? 'rgba(255,255,255,0.10)' : 'transparent',
-            color: mode === m.id ? '#F4F8FB' : 'rgba(255,255,255,0.35)',
+            color: mode === m.id ? '#dceaf4' : 'rgba(255,255,255,0.35)',
             fontSize: 13, fontWeight: 500, transition: 'all 0.2s', letterSpacing: '0.01em',
           }}
             onMouseEnter={e => { if (mode !== m.id) e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
@@ -192,7 +192,7 @@ function HeroChatPanel() {
             placeholder={MODE_PLACEHOLDER[mode]}
             style={{
               flex: 1, background: 'none', border: 'none', outline: 'none',
-              fontSize: 15, color: '#F4F8FB', caretColor: '#00C4CC',
+              fontSize: 15, color: '#dceaf4', caretColor: '#00b8d4',
               lineHeight: 1.5, padding: '2px 0',
               fontFamily: 'inherit',
             }}
@@ -292,7 +292,7 @@ function HeroChatPanel() {
                           onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent' }}
                         >
                           <span style={{ width: 7, height: 7, borderRadius: '50%', background: m.badgeColor, flexShrink: 0, boxShadow: `0 0 7px ${m.badgeColor}99` }} />
-                          <span style={{ flex: 1, fontSize: 12.5, color: isSelected ? '#F4F8FB' : 'rgba(255,255,255,0.65)', fontWeight: isSelected ? 600 : 400 }}>{m.label}</span>
+                          <span style={{ flex: 1, fontSize: 12.5, color: isSelected ? '#dceaf4' : 'rgba(255,255,255,0.65)', fontWeight: isSelected ? 600 : 400 }}>{m.label}</span>
                           <span style={{
                             fontSize: 9.5, fontWeight: 700, padding: '2px 7px', borderRadius: 5,
                             background: `${m.badgeColor}18`,
@@ -315,7 +315,7 @@ function HeroChatPanel() {
           {/* Send button */}
           <button onClick={goToLogin} style={{
             width: 34, height: 34, borderRadius: '50%', border: 'none', cursor: 'pointer', flexShrink: 0,
-            background: hasPrompt ? '#F4F8FB' : 'rgba(255,255,255,0.08)',
+            background: hasPrompt ? '#dceaf4' : 'rgba(255,255,255,0.08)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             boxShadow: hasPrompt ? '0 2px 12px rgba(244,248,251,0.25)' : 'none',
             transition: 'all 0.2s',
@@ -324,7 +324,7 @@ function HeroChatPanel() {
             onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M7 11.5V2.5M7 2.5L3 6.5M7 2.5L11 6.5" stroke={hasPrompt ? '#0B0F14' : 'rgba(255,255,255,0.3)'} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M7 11.5V2.5M7 2.5L3 6.5M7 2.5L11 6.5" stroke={hasPrompt ? '#070e1a' : 'rgba(255,255,255,0.3)'} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
         </div>
@@ -344,7 +344,7 @@ function Hero() {
     <section style={{
       height: '100vh', minHeight: 600,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: '#0B0F14', position: 'relative', overflow: 'hidden',
+      background: '#070e1a', position: 'relative', overflow: 'hidden',
     }}>
       {/* Video background */}
       <video
@@ -354,7 +354,7 @@ function Hero() {
           objectFit: 'cover', zIndex: 0,
         }}
       >
-        <source src="/For Rebranding/New folder/upscaled-video.mp4" type="video/mp4" />
+        <source src="/media/upscaled-video.mp4" type="video/mp4" />
       </video>
 
       {/* Overlays — darken + centre-vignette so chat UI reads clearly */}
@@ -404,29 +404,29 @@ const FEATURES = [
     id: 'studio',
     Icon: Mic,
     label: 'Studio — Avatar Video',
-    desc: 'Upload a portrait, write a script, and Reelsy renders a lip-synced talking video using your cloned ElevenLabs voice. Spokesperson content at scale.',
+    desc: 'Upload a portrait, write a script, and Reelx renders a lip-synced talking video using your cloned ElevenLabs voice. Spokesperson content at scale.',
   },
 ]
 
 function ImageGenPreview() {
   return (
-    <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+    <div style={{ display: 'flex', gap: 16, alignItems: 'stretch', flex: 1 }}>
 
-      {/* Image preview */}
+      {/* Image preview — fills full height */}
       <div style={{
-        flexShrink: 0, width: 148,
-        borderRadius: 12, overflow: 'hidden', border: '1px solid #1E2A3A', lineHeight: 0,
-        background: '#0D1420',
+        flexShrink: 0, width: 220,
+        borderRadius: 12, overflow: 'hidden', border: '1px solid #1E2A3A',
+        background: '#0D1420', minHeight: 280,
       }}>
         <img
-          src="/For Rebranding/New folder/image-gen-svg/5.svg"
+          src="/media/image-gen-svg/5.svg"
           alt=""
-          style={{ width: '100%', display: 'block' }}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
         />
       </div>
 
       {/* Prompt + controls */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
 
         {/* Prompt box */}
         <div style={{
@@ -434,40 +434,33 @@ function ImageGenPreview() {
           borderRadius: 10, padding: '12px 14px', overflow: 'hidden',
         }}>
           <div style={{ fontSize: 10, color: '#3A4A5C', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Prompt</div>
-          <div style={{ fontSize: 11, color: '#8A9BB0', lineHeight: 1.65, display: '-webkit-box', WebkitLineClamp: 7, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-            A professional brand photo of a founder presenting at a conference, cinematic lighting, shallow depth of field, sharp focus on the subject, modern stage backdrop with soft bokeh, confident posture, high-end editorial aesthetic, photorealistic.
+          <div style={{ fontSize: 11, color: '#8A9BB0', lineHeight: 1.65, display: '-webkit-box', WebkitLineClamp: 8, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            A hyper-detailed centered close-up beauty portrait of a woman with her eyes closed, her face emerging through swirling clouds of colored smoke, with cyan-blue smoke flowing around the left side of her face and magenta-red smoke wrapping the right side, blending softly across the composition, featuring glossy lips, smooth luminous skin, dramatic metallic eye makeup, soft shadows, neon cinematic lighting, high contrast, an ethereal surreal atmosphere, a dark background, symmetrical framing, ultra-sharp focus on the face, volumetric smoke, vibrant color grading, and a luxury fashion editorial style in a vertical composition.
           </div>
         </div>
 
-        {/* Model + format row */}
-        <div style={{ display: 'flex', gap: 6 }}>
-          <div style={{
-            flex: 1, background: '#0D1420', border: '1px solid #1E2A3A',
-            borderRadius: 8, padding: '8px 10px',
-          }}>
-            <div style={{ fontSize: 9, color: '#3A4A5C', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Model</div>
-            <div style={{ fontSize: 11, color: '#A7B4C2', display: 'flex', alignItems: 'center', gap: 5 }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#00C4CC' }} />
-              GPT-5 Image
-            </div>
+        {/* Model + size in a single unified row */}
+        <div style={{
+          background: '#0D1420', border: '1px solid #1E2A3A',
+          borderRadius: 8, padding: '8px 12px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#00b8d4', boxShadow: '0 0 6px #00b8d488' }} />
+            <span style={{ fontSize: 11.5, color: '#00d8ec', fontWeight: 500 }}>GPT-5 Image</span>
           </div>
-          <div style={{
-            background: '#0D1420', border: '1px solid #1E2A3A',
-            borderRadius: 8, padding: '8px 10px',
-          }}>
-            <div style={{ fontSize: 9, color: '#3A4A5C', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Size</div>
-            <div style={{ fontSize: 11, color: '#A7B4C2' }}>1024×1024</div>
-          </div>
+          <span style={{ fontSize: 11, color: '#4A5C6E', letterSpacing: '0.02em' }}>1024×1024</span>
         </div>
 
         {/* Generate button */}
         <button style={{
-          background: 'linear-gradient(90deg,#00C4CC,#00F2FE)',
-          border: 'none', borderRadius: 8, padding: '9px 14px',
+          background: 'linear-gradient(90deg,#00b8d4,#00d8ec)',
+          border: 'none', borderRadius: 8, padding: '10px 14px',
           fontSize: 12, fontWeight: 600, color: '#0A101A', cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+          letterSpacing: '0.01em',
         }}>
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
             <polygon points="2,1 11,6 2,11" fill="#0A101A"/>
           </svg>
           Generate Image
@@ -480,21 +473,21 @@ function ImageGenPreview() {
 
 function VideoGenPreview() {
   return (
-    <div style={{ display: 'flex', gap: 14, alignItems: 'stretch' }}>
+    <div style={{ display: 'flex', gap: 16, alignItems: 'stretch', flex: 1 }}>
 
-      {/* Video preview */}
+      {/* Video preview — fills full height */}
       <div style={{
-        flexShrink: 0, width: 148,
-        borderRadius: 12, overflow: 'hidden', border: '1px solid #1E2A3A', lineHeight: 0,
-        background: '#0D1420',
+        flexShrink: 0, width: 220,
+        borderRadius: 12, overflow: 'hidden', border: '1px solid #1E2A3A',
+        background: '#0D1420', minHeight: 280,
       }}>
-        <video autoPlay muted loop playsInline style={{ width: '100%', display: 'block' }}>
-          <source src="/For Rebranding/New folder/video-generation.mp4" type="video/mp4" />
+        <video autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}>
+          <source src="/media/video-generation.mp4" type="video/mp4" />
         </video>
       </div>
 
       {/* Prompt + controls */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
 
         {/* Prompt box */}
         <div style={{
@@ -502,40 +495,33 @@ function VideoGenPreview() {
           borderRadius: 10, padding: '12px 14px', overflow: 'hidden',
         }}>
           <div style={{ fontSize: 10, color: '#3A4A5C', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Prompt</div>
-          <div style={{ fontSize: 11, color: '#8A9BB0', lineHeight: 1.65, display: '-webkit-box', WebkitLineClamp: 7, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          <div style={{ fontSize: 11, color: '#8A9BB0', lineHeight: 1.65, display: '-webkit-box', WebkitLineClamp: 9, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
             Create a realistic vertical 9:16 UGC-style selfie video of a 28-year-old woman promoting HERA skincare. She is filming herself in a bright, modern bathroom with soft morning light, speaking directly to the front-facing camera in a natural, authentic, live social media style. She looks polished but relatable, with healthy glowing skin, minimal elegant makeup, and a clean beauty aesthetic that fits a premium Korean skincare brand. She holds a sleek HERA skincare product, shows it close to the camera, talks about how it feels on the skin, then applies a small amount to her cheek and gently blends it in while continuing to speak.
           </div>
         </div>
 
-        {/* Model + format row */}
-        <div style={{ display: 'flex', gap: 6 }}>
-          <div style={{
-            flex: 1, background: '#0D1420', border: '1px solid #1E2A3A',
-            borderRadius: 8, padding: '8px 10px',
-          }}>
-            <div style={{ fontSize: 9, color: '#3A4A5C', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Model</div>
-            <div style={{ fontSize: 11, color: '#A7B4C2', display: 'flex', alignItems: 'center', gap: 5 }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#00C4CC' }} />
-              Veo 3.1 Fast
-            </div>
+        {/* Model + format unified row */}
+        <div style={{
+          background: '#0D1420', border: '1px solid #1E2A3A',
+          borderRadius: 8, padding: '8px 12px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#00b8d4', boxShadow: '0 0 6px #00b8d488' }} />
+            <span style={{ fontSize: 11.5, color: '#00d8ec', fontWeight: 500 }}>Veo 3.1 Fast</span>
           </div>
-          <div style={{
-            background: '#0D1420', border: '1px solid #1E2A3A',
-            borderRadius: 8, padding: '8px 10px',
-          }}>
-            <div style={{ fontSize: 9, color: '#3A4A5C', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Format</div>
-            <div style={{ fontSize: 11, color: '#A7B4C2' }}>9:16 · 8s</div>
-          </div>
+          <span style={{ fontSize: 11, color: '#4A5C6E', letterSpacing: '0.02em' }}>9:16 · 8s</span>
         </div>
 
         {/* Generate button */}
         <button style={{
-          background: 'linear-gradient(90deg,#00C4CC,#00F2FE)',
-          border: 'none', borderRadius: 8, padding: '9px 14px',
+          background: 'linear-gradient(90deg,#00b8d4,#00d8ec)',
+          border: 'none', borderRadius: 8, padding: '10px 14px',
           fontSize: 12, fontWeight: 600, color: '#0A101A', cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+          letterSpacing: '0.01em',
         }}>
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
             <polygon points="2,1 11,6 2,11" fill="#0A101A"/>
           </svg>
           Generate Video
@@ -548,24 +534,24 @@ function VideoGenPreview() {
 
 function StudioPreview() {
   return (
-    <div style={{ display: 'flex', gap: 14, alignItems: 'stretch' }}>
+    <div style={{ display: 'flex', gap: 16, alignItems: 'stretch', flex: 1 }}>
 
-      {/* Avatar stage — center panel preview */}
+      {/* Avatar stage — fills full height */}
       <div style={{
-        position: 'relative', flexShrink: 0, width: 140,
-        borderRadius: 12, overflow: 'hidden', border: '1px solid #1E2A3A', lineHeight: 0,
-        background: '#0D1420',
+        position: 'relative', flexShrink: 0, width: 220,
+        borderRadius: 12, overflow: 'hidden', border: '1px solid #1E2A3A',
+        background: '#0D1420', minHeight: 280,
       }}>
-        <video autoPlay muted loop playsInline style={{ width: '100%', display: 'block' }}>
-          <source src="/For Rebranding/New folder/asian_man.mp4" type="video/mp4" />
+        <video autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}>
+          <source src="/media/asian_man.mp4" type="video/mp4" />
         </video>
         <div style={{
           position: 'absolute', top: 8, left: 8,
           background: 'rgba(0,196,204,0.15)', border: '1px solid rgba(0,196,204,0.3)',
           borderRadius: 6, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 5,
         }}>
-          <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#00C4CC' }} />
-          <span style={{ fontSize: 10, color: '#00C4CC', fontWeight: 600, letterSpacing: '0.06em' }}>STAGE</span>
+          <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#00b8d4' }} />
+          <span style={{ fontSize: 10, color: '#00b8d4', fontWeight: 600, letterSpacing: '0.06em' }}>STAGE</span>
         </div>
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0,
@@ -587,38 +573,38 @@ function StudioPreview() {
           {['InfiniteTalk', 'Kling Avatar'].map((m, i) => (
             <div key={m} style={{
               flex: 1, textAlign: 'center', padding: '5px 0', borderRadius: 6, fontSize: 10, fontWeight: 600,
-              background: i === 0 ? 'linear-gradient(90deg,#00C4CC,#00F2FE)' : 'transparent',
-              color: i === 0 ? '#0B0F14' : '#4A5C6E',
+              background: i === 0 ? 'linear-gradient(90deg,#00b8d4,#00d8ec)' : 'transparent',
+              color: i === 0 ? '#070e1a' : '#4A5C6E',
             }}>{m}</div>
           ))}
         </div>
 
         {/* Portrait upload */}
-        <div style={{ background: '#0D1420', border: '1px dashed #273242', borderRadius: 9, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ background: '#0D1420', border: '1px dashed #183048', borderRadius: 9, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
           <Image
-            src="/For Rebranding/New folder/asian_man_img.png"
+            src="/media/your_avatar.png"
             alt="Portrait"
             width={34} height={34}
             style={{ borderRadius: 6, objectFit: 'cover', flexShrink: 0 }}
           />
           <div>
             <div style={{ fontSize: 9, color: '#3A4A5C', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Portrait Image</div>
-            <div style={{ fontSize: 10, color: '#738295' }}>asian_man_img.png</div>
+            <div style={{ fontSize: 10, color: '#4a7a96' }}>your_avatar.png</div>
           </div>
         </div>
 
         {/* Audio upload */}
-        <div style={{ background: '#0D1420', border: '1px dashed #273242', borderRadius: 9, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ background: '#0D1420', border: '1px dashed #183048', borderRadius: 9, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ flexShrink: 0, width: 28, height: 28, borderRadius: 6, background: 'rgba(0,196,204,0.1)', border: '1px solid rgba(0,196,204,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-              <path d="M9 18V5l12-2v13" stroke="#00C4CC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <circle cx="6" cy="18" r="3" stroke="#00C4CC" strokeWidth="1.5"/>
-              <circle cx="18" cy="16" r="3" stroke="#00C4CC" strokeWidth="1.5"/>
+              <path d="M9 18V5l12-2v13" stroke="#00b8d4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="6" cy="18" r="3" stroke="#00b8d4" strokeWidth="1.5"/>
+              <circle cx="18" cy="16" r="3" stroke="#00b8d4" strokeWidth="1.5"/>
             </svg>
           </div>
           <div>
             <div style={{ fontSize: 9, color: '#3A4A5C', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Audio</div>
-            <div style={{ fontSize: 10, color: '#738295' }}>voiceover_take1.mp3 · 2.4 MB</div>
+            <div style={{ fontSize: 10, color: '#4a7a96' }}>voiceover_take1.mp3 · 2.4 MB</div>
           </div>
         </div>
 
@@ -630,7 +616,7 @@ function StudioPreview() {
 
         {/* Generate button */}
         <button style={{
-          background: 'linear-gradient(90deg,#00C4CC,#00F2FE)',
+          background: 'linear-gradient(90deg,#00b8d4,#00d8ec)',
           border: 'none', borderRadius: 8, padding: '9px 14px', marginTop: 'auto',
           fontSize: 12, fontWeight: 600, color: '#0A101A', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
@@ -671,17 +657,17 @@ function FeatureShowcase() {
   }, [activeIdx, tick])
 
   return (
-    <section style={{ padding: '56px 32px 64px', background: '#101722', borderTop: '1px solid #273242' }}>
+    <section style={{ padding: '56px 32px 64px', background: '#101722', borderTop: '1px solid #183048' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto' }}>
         <motion.h2
           variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
-          style={{ fontFamily: 'var(--font-syne)', fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 700, color: '#F4F8FB', marginBottom: 6 }}
+          style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 700, color: '#dceaf4', marginBottom: 6 }}
         >
           Everything you need to create
         </motion.h2>
         <motion.p
           variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
-          style={{ color: '#738295', fontSize: 16, marginBottom: 36, lineHeight: 1.5 }}
+          style={{ color: '#4a7a96', fontSize: 16, marginBottom: 36, lineHeight: 1.5 }}
         >
           Three powerful tools, one unified workspace.
         </motion.p>
@@ -696,14 +682,14 @@ function FeatureShowcase() {
                     style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: '20px 0', width: '100%' }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: active ? 12 : 0 }}>
-                      <f.Icon size={17} color={active ? '#00C4CC' : '#3A4A5C'} />
-                      <span style={{ fontFamily: 'var(--font-syne)', fontWeight: 600, fontSize: 17, color: active ? '#F4F8FB' : '#4A5C6E', transition: 'color 0.25s' }}>{f.label}</span>
+                      <f.Icon size={17} color={active ? '#00b8d4' : '#3A4A5C'} />
+                      <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 17, color: active ? '#dceaf4' : '#4A5C6E', transition: 'color 0.25s' }}>{f.label}</span>
                     </div>
                     {active && (
                       <>
-                        <p style={{ fontSize: 14, color: '#A7B4C2', lineHeight: 1.65, margin: '0 0 16px', paddingLeft: 29 }}>{f.desc}</p>
-                        <div style={{ height: 2, background: '#273242', borderRadius: 99 }}>
-                          <div style={{ height: '100%', width: `${progress}%`, background: 'linear-gradient(90deg,#00C4CC,#00F2FE)', borderRadius: 99, transition: 'width 0.08s linear' }} />
+                        <p style={{ fontSize: 14, color: '#00d8ec', lineHeight: 1.65, margin: '0 0 16px', paddingLeft: 29 }}>{f.desc}</p>
+                        <div style={{ height: 2, background: '#183048', borderRadius: 99 }}>
+                          <div style={{ height: '100%', width: `${progress}%`, background: 'linear-gradient(90deg,#00b8d4,#00d8ec)', borderRadius: 99, transition: 'width 0.08s linear' }} />
                         </div>
                       </>
                     )}
@@ -719,7 +705,7 @@ function FeatureShowcase() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0, transition: { duration: 0.38, ease: [0.25, 0.1, 0.25, 1] } }}
               exit={{ opacity: 0, y: -10, transition: { duration: 0.22, ease: [0.25, 0.1, 0.25, 1] } }}
-              style={{ background: '#141D28', border: '1px solid #273242', borderRadius: 16, padding: 28, minHeight: 320 }}
+              style={{ background: '#0f2035', border: '1px solid #183048', borderRadius: 16, padding: 28, minHeight: 360, display: 'flex', flexDirection: 'column' }}
             >
               {activeIdx === 0 ? <ImageGenPreview /> : activeIdx === 1 ? <VideoGenPreview /> : <StudioPreview />}
             </motion.div>
@@ -766,7 +752,7 @@ const HIGHLIGHT_PLANS = [
       'Priority generation queue',
       'Priority support',
     ],
-    accent: '#00C4CC',
+    accent: '#00b8d4',
     highlight: true,
   },
   {
@@ -795,37 +781,37 @@ function PricingHighlight() {
   const router = useRouter()
 
   return (
-    <section style={{ padding: '96px 32px', background: '#0B0F14', borderTop: '1px solid #273242' }}>
+    <section style={{ padding: '96px 32px', background: '#070e1a', borderTop: '1px solid #183048' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 52, flexWrap: 'wrap', gap: 20 }}>
           <div>
             <motion.p variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
-              style={{ fontSize: 11, fontWeight: 700, color: '#738295', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>
+              style={{ fontSize: 11, fontWeight: 700, color: '#4a7a96', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>
               Plans & Pricing
             </motion.p>
             <motion.h2 variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
-              style={{ fontFamily: 'var(--font-syne)', fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 700, color: '#F4F8FB', margin: 0 }}>
+              style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 700, color: '#dceaf4', margin: 0 }}>
               Simple, flexible credits
             </motion.h2>
           </div>
           {/* Annual toggle */}
           <motion.div variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
             style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 13, color: annual ? '#738295' : '#F4F8FB', transition: 'color 0.2s' }}>Monthly</span>
+            <span style={{ fontSize: 13, color: annual ? '#4a7a96' : '#dceaf4', transition: 'color 0.2s' }}>Monthly</span>
             <button onClick={() => setAnnual(a => !a)} style={{
               width: 44, height: 24, borderRadius: 99, border: 'none', cursor: 'pointer', position: 'relative',
-              background: annual ? 'linear-gradient(135deg,#00C4CC,#00F2FE)' : '#273242',
+              background: annual ? 'linear-gradient(135deg,#00b8d4,#00d8ec)' : '#183048',
               transition: 'background 0.3s',
             }}>
               <div style={{
                 position: 'absolute', top: 3, left: annual ? 'calc(100% - 21px)' : 3,
-                width: 18, height: 18, borderRadius: '50%', background: '#F4F8FB',
+                width: 18, height: 18, borderRadius: '50%', background: '#dceaf4',
                 transition: 'left 0.3s',
               }} />
             </button>
-            <span style={{ fontSize: 13, color: annual ? '#F4F8FB' : '#738295', transition: 'color 0.2s' }}>
-              Annual <span style={{ color: '#00C4CC', fontWeight: 600, fontSize: 11 }}>–24%</span>
+            <span style={{ fontSize: 13, color: annual ? '#dceaf4' : '#4a7a96', transition: 'color 0.2s' }}>
+              Annual <span style={{ color: '#00b8d4', fontWeight: 600, fontSize: 11 }}>–24%</span>
             </span>
           </motion.div>
         </div>
@@ -838,7 +824,7 @@ function PricingHighlight() {
               variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
               style={{
                 background: plan.highlight ? 'rgba(0,196,204,0.05)' : '#101722',
-                border: `1px solid ${plan.highlight ? 'rgba(0,196,204,0.35)' : '#273242'}`,
+                border: `1px solid ${plan.highlight ? 'rgba(0,196,204,0.35)' : '#183048'}`,
                 borderRadius: 20, padding: 28, position: 'relative', overflow: 'hidden',
               }}
             >
@@ -863,19 +849,19 @@ function PricingHighlight() {
               )}
 
               <div style={{ marginBottom: plan.badge ? 0 : 16 }}>
-                <div style={{ fontFamily: 'var(--font-syne)', fontWeight: 700, fontSize: 22, color: '#F4F8FB', marginBottom: 6 }}>{plan.name}</div>
-                <div style={{ fontSize: 13, color: '#738295', lineHeight: 1.5, marginBottom: 20 }}>{plan.desc}</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 22, color: '#dceaf4', marginBottom: 6 }}>{plan.name}</div>
+                <div style={{ fontSize: 13, color: '#4a7a96', lineHeight: 1.5, marginBottom: 20 }}>{plan.desc}</div>
               </div>
 
               {/* Price */}
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, marginBottom: 6 }}>
-                <span style={{ fontFamily: 'var(--font-syne)', fontWeight: 800, fontSize: 42, color: '#F4F8FB', lineHeight: 1 }}>
+                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 42, color: '#dceaf4', lineHeight: 1 }}>
                   ${annual ? plan.annualPrice : plan.monthlyPrice}
                 </span>
-                <span style={{ fontSize: 13, color: '#738295', marginBottom: 6 }}>/mo</span>
+                <span style={{ fontSize: 13, color: '#4a7a96', marginBottom: 6 }}>/mo</span>
               </div>
               {annual && (
-                <div style={{ fontSize: 12, color: '#00C4CC', marginBottom: 4 }}>Billed annually</div>
+                <div style={{ fontSize: 12, color: '#00b8d4', marginBottom: 4 }}>Billed annually</div>
               )}
 
               {/* Credits */}
@@ -884,8 +870,8 @@ function PricingHighlight() {
                 background: `${plan.accent}12`, border: `1px solid ${plan.accent}25`,
                 borderRadius: 10, padding: '10px 14px', marginBottom: 24, marginTop: 16,
               }}>
-                <span style={{ fontFamily: 'var(--font-syne)', fontWeight: 700, fontSize: 18, color: plan.accent }}>{plan.credits}</span>
-                <span style={{ fontSize: 12, color: '#738295' }}>{plan.creditsNote}</span>
+                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 18, color: plan.accent }}>{plan.credits}</span>
+                <span style={{ fontSize: 12, color: '#4a7a96' }}>{plan.creditsNote}</span>
               </div>
 
               {/* Features */}
@@ -893,7 +879,7 @@ function PricingHighlight() {
                 {plan.features.map(f => (
                   <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 9 }}>
                     <CheckCircle size={14} color={plan.accent} style={{ flexShrink: 0, marginTop: 1 }} />
-                    <span style={{ fontSize: 13, color: '#A7B4C2', lineHeight: 1.5 }}>{f}</span>
+                    <span style={{ fontSize: 13, color: '#00d8ec', lineHeight: 1.5 }}>{f}</span>
                   </div>
                 ))}
               </div>
@@ -902,8 +888,8 @@ function PricingHighlight() {
               <button onClick={() => router.push('/login')} style={{
                 width: '100%', padding: '13px 0', borderRadius: 12, border: 'none', cursor: 'pointer',
                 fontWeight: 700, fontSize: 14,
-                background: plan.highlight ? 'linear-gradient(135deg,#00C4CC,#00F2FE)' : `${plan.accent}18`,
-                color: plan.highlight ? '#0B0F14' : plan.accent,
+                background: plan.highlight ? 'linear-gradient(135deg,#00b8d4,#00d8ec)' : `${plan.accent}18`,
+                color: plan.highlight ? '#070e1a' : plan.accent,
                 boxShadow: plan.highlight ? '0 0 20px rgba(0,196,204,0.3)' : 'none',
                 transition: 'opacity 0.2s, box-shadow 0.2s',
               }}
@@ -920,12 +906,12 @@ function PricingHighlight() {
         <motion.div variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
           style={{ marginTop: 28 }}>
           <Link href="/pricing" style={{
-            fontSize: 14, color: '#738295', textDecoration: 'none',
+            fontSize: 14, color: '#4a7a96', textDecoration: 'none',
             display: 'inline-flex', alignItems: 'center', gap: 6,
             transition: 'color 0.2s',
           }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#A7B4C2')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#738295')}
+            onMouseEnter={e => (e.currentTarget.style.color = '#00d8ec')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#4a7a96')}
           >
             See all plans including Free & Enterprise <ArrowRight size={14} />
           </Link>
@@ -937,30 +923,33 @@ function PricingHighlight() {
 
 /* ── Gallery ─────────────────────────────────────────────────── */
 type GalleryCard =
-  | { kind: 'image'; src: string; ratio: '9/16' | '1/1'; tag: string }
-  | { kind: 'video'; src: string; ratio: '9/16' | '1/1'; tag: string }
+  | { kind: 'image'; src: string; ratio: '9/16' | '1/1'; tag: string; col?: number }
+  | { kind: 'video'; src: string; ratio: '9/16' | '1/1'; tag: string; col?: number }
 
 const GALLERY_CARDS: GalleryCard[] = [
-  // 9:16 portrait videos
-  { kind: 'video', src: '/For Rebranding/New folder/asian_man.mp4',         ratio: '9/16', tag: 'AI Avatar' },
-  { kind: 'video', src: '/For Rebranding/New folder/video-generation.mp4',  ratio: '9/16', tag: 'Video Gen' },
-  // portrait image
-  { kind: 'image', src: '/For Rebranding/New folder/asian_man_img.png',     ratio: '9/16', tag: 'Portrait' },
-  // square AI-generated images
-  { kind: 'image', src: '/A cyberpunk city at sunset with neon reflections on wet streets.png',                                                                                            ratio: '1/1', tag: 'Cyberpunk' },
-  { kind: 'image', src: '/Watercolor painting of a Japanese garden in autumn.png',                                                                                                        ratio: '1/1', tag: 'Watercolor' },
-  { kind: 'image', src: '/Surreal floating islands above clouds at golden hour.png',                                                                                                      ratio: '1/1', tag: 'Surreal' },
-  { kind: 'image', src: '/Ethereal forest with bioluminescent mushrooms and fireflies.png',                                                                                               ratio: '1/1', tag: 'Nature' },
-  { kind: 'image', src: '/Macro photograph of morning dew on a spider web.png',                                                                                                          ratio: '1/1', tag: 'Macro' },
-  // SVG illustrations (all ~1.14:1 → treated as square)
-  { kind: 'image', src: '/For Rebranding/New folder/image-gen-svg/1.svg',   ratio: '1/1', tag: 'Illustration' },
-  { kind: 'image', src: '/For Rebranding/New folder/image-gen-svg/2.svg',   ratio: '1/1', tag: 'Illustration' },
-  { kind: 'image', src: '/For Rebranding/New folder/image-gen-svg/3.svg',   ratio: '1/1', tag: 'Illustration' },
-  { kind: 'image', src: '/For Rebranding/New folder/image-gen-svg/4.svg',   ratio: '1/1', tag: 'Illustration' },
-  { kind: 'image', src: '/For Rebranding/New folder/image-gen-svg/5.svg',   ratio: '1/1', tag: 'Illustration' },
-  { kind: 'image', src: '/For Rebranding/New folder/image-gen-svg/6.svg',   ratio: '1/1', tag: 'Illustration' },
-  { kind: 'image', src: '/For Rebranding/New folder/image-gen-svg/7.svg',   ratio: '1/1', tag: 'Illustration' },
-  { kind: 'video', src: '/For Rebranding/New folder/cr_cologne.mp4',        ratio: '9/16', tag: 'Creative' },
+  // Tall cards interleaved so dense grid distributes them across columns
+  { kind: 'video', src: '/media/asian_man.mp4',         ratio: '9/16', tag: 'AI Avatar' },
+  { kind: 'image', src: '/A cyberpunk city at sunset with neon reflections on wet streets.png', ratio: '1/1', tag: 'Cyberpunk' },
+  { kind: 'image', src: '/media/3%20ia.png',            ratio: '9/16', tag: 'AI Art' },
+  { kind: 'image', src: '/Watercolor painting of a Japanese garden in autumn.png',              ratio: '1/1', tag: 'Watercolor' },
+  { kind: 'video', src: '/media/video-generation.mp4',  ratio: '9/16', tag: 'Video Gen' },
+  { kind: 'image', src: '/media/image-gen-svg/1.svg',   ratio: '1/1', tag: 'Illustration' },
+  { kind: 'image', src: '/media/7a.png',                ratio: '9/16', tag: 'Portrait' },
+  { kind: 'image', src: '/media/image-gen-svg/2.svg',   ratio: '1/1', tag: 'Illustration' },
+  { kind: 'video', src: '/media/cr_cologne.mp4',        ratio: '9/16', tag: 'Creative' },
+  { kind: 'image', src: '/Surreal floating islands above clouds at golden hour.png',            ratio: '1/1', tag: 'Surreal' },
+  { kind: 'image', src: '/Ethereal forest with bioluminescent mushrooms and fireflies.png',     ratio: '1/1', tag: 'Nature' },
+  { kind: 'image', src: '/media/8a.png',                ratio: '1/1', tag: 'Macro' },
+  { kind: 'image', src: '/media/image-gen-svg/3.svg',   ratio: '1/1', tag: 'Illustration' },
+  { kind: 'image', src: '/media/2%20ia.png',            ratio: '1/1', tag: 'AI Art' },
+  { kind: 'image', src: '/media/image-gen-svg/4.svg',   ratio: '1/1', tag: 'Illustration' },
+  { kind: 'image', src: '/media/1%20ia.png',            ratio: '1/1', tag: 'AI Art' },
+  { kind: 'image', src: '/media/image-gen-svg/5.svg',   ratio: '1/1', tag: 'Illustration' },
+  { kind: 'image', src: '/media/4%20ia.png',            ratio: '1/1', tag: 'AI Art' },
+  { kind: 'image', src: '/media/image-gen-svg/6.svg',   ratio: '1/1', tag: 'Illustration' },
+  { kind: 'image', src: '/media/5%20ia.png',            ratio: '1/1', tag: 'AI Art' },
+  { kind: 'image', src: '/media/image-gen-svg/7.svg',   ratio: '1/1', tag: 'Illustration', col: 2 },
+  { kind: 'image', src: '/media/6%20ia.png',            ratio: '1/1', tag: 'AI Art',        col: 4 },
 ]
 
 function GallerySection() {
@@ -974,36 +963,42 @@ function GallerySection() {
         </motion.p>
         {/* Heading */}
         <motion.h2 variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
-          style={{ fontFamily: 'var(--font-syne)', fontSize: 'clamp(26px,3.5vw,42px)', fontWeight: 700, color: '#F4F8FB', margin: '0 0 56px', lineHeight: 1.15 }}>
-          Made with Reelsy
+          style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(26px,3.5vw,42px)', fontWeight: 700, color: '#dceaf4', margin: '0 0 56px', lineHeight: 1.15 }}>
+          Made with Reelx
         </motion.h2>
 
-        {/* Collage — CSS columns for masonry stacking */}
+        {/* Mosaic grid — CSS Grid with dense packing; tall cards span 2 rows */}
         <style>{`
-          .gallery-collage { columns: 5; column-gap: 10px; }
-          @media (max-width: 1024px) { .gallery-collage { columns: 4 } }
-          @media (max-width: 768px)  { .gallery-collage { columns: 3 } }
-          @media (max-width: 480px)  { .gallery-collage { columns: 2 } }
+          .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-auto-rows: 220px;
+            grid-auto-flow: dense;
+            gap: 8px;
+          }
+          @media (max-width: 1024px) { .gallery-grid { grid-template-columns: repeat(4, 1fr); } }
+          @media (max-width: 768px)  { .gallery-grid { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 180px; } }
+          @media (max-width: 480px)  { .gallery-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 160px; } }
+          .gallery-item-tall { grid-row: span 2; }
         `}</style>
         <motion.div
           variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.05 }}
-          className="gallery-collage"
+          className="gallery-grid"
         >
           {GALLERY_CARDS.map((card, i) => (
             <motion.div
               key={i}
               variants={fadeRise}
+              className={card.ratio === '9/16' ? 'gallery-item-tall' : undefined}
               style={{
-                breakInside: 'avoid',
-                marginBottom: 10,
-                borderRadius: 12,
+                borderRadius: 14,
                 overflow: 'hidden',
                 position: 'relative',
-                aspectRatio: card.ratio,
                 background: '#0D1420',
                 cursor: 'pointer',
+                ...(card.col ? { gridColumn: card.col } : {}),
               }}
-              whileHover={{ scale: 1.025, transition: { duration: 0.18 } }}
+              whileHover={{ scale: 1.03, transition: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] } }}
             >
               {card.kind === 'video' ? (
                 <video
@@ -1026,12 +1021,12 @@ function GallerySection() {
               {/* Bottom fade + tag */}
               <div style={{
                 position: 'absolute', bottom: 0, left: 0, right: 0,
-                background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)',
-                padding: '28px 10px 9px',
+                background: 'linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%)',
+                padding: '36px 12px 10px',
               }}>
                 <span style={{
-                  fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
-                  color: 'rgba(255,255,255,0.5)',
+                  fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
+                  color: 'rgba(255,255,255,0.55)',
                 }}>{card.tag}</span>
               </div>
             </motion.div>
@@ -1044,7 +1039,7 @@ function GallerySection() {
           <Link href="/login" style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
             background: 'linear-gradient(135deg, #0e7490 0%, #6d28d9 100%)',
-            color: '#F4F8FB', fontWeight: 600, fontSize: 14,
+            color: '#dceaf4', fontWeight: 600, fontSize: 14,
             padding: '12px 28px', borderRadius: 12, textDecoration: 'none',
             transition: 'opacity 0.2s',
           }}
@@ -1063,15 +1058,15 @@ function GallerySection() {
 const FAQS = [
   {
     q: 'What are credits and how do they work?',
-    a: 'Credits are the currency used to generate content on Reelsy. Each generation costs a set number of credits depending on the model and output type — images cost fewer credits than videos. Credits are included with every plan and reset monthly. You can also purchase additional credit packs at any time.',
+    a: 'Credits are the currency used to generate content on Reelx. Each generation costs a set number of credits depending on the model and output type — images cost fewer credits than videos. Credits are included with every plan and reset monthly. You can also purchase additional credit packs at any time.',
   },
   {
     q: 'Can I use the content I generate commercially?',
-    a: 'Yes. All content generated on Reelsy belongs to you and can be used for commercial purposes, including advertising, client work, and product assets. Output rights are subject to the terms of the underlying AI model provider (e.g., OpenAI, Google), which generally permit commercial use for outputs generated via their APIs.',
+    a: 'Yes. All content generated on Reelx belongs to you and can be used for commercial purposes, including advertising, client work, and product assets. Output rights are subject to the terms of the underlying AI model provider (e.g., OpenAI, Google), which generally permit commercial use for outputs generated via their APIs.',
   },
   {
     q: 'Which AI models are available?',
-    a: 'Reelsy gives you access to a curated selection of the best models across categories — GPT-5 Image Mode, Nano Banana 3 Pro & Flash for images; Seedance 2.0, Veo 3.1, Kling 3.0, and Grok for video. The model list is updated regularly as new models launch.',
+    a: 'Reelx gives you access to a curated selection of the best models across categories — GPT-5 Image Mode, Nano Banana 3 Pro & Flash for images; Seedance 2.0, Veo 3.1, Kling 3.0, and Grok for video. The model list is updated regularly as new models launch.',
   },
   {
     q: 'Do unused credits roll over?',
@@ -1087,7 +1082,7 @@ const FAQS = [
   },
   {
     q: 'How do I get support?',
-    a: 'Email us at support@reelsy-app.com. We typically respond within 1–2 business days. Pro and Business subscribers receive priority response times.',
+    a: 'Email us at support@reelx.app. We typically respond within 1–2 business days. Pro and Business subscribers receive priority response times.',
   },
 ]
 
@@ -1095,14 +1090,14 @@ function FAQ() {
   const [open, setOpen] = useState<number | null>(null)
 
   return (
-    <section id="faq" style={{ background: '#0B0F14', borderTop: '1px solid #1E2A3A', padding: '96px 32px' }}>
+    <section id="faq" style={{ background: '#070e1a', borderTop: '1px solid #1E2A3A', padding: '96px 32px' }}>
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
         <motion.p variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
           style={{ fontSize: 11, fontWeight: 700, color: '#4A5C6E', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>
           FAQ
         </motion.p>
         <motion.h2 variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
-          style={{ fontFamily: 'var(--font-syne)', fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 700, color: '#F4F8FB', margin: '0 0 56px', lineHeight: 1.15 }}>
+          style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 700, color: '#dceaf4', margin: '0 0 56px', lineHeight: 1.15 }}>
           FAQ
         </motion.h2>
 
@@ -1123,19 +1118,19 @@ function FAQ() {
                     textAlign: 'left',
                   }}
                 >
-                  <span style={{ fontSize: 15, fontWeight: 500, color: isOpen ? '#F4F8FB' : '#C8D5E0', lineHeight: 1.4, transition: 'color 0.18s' }}>
+                  <span style={{ fontSize: 15, fontWeight: 500, color: isOpen ? '#dceaf4' : '#C8D5E0', lineHeight: 1.4, transition: 'color 0.18s' }}>
                     {faq.q}
                   </span>
                   <span style={{
                     width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-                    border: '1px solid #273242', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    border: '1px solid #183048', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     transition: 'border-color 0.18s, background 0.18s',
                     background: isOpen ? 'rgba(255,255,255,0.07)' : 'transparent',
-                    borderColor: isOpen ? '#3A4A5C' : '#273242',
+                    borderColor: isOpen ? '#3A4A5C' : '#183048',
                   }}>
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none"
                       style={{ transform: isOpen ? 'rotate(45deg)' : 'none', transition: 'transform 0.22s ease' }}>
-                      <path d="M5 1V9M1 5H9" stroke={isOpen ? '#F4F8FB' : '#738295'} strokeWidth="1.5" strokeLinecap="round" />
+                      <path d="M5 1V9M1 5H9" stroke={isOpen ? '#dceaf4' : '#4a7a96'} strokeWidth="1.5" strokeLinecap="round" />
                     </svg>
                   </span>
                 </button>
@@ -1147,7 +1142,7 @@ function FAQ() {
                   transition: 'grid-template-rows 0.28s ease',
                 }}>
                   <div style={{ overflow: 'hidden' }}>
-                    <p style={{ fontSize: 14, color: '#738295', lineHeight: 1.75, margin: 0, paddingBottom: 22 }}>
+                    <p style={{ fontSize: 14, color: '#4a7a96', lineHeight: 1.75, margin: 0, paddingBottom: 22 }}>
                       {faq.a}
                     </p>
                   </div>
@@ -1173,19 +1168,19 @@ const FOOTER_LINKS: [string, string][] = [
 
 function Footer() {
   return (
-    <footer style={{ background: '#0D1520', borderTop: '1px solid #273242', padding: '32px' }}>
+    <footer style={{ background: '#0D1520', borderTop: '1px solid #183048', padding: '32px' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
-        <Image src="/For Rebranding/reelsy-logo-white-txt.png" alt="Reelsy" width={88} height={24} style={{ objectFit: 'contain' }} />
+        <Image src="/brand/newlogo.png" alt="Reelx" width={140} height={40} style={{ objectFit: 'contain' }} />
         <nav style={{ display: 'flex', gap: 28, flexWrap: 'wrap', alignItems: 'center' }}>
           {FOOTER_LINKS.map(([label, href]) => (
             <Link key={label} href={href}
-              style={{ fontSize: 13, color: '#738295', textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#A7B4C2')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#738295')}
+              style={{ fontSize: 13, color: '#ffffff', textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#00d8ec')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#ffffff')}
             >{label}</Link>
           ))}
         </nav>
-        <span style={{ fontSize: 12, color: '#4A5C6E' }}>© 2026 Reelsy. All rights reserved.</span>
+        <span style={{ fontSize: 12, color: '#ffffff' }}>© 2026 Reelx. All rights reserved.</span>
       </div>
     </footer>
   )

@@ -5,6 +5,11 @@
       "source": "withoneai/auth",
       "sourceType": "github",
       "computedHash": "d84b4e624d1c31c2b1537daf135543095e6980e7c210067989fd6073a1499e31"
+    },
+    "theme-factory": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "computedHash": "0290eabfd6fea9fcfd59c12de15e3f4046593185089956802b6d48ba1d07f428"
     }
   }
 }

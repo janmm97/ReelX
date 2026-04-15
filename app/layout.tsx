@@ -1,30 +1,32 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Plus_Jakarta_Sans } from "next/font/google";
+import { Open_Sans } from "next/font/google";
 import "./globals.css";
 
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-syne",
+/* Brand typography spec: FreeSans Bold (headers) / FreeSans (body)
+   Open Sans is used as the closest available web-font approximation. */
+const openSansHeading = Open_Sans({
+  variable: "--font-heading",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["600", "700", "800"],
   display: "swap",
 });
 
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-manrope",
+const openSansBody = Open_Sans({
+  variable: "--font-body-text",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["300", "400", "500", "600"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://reelsy.ai"),
-  title: "Reelsy — AI Creative Studio",
+  metadataBase: new URL("https://reelx.ai"),
+  title: "Reelx — AI Creative Studio",
   description:
-    "Create images, videos, and avatar content at the speed of content. Reelsy is an AI creative studio with fast workflows, flexible models, and production-ready output.",
+    "Create images, videos, and avatar content at the speed of content. Reelx is an AI creative studio with fast workflows, flexible models, and production-ready output.",
   openGraph: {
-    title: "Reelsy — AI Creative Studio",
+    title: "Reelx — AI Creative Studio",
     description:
-      "Create images, videos, and avatar content at the speed of content. Reelsy is an AI creative studio with fast workflows, flexible models, and production-ready output.",
+      "Create images, videos, and avatar content at the speed of content. Reelx is an AI creative studio with fast workflows, flexible models, and production-ready output.",
     type: "website",
   },
 };
@@ -37,7 +39,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${bricolage.variable} ${jakarta.variable} h-full antialiased`}
+      className={`${openSansHeading.variable} ${openSansBody.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

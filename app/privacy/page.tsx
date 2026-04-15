@@ -3,13 +3,13 @@ import PublicHeader from '@/components/PublicHeader'
 const LAST_UPDATED = 'April 14, 2026'
 
 export const metadata = {
-  title: 'Privacy & Terms — Reelsy',
-  description: 'Privacy policy and terms of service for Reelsy.',
+  title: 'Privacy & Terms — Reelx',
+  description: 'Privacy policy and terms of service for Reelx.',
 }
 
 export default function PrivacyPage() {
   return (
-    <div style={{ background: '#0B0F14', minHeight: '100vh', color: '#F4F8FB' }}>
+    <div style={{ background: '#070e1a', minHeight: '100vh', color: '#dceaf4' }}>
       <PublicHeader />
 
       {/* Body */}
@@ -22,7 +22,7 @@ export default function PrivacyPage() {
         <h2 style={{ fontSize: 20, fontWeight: 700, color: '#C8D5E0', margin: '0 0 28px', paddingBottom: 12, borderBottom: '1px solid #1E2A3A' }}>Privacy Policy</h2>
 
         <Section title="1. Information We Collect">
-          <p>When you use Reelsy we collect:</p>
+          <p>When you use Reelx we collect:</p>
           <ul>
             <li><strong>Account data</strong> — email address and authentication credentials when you sign up.</li>
             <li><strong>Usage data</strong> — prompts you submit, generations requested, and feature interactions, used to operate and improve the service.</li>
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
 
         <Section title="2. How We Use Your Data">
           <ul>
-            <li>To provide, operate, and maintain the Reelsy platform</li>
+            <li>To provide, operate, and maintain the Reelx platform</li>
             <li>To process payments and manage your subscription or credits</li>
             <li>To send transactional emails (receipts, password resets, service notices)</li>
             <li>To detect and prevent fraud or abuse</li>
@@ -52,30 +52,30 @@ export default function PrivacyPage() {
         </Section>
 
         <Section title="4. Data Retention">
-          <p>We retain your account data for as long as your account is active. Generated outputs are stored for 30 days after creation unless you delete them earlier. You may request full account deletion at any time by emailing <a href="mailto:support@reelsy-app.com" style={{ color: '#738295' }}>support@reelsy-app.com</a>.</p>
+          <p>We retain your account data for as long as your account is active. Generated outputs are stored for 30 days after creation unless you delete them earlier. You may request full account deletion at any time by emailing <a href="mailto:support@reelx.app" style={{ color: '#4a7a96' }}>support@reelx.app</a>.</p>
         </Section>
 
         <Section title="5. Cookies">
-          <p>Reelsy uses essential cookies for session management and authentication. We do not use tracking or advertising cookies.</p>
+          <p>Reelx uses essential cookies for session management and authentication. We do not use tracking or advertising cookies.</p>
         </Section>
 
         <Section title="6. Your Rights">
-          <p>Depending on your jurisdiction you may have the right to access, correct, or delete your personal data. To exercise these rights, contact us at <a href="mailto:support@reelsy-app.com" style={{ color: '#738295' }}>support@reelsy-app.com</a>.</p>
+          <p>Depending on your jurisdiction you may have the right to access, correct, or delete your personal data. To exercise these rights, contact us at <a href="mailto:support@reelx.app" style={{ color: '#4a7a96' }}>support@reelx.app</a>.</p>
         </Section>
 
         {/* Terms */}
         <h2 style={{ fontSize: 20, fontWeight: 700, color: '#C8D5E0', margin: '48px 0 28px', paddingBottom: 12, borderBottom: '1px solid #1E2A3A' }}>Terms of Service</h2>
 
         <Section title="7. Acceptance">
-          <p>By creating an account or using Reelsy you agree to these terms. If you do not agree, do not use the service.</p>
+          <p>By creating an account or using Reelx you agree to these terms. If you do not agree, do not use the service.</p>
         </Section>
 
         <Section title="8. Subscriptions & Credits">
-          <p>Reelsy operates on a credit-based model. Credits are non-refundable once consumed. Subscription charges are billed in advance on a monthly or annual cycle. You may cancel at any time; cancellation takes effect at the end of the current billing period.</p>
+          <p>Reelx operates on a credit-based model. Credits are non-refundable once consumed. Subscription charges are billed in advance on a monthly or annual cycle. You may cancel at any time; cancellation takes effect at the end of the current billing period.</p>
         </Section>
 
         <Section title="9. Content Policy">
-          <p>You are responsible for the prompts you submit and the outputs you publish or distribute. You agree not to use Reelsy to generate content that violates applicable law or our Acceptable Use Policy (see Legal page).</p>
+          <p>You are responsible for the prompts you submit and the outputs you publish or distribute. You agree not to use Reelx to generate content that violates applicable law or our Acceptable Use Policy (see Legal page).</p>
         </Section>
 
         <Section title="10. Service Availability">
@@ -93,8 +93,8 @@ export default function PrivacyPage() {
         <div style={{ marginTop: 56, paddingTop: 32, borderTop: '1px solid #1E2A3A' }}>
           <p style={{ fontSize: 13, color: '#4A5C6E' }}>
             Questions?{' '}
-            <a href="mailto:support@reelsy-app.com" style={{ color: '#738295', textDecoration: 'underline', textUnderlineOffset: 3 }}>
-              support@reelsy-app.com
+            <a href="mailto:support@reelx.app" style={{ color: '#4a7a96', textDecoration: 'underline', textUnderlineOffset: 3 }}>
+              support@reelx.app
             </a>
           </p>
         </div>
@@ -107,7 +107,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <section style={{ marginBottom: 36 }}>
       <h3 style={{ fontSize: 15, fontWeight: 600, color: '#C8D5E0', margin: '0 0 10px' }}>{title}</h3>
-      <div style={{ fontSize: 14, color: '#738295', lineHeight: 1.75 }}>
+      <div style={{ fontSize: 14, color: '#4a7a96', lineHeight: 1.75 }}>
         {children}
       </div>
     </section>

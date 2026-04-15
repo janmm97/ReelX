@@ -30,22 +30,22 @@ function AuthCard() {
 
   return (
     <div style={{
-      background: '#141D28', border: '1px solid #273242', borderRadius: 20,
+      background: '#0f2035', border: '1px solid #183048', borderRadius: 20,
       padding: 40, width: '100%', maxWidth: 400,
       display: 'flex', flexDirection: 'column', gap: 24, alignItems: 'center',
     }}>
       <Image
-        src="/For Rebranding/reelsy-icon.png"
-        alt="Reelsy"
+        src="/brand/reelsy-icon.png"
+        alt="Reelx"
         width={48} height={48}
         style={{ objectFit: 'contain' }}
       />
 
       <div style={{ textAlign: 'center' }}>
-        <h1 style={{ fontFamily: 'var(--font-syne)', fontSize: 24, fontWeight: 700, color: '#F4F8FB', margin: '0 0 8px' }}>
-          {isSignup ? 'Create your Reelsy workspace' : 'Sign in to Reelsy'}
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 700, color: '#dceaf4', margin: '0 0 8px' }}>
+          {isSignup ? 'Create your Reelx workspace' : 'Sign in to Reelx'}
         </h1>
-        <p style={{ fontSize: 14, color: '#738295', margin: 0, lineHeight: 1.5 }}>
+        <p style={{ fontSize: 14, color: '#4a7a96', margin: 0, lineHeight: 1.5 }}>
           {isSignup
             ? 'Continue with Google to get started.'
             : 'Continue with your Google account to access your workspace.'}
@@ -57,21 +57,21 @@ function AuthCard() {
         style={{
           width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
           gap: 10, padding: '12px 20px', borderRadius: 12,
-          background: '#F4F8FB', color: '#0B0F14', fontWeight: 600, fontSize: 15,
+          background: '#dceaf4', color: '#070e1a', fontWeight: 600, fontSize: 15,
           border: 'none', cursor: 'pointer', transition: 'background 0.2s',
         }}
         onMouseEnter={e => (e.currentTarget.style.background = '#e8eef4')}
-        onMouseLeave={e => (e.currentTarget.style.background = '#F4F8FB')}
+        onMouseLeave={e => (e.currentTarget.style.background = '#dceaf4')}
       >
         <GoogleIcon />
         Continue with Google
       </button>
 
-      <p style={{ fontSize: 12, color: '#738295', textAlign: 'center', lineHeight: 1.6, margin: 0 }}>
+      <p style={{ fontSize: 12, color: '#4a7a96', textAlign: 'center', lineHeight: 1.6, margin: 0 }}>
         By continuing you agree to the{' '}
-        <a href="#" style={{ color: '#A7B4C2', textDecoration: 'underline' }}>Terms of Service</a>
+        <a href="#" style={{ color: '#00d8ec', textDecoration: 'underline' }}>Terms of Service</a>
         {' '}and{' '}
-        <a href="#" style={{ color: '#A7B4C2', textDecoration: 'underline' }}>Privacy Policy</a>.
+        <a href="#" style={{ color: '#00d8ec', textDecoration: 'underline' }}>Privacy Policy</a>.
       </p>
     </div>
   )
@@ -88,25 +88,25 @@ export default function LoginPage() {
         {/* Grid texture */}
         <div style={{
           position: 'absolute', inset: 0,
-          backgroundImage: 'linear-gradient(#273242 1px,transparent 1px),linear-gradient(90deg,#273242 1px,transparent 1px)',
+          backgroundImage: 'linear-gradient(#183048 1px,transparent 1px),linear-gradient(90deg,#183048 1px,transparent 1px)',
           backgroundSize: '40px 40px', opacity: 0.06, pointerEvents: 'none',
         }} />
         {/* Cyan bloom */}
         <div style={{
           position: 'absolute', bottom: '-10%', right: '-10%', width: 480, height: 480,
-          borderRadius: '50%', background: 'radial-gradient(circle,rgba(0,196,204,0.1) 0%,transparent 70%)',
+          borderRadius: '50%', background: 'radial-gradient(circle,rgba(0,184,212,0.1) 0%,transparent 70%)',
           pointerEvents: 'none',
         }} />
         {/* Ribbon line accent */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#00C4CC,transparent)' }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#00b8d4,transparent)' }} />
 
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <Image src="/For Rebranding/reelsy-logo-white-txt.png" alt="Reelsy" width={120} height={34} style={{ objectFit: 'contain', marginBottom: 48 }} />
+          <Image src="/brand/newlogo.png" alt="Reelx" width={120} height={34} style={{ objectFit: 'contain', marginBottom: 48 }} />
 
-          <h2 style={{ fontFamily: 'var(--font-syne)', fontSize: 'clamp(28px,3vw,44px)', fontWeight: 800, color: '#F4F8FB', lineHeight: 1.1, marginBottom: 16 }}>
+          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(28px,3vw,44px)', fontWeight: 800, color: '#dceaf4', lineHeight: 1.1, marginBottom: 16 }}>
             Create visuals<br />in motion
           </h2>
-          <p style={{ fontSize: 16, color: '#738295', lineHeight: 1.6, maxWidth: 380, marginBottom: 48 }}>
+          <p style={{ fontSize: 16, color: '#4a7a96', lineHeight: 1.6, maxWidth: 380, marginBottom: 48 }}>
             Image, video, and avatar workflows in one AI studio.
           </p>
 
@@ -118,13 +118,13 @@ export default function LoginPage() {
               { label: 'Avatar to Video', detail: 'Studio · ElevenLabs' },
             ].map(item => (
               <div key={item.label} style={{
-                background: 'rgba(20,29,40,0.72)', border: '1px solid #273242',
+                background: 'rgba(20,29,40,0.72)', border: '1px solid #183048',
                 borderRadius: 10, padding: '10px 16px',
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 backdropFilter: 'blur(12px)',
               }}>
-                <span style={{ fontSize: 13, color: '#F4F8FB' }}>{item.label}</span>
-                <span style={{ fontSize: 11, color: '#738295' }}>{item.detail}</span>
+                <span style={{ fontSize: 13, color: '#dceaf4' }}>{item.label}</span>
+                <span style={{ fontSize: 11, color: '#4a7a96' }}>{item.detail}</span>
               </div>
             ))}
           </div>

@@ -15,7 +15,7 @@ export default function VideoPlayer({ videoUrl }: Props) {
       />
       <a
         href={videoUrl}
-        download="reelsy-talking-video.mp4"
+        download="reelx-talking-video.mp4"
         target="_blank"
         rel="noopener noreferrer"
         className="self-start px-4 py-2 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-xs text-white font-medium transition-colors"

@@ -4,35 +4,35 @@ import PublicHeader from '@/components/PublicHeader'
 
 /* ── SEO ──────────────────────────────────────────────────────── */
 export const metadata: Metadata = {
-  title: 'Reelsy Products — AI Image, Video & Talking Studio',
+  title: 'Reelx Products — AI Image, Video & Talking Studio',
   description:
-    'Generate AI images with GPT-5, produce cinematic videos from text or images, and create voice-driven talking avatar videos with ElevenLabs — all in Reelsy.',
-  alternates: { canonical: 'https://reelsy.ai/products' },
+    'Generate AI images with GPT-5, produce cinematic videos from text or images, and create voice-driven talking avatar videos with ElevenLabs — all in Reelx.',
+  alternates: { canonical: 'https://reelx.ai/products' },
   openGraph: {
-    title: 'Reelsy Products — AI Image, Video & Talking Studio',
+    title: 'Reelx Products — AI Image, Video & Talking Studio',
     description:
       'Generate AI images, cinematic videos, and talking avatar content. GPT-5, Veo 3.1, Kling 3.0, ElevenLabs — one platform.',
     type: 'website',
-    url: 'https://reelsy.ai/products',
-    images: [{ url: 'https://reelsy.ai/og/products.png', width: 1200, height: 630, alt: 'Reelsy Products — AI Image, Video & Talking Studio' }],
+    url: 'https://reelx.ai/products',
+    images: [{ url: 'https://reelx.ai/og/products.png', width: 1200, height: 630, alt: 'Reelx Products — AI Image, Video & Talking Studio' }],
   },
   twitter: {
     card: 'summary_large_image',
-    site: '@reelsy',
-    title: 'Reelsy Products — AI Image, Video & Talking Studio',
+    site: '@reelx',
+    title: 'Reelx Products — AI Image, Video & Talking Studio',
     description:
       'Generate AI images, cinematic videos, and talking avatar content — all in one AI creative platform.',
-    images: ['https://reelsy.ai/og/products.png'],
+    images: ['https://reelx.ai/og/products.png'],
   },
 }
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
-  name: 'Reelsy',
+  name: 'Reelx',
   applicationCategory: 'MultimediaApplication',
   operatingSystem: 'Web',
-  url: 'https://reelsy.ai',
+  url: 'https://reelx.ai',
   description:
     'AI creative suite for image generation, video creation, and talking avatar videos.',
   offers: {
@@ -86,13 +86,13 @@ const CSS = `
     display:inline-flex; align-items:center; gap:6px;
     padding:5px 12px; border-radius:100px; font-size:12px; font-weight:500;
     background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08);
-    color:#A7B4C2; white-space:nowrap; letter-spacing:0.01em;
+    color:#00d8ec; white-space:nowrap; letter-spacing:0.01em;
   }
   .pill-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
 
   .check-item {
     display:flex; align-items:center; gap:10px;
-    font-size:14px; color:#A7B4C2; line-height:1.5;
+    font-size:14px; color:#00d8ec; line-height:1.5;
   }
   .check-ring {
     width:18px; height:18px; border-radius:50%; flex-shrink:0;
@@ -102,7 +102,7 @@ const CSS = `
 
   .divider {
     width:100%; height:1px;
-    background:linear-gradient(90deg, transparent 0%, #273242 20%, #273242 80%, transparent 100%);
+    background:linear-gradient(90deg, transparent 0%, #183048 20%, #183048 80%, transparent 100%);
   }
 
   .prod-grid { display:grid; grid-template-columns:1fr 1fr; gap:clamp(40px,6vw,96px); align-items:center; }
@@ -112,7 +112,7 @@ const CSS = `
   .stat-item { text-align:center; }
 
   .wave-bar {
-    width:3px; border-radius:3px; background:#00C4CC; transform-origin:bottom;
+    width:3px; border-radius:3px; background:#00b8d4; transform-origin:bottom;
   }
 
   .img-tile { border-radius:8px; overflow:hidden; position:relative; }
@@ -123,10 +123,10 @@ const CSS = `
   }
 
   .nav-link {
-    color:#A7B4C2; font-size:14px; text-decoration:none;
-    transition:color 0.2s; font-family:var(--font-manrope);
+    color:#00d8ec; font-size:14px; text-decoration:none;
+    transition:color 0.2s; font-family:var(--font-body-text);
   }
-  .nav-link:hover, .nav-link.active { color:#F4F8FB; }
+  .nav-link:hover, .nav-link.active { color:#dceaf4; }
 
   @media (max-width:860px) {
     .prod-grid { grid-template-columns:1fr; }
@@ -158,7 +158,7 @@ function ArrowRight() {
 function CheckSvg() {
   return (
     <svg width="9" height="7" viewBox="0 0 9 7" fill="none" aria-hidden="true">
-      <path d="M1 3.5L3.5 6L8 1" stroke="#00C4CC" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M1 3.5L3.5 6L8 1" stroke="#00b8d4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
@@ -166,9 +166,9 @@ function CheckSvg() {
 /* ── Product visuals (pure SVG/CSS, no external assets) ───────── */
 
 function ImageGenVisual() {
-  const BASE = '/For%20Rebranding/New%20folder/image-gen-svg'
+  const BASE = '/media/image-gen-svg'
   const tiles = [
-    { src: `${BASE}/1.svg`, label: 'Portrait',  dot: '#00C4CC', ratio: '3/4' },
+    { src: `${BASE}/1.svg`, label: 'Portrait',  dot: '#00b8d4', ratio: '3/4' },
     { src: `${BASE}/2.svg`, label: 'Abstract',  dot: '#8B5CF6', ratio: '2/3' },
     { src: `${BASE}/3.svg`, label: 'Landscape', dot: '#10B981', ratio: '3/4' },
     { src: `${BASE}/4.svg`, label: 'Product',   dot: '#F59E0B', ratio: '3/4' },
@@ -228,7 +228,7 @@ function ImageGenVisual() {
               <span style={{
                 fontSize: 8, fontWeight: 700, letterSpacing: '0.07em',
                 textTransform: 'uppercase', color: 'rgba(255,255,255,0.75)',
-                fontFamily: 'var(--font-manrope)',
+                fontFamily: 'var(--font-body-text)',
               }}>{t.label}</span>
             </div>
           </div>
@@ -245,7 +245,7 @@ function ImageGenVisual() {
         zIndex: 10,
       }}>
         <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', flexShrink: 0, boxShadow: '0 0 8px rgba(16,185,129,0.5)' }} />
-        <span style={{ fontSize: 12, fontWeight: 600, color: '#F4F8FB', fontFamily: 'var(--font-manrope)', whiteSpace: 'nowrap' }}>
+        <span style={{ fontSize: 12, fontWeight: 600, color: '#dceaf4', fontFamily: 'var(--font-body-text)', whiteSpace: 'nowrap' }}>
           GPT-5 Image Mode
         </span>
       </div>
@@ -272,11 +272,11 @@ function VideoGenVisual() {
         boxShadow: '0 8px 40px rgba(0,0,0,0.7)',
         transform: 'rotate(2.5deg)',
         animation: 'frameDrift2 4s ease-in-out infinite',
-        overflow: 'hidden', background: '#0B0F14',
+        overflow: 'hidden', background: '#070e1a',
       }}>
         <video autoPlay muted loop playsInline
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}>
-          <source src="/For%20Rebranding/New%20folder/video-generation.mp4" type="video/mp4" />
+          <source src="/media/video-generation.mp4" type="video/mp4" />
         </video>
         <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, transparent 25%)', pointerEvents: 'none' }} />
       </div>
@@ -288,11 +288,11 @@ function VideoGenVisual() {
         boxShadow: '0 20px 60px rgba(0,0,0,0.75)',
         transform: 'rotate(-2deg)',
         animation: 'frameDrift 5s ease-in-out infinite',
-        zIndex: 2, overflow: 'hidden', background: '#0B0F14',
+        zIndex: 2, overflow: 'hidden', background: '#070e1a',
       }}>
         <video autoPlay muted loop playsInline
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}>
-          <source src="/For%20Rebranding/New%20folder/upscaled-video.mp4" type="video/mp4" />
+          <source src="/media/upscaled-video.mp4" type="video/mp4" />
         </video>
         <div style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, transparent 25%, transparent 75%, rgba(0,0,0,0.15) 100%)', pointerEvents: 'none' }} />
       </div>
@@ -306,8 +306,8 @@ function VideoGenVisual() {
         boxShadow: '0 8px 28px rgba(0,0,0,0.6)',
       }}>
         <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#3B82F6', boxShadow: '0 0 8px rgba(59,130,246,0.5)' }} />
-        <span style={{ fontSize: 11, fontWeight: 600, color: '#C8D8E8', fontFamily: 'var(--font-manrope)' }}>Veo 3.1</span>
-        <span style={{ fontSize: 9, color: '#4A6070', fontFamily: 'var(--font-manrope)' }}>/ Google</span>
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#C8D8E8', fontFamily: 'var(--font-body-text)' }}>Veo 3.1</span>
+        <span style={{ fontSize: 9, color: '#4A6070', fontFamily: 'var(--font-body-text)' }}>/ Google</span>
       </div>
     </div>
   )
@@ -317,7 +317,7 @@ function StudioVisual() {
   const lines = [
     { text: 'Hey everyone, welcome back to the channel.', t: '0:00', active: false },
     { text: "Today I'm going to show you something that's going to completely change the way you create content online.", t: '0:03', active: true },
-    { text: "With Reelsy's Studio, you can turn any script into a lifelike talking video — in minutes.", t: '0:09', active: false },
+    { text: "With Reelx's Studio, you can turn any script into a lifelike talking video — in minutes.", t: '0:09', active: false },
     { text: "No camera. No microphone. Just your words.", t: '0:16', active: false },
   ]
 
@@ -335,12 +335,12 @@ function StudioVisual() {
       }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#456B80', fontFamily: 'var(--font-manrope)' }}>
+          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#456B80', fontFamily: 'var(--font-body-text)' }}>
             Script Transcript
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#00C4CC', boxShadow: '0 0 6px rgba(0,196,204,0.7)' }} />
-            <span style={{ fontSize: 10, color: '#00C4CC', fontFamily: 'var(--font-manrope)', fontWeight: 600 }}>LIVE</span>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#00b8d4', boxShadow: '0 0 6px rgba(0,196,204,0.7)' }} />
+            <span style={{ fontSize: 10, color: '#00b8d4', fontFamily: 'var(--font-body-text)', fontWeight: 600 }}>LIVE</span>
           </div>
         </div>
         {/* Lines */}
@@ -352,14 +352,14 @@ function StudioVisual() {
               background: l.active ? 'rgba(0,196,204,0.07)' : 'transparent',
               border: l.active ? '1px solid rgba(0,196,204,0.18)' : '1px solid transparent',
             }}>
-              <span style={{ fontSize: 9, color: l.active ? '#00C4CC' : '#334A5E', fontFamily: 'var(--font-manrope)', fontWeight: 600, marginTop: 2, flexShrink: 0 }}>{l.t}</span>
-              <span style={{ fontSize: 12, color: l.active ? '#D4E8F0' : '#4A6070', fontFamily: 'var(--font-manrope)', lineHeight: 1.5 }}>{l.text}</span>
+              <span style={{ fontSize: 9, color: l.active ? '#00b8d4' : '#334A5E', fontFamily: 'var(--font-body-text)', fontWeight: 600, marginTop: 2, flexShrink: 0 }}>{l.t}</span>
+              <span style={{ fontSize: 12, color: l.active ? '#D4E8F0' : '#4A6070', fontFamily: 'var(--font-body-text)', lineHeight: 1.5 }}>{l.text}</span>
             </div>
           ))}
         </div>
         {/* Progress bar */}
         <div style={{ marginTop: 16, height: 3, borderRadius: 3, background: 'rgba(255,255,255,0.06)' }}>
-          <div style={{ width: '38%', height: '100%', borderRadius: 3, background: '#00C4CC' }} />
+          <div style={{ width: '38%', height: '100%', borderRadius: 3, background: '#00b8d4' }} />
         </div>
       </div>
 
@@ -373,18 +373,18 @@ function StudioVisual() {
         transformOrigin: 'bottom left',
         zIndex: 2,
         aspectRatio: '3/4',
-        background: '#0B0F14',
+        background: '#070e1a',
       }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/For%20Rebranding/New%20folder/asian_man_img.png"
+          src="/media/your_avatar.png"
           alt="AI-generated talking avatar"
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
         />
         {/* Badge */}
         <div style={{ position: 'absolute', bottom: 12, left: 12, display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(8,12,18,0.88)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, padding: '6px 11px' }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#00C4CC', boxShadow: '0 0 7px rgba(0,196,204,0.8)' }} />
-          <span style={{ fontSize: 10, fontWeight: 600, color: '#F4F8FB', fontFamily: 'var(--font-manrope)' }}>ElevenLabs Voice</span>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#00b8d4', boxShadow: '0 0 7px rgba(0,196,204,0.8)' }} />
+          <span style={{ fontSize: 10, fontWeight: 600, color: '#dceaf4', fontFamily: 'var(--font-body-text)' }}>ElevenLabs Voice</span>
         </div>
       </div>
 
@@ -398,7 +398,7 @@ function SectionLabel({ icon, text }: { icon: React.ReactNode; text: string }) {
     <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 22 }}>
       {icon}
       <span style={{
-        fontFamily: 'var(--font-manrope)', fontSize: 11, fontWeight: 700,
+        fontFamily: 'var(--font-body-text)', fontSize: 11, fontWeight: 700,
         letterSpacing: '0.13em', textTransform: 'uppercase', color: '#556B80',
       }}>{text}</span>
     </div>
@@ -439,7 +439,7 @@ export default function ProductsPage() {
       />
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
-      <div style={{ background: '#0B0F14', minHeight: '100vh', color: '#F4F8FB', fontFamily: 'var(--font-manrope)' }}>
+      <div style={{ background: '#070e1a', minHeight: '100vh', color: '#dceaf4', fontFamily: 'var(--font-body-text)' }}>
 
         <PublicHeader />
 
@@ -447,14 +447,14 @@ export default function ProductsPage() {
         <section style={{ padding: 'clamp(56px,7vw,96px) 32px clamp(40px,5vw,64px)' }}>
           <div style={{ maxWidth: 1280, margin: '0 auto' }}>
             <p className="ar-0" style={{
-              fontFamily: 'var(--font-manrope)', fontSize: 12, fontWeight: 700,
-              letterSpacing: '0.14em', textTransform: 'uppercase', color: '#00C4CC',
+              fontFamily: 'var(--font-body-text)', fontSize: 12, fontWeight: 700,
+              letterSpacing: '0.14em', textTransform: 'uppercase', color: '#00b8d4',
               marginBottom: 14,
             }}>
-              The Reelsy Suite
+              The Reelx Suite
             </p>
             <h1 className="ar-1 hero-h1" style={{
-              fontFamily: 'var(--font-syne)',
+              fontFamily: 'var(--font-heading)',
               fontSize: 'clamp(44px,7.5vw,100px)',
               fontWeight: 800, lineHeight: 1.04, letterSpacing: '-0.032em',
               margin: '0 0 28px', maxWidth: '13ch',
@@ -465,7 +465,7 @@ export default function ProductsPage() {
               fontSize: 'clamp(15px,1.8vw,18px)', color: '#8A9EAE',
               maxWidth: 480, lineHeight: 1.7, margin: 0,
             }}>
-              From a single prompt to a finished video — Reelsy connects image generation,
+              From a single prompt to a finished video — Reelx connects image generation,
               video creation, and voice-driven studio output in one seamless platform.
             </p>
           </div>
@@ -486,7 +486,7 @@ export default function ProductsPage() {
             {/* Watermark */}
             <div className="af" aria-hidden="true" style={{
               position: 'absolute', top: -48, left: -16, zIndex: 0,
-              fontFamily: 'var(--font-syne)', fontWeight: 800,
+              fontFamily: 'var(--font-heading)', fontWeight: 800,
               fontSize: 'clamp(100px,16vw,192px)', lineHeight: 1,
               color: '#111A26', userSelect: 'none', pointerEvents: 'none',
             }}>01</div>
@@ -498,16 +498,16 @@ export default function ProductsPage() {
                   text="Image Generation"
                   icon={
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#00C4CC" opacity="0.8" />
-                      <rect x="9" y="1" width="6" height="6" rx="1.5" fill="#00C4CC" opacity="0.35" />
-                      <rect x="1" y="9" width="6" height="6" rx="1.5" fill="#00C4CC" opacity="0.35" />
-                      <rect x="9" y="9" width="6" height="6" rx="1.5" fill="#00C4CC" opacity="0.15" />
+                      <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#00b8d4" opacity="0.8" />
+                      <rect x="9" y="1" width="6" height="6" rx="1.5" fill="#00b8d4" opacity="0.35" />
+                      <rect x="1" y="9" width="6" height="6" rx="1.5" fill="#00b8d4" opacity="0.35" />
+                      <rect x="9" y="9" width="6" height="6" rx="1.5" fill="#00b8d4" opacity="0.15" />
                     </svg>
                   }
                 />
 
                 <h2 className="prod-h2" style={{
-                  fontFamily: 'var(--font-syne)',
+                  fontFamily: 'var(--font-heading)',
                   fontSize: 'clamp(32px,4.2vw,56px)',
                   fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.025em',
                   margin: '0 0 20px',
@@ -535,8 +535,8 @@ export default function ProductsPage() {
 
                 <Link href="/login" className="cta-link" style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
-                  fontFamily: 'var(--font-syne)', fontWeight: 700, fontSize: 15,
-                  color: '#00C4CC', textDecoration: 'none',
+                  fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15,
+                  color: '#00b8d4', textDecoration: 'none',
                 }}>
                   Start generating images
                   <span className="cta-arrow"><ArrowRight /></span>
@@ -566,7 +566,7 @@ export default function ProductsPage() {
             {/* Watermark — right-aligned */}
             <div className="af" aria-hidden="true" style={{
               position: 'absolute', top: -48, right: -16, left: 'auto', zIndex: 0,
-              fontFamily: 'var(--font-syne)', fontWeight: 800,
+              fontFamily: 'var(--font-heading)', fontWeight: 800,
               fontSize: 'clamp(100px,16vw,192px)', lineHeight: 1,
               color: '#111A26', userSelect: 'none', pointerEvents: 'none',
             }}>02</div>
@@ -583,14 +583,14 @@ export default function ProductsPage() {
                   text="Video Generation"
                   icon={
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <rect x="1" y="3" width="10" height="10" rx="2" stroke="#00C4CC" strokeWidth="1.4" opacity="0.8" />
-                      <path d="M11 8L15 5.5V10.5L11 8Z" fill="#00C4CC" opacity="0.8" />
+                      <rect x="1" y="3" width="10" height="10" rx="2" stroke="#00b8d4" strokeWidth="1.4" opacity="0.8" />
+                      <path d="M11 8L15 5.5V10.5L11 8Z" fill="#00b8d4" opacity="0.8" />
                     </svg>
                   }
                 />
 
                 <h2 className="prod-h2" style={{
-                  fontFamily: 'var(--font-syne)',
+                  fontFamily: 'var(--font-heading)',
                   fontSize: 'clamp(32px,4.2vw,56px)',
                   fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.025em',
                   margin: '0 0 20px',
@@ -618,8 +618,8 @@ export default function ProductsPage() {
 
                 <Link href="/login" className="cta-link" style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
-                  fontFamily: 'var(--font-syne)', fontWeight: 700, fontSize: 15,
-                  color: '#00C4CC', textDecoration: 'none',
+                  fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15,
+                  color: '#00b8d4', textDecoration: 'none',
                 }}>
                   Generate your first video
                   <span className="cta-arrow"><ArrowRight /></span>
@@ -644,7 +644,7 @@ export default function ProductsPage() {
             {/* Watermark — left, matching 01 */}
             <div className="af" aria-hidden="true" style={{
               position: 'absolute', top: -48, left: -16, zIndex: 0,
-              fontFamily: 'var(--font-syne)', fontWeight: 800,
+              fontFamily: 'var(--font-heading)', fontWeight: 800,
               fontSize: 'clamp(100px,16vw,192px)', lineHeight: 1,
               color: '#111A26', userSelect: 'none', pointerEvents: 'none',
             }}>03</div>
@@ -656,15 +656,15 @@ export default function ProductsPage() {
                   text="Studio"
                   icon={
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <circle cx="8" cy="8" r="6.5" stroke="#00C4CC" strokeWidth="1.4" opacity="0.7" />
-                      <circle cx="8" cy="6" r="2.2" fill="#00C4CC" opacity="0.8" />
-                      <path d="M3.5 14C3.5 11.5 5.5 9.5 8 9.5C10.5 9.5 12.5 11.5 12.5 14" stroke="#00C4CC" strokeWidth="1.4" strokeLinecap="round" />
+                      <circle cx="8" cy="8" r="6.5" stroke="#00b8d4" strokeWidth="1.4" opacity="0.7" />
+                      <circle cx="8" cy="6" r="2.2" fill="#00b8d4" opacity="0.8" />
+                      <path d="M3.5 14C3.5 11.5 5.5 9.5 8 9.5C10.5 9.5 12.5 11.5 12.5 14" stroke="#00b8d4" strokeWidth="1.4" strokeLinecap="round" />
                     </svg>
                   }
                 />
 
                 <h2 className="prod-h2" style={{
-                  fontFamily: 'var(--font-syne)',
+                  fontFamily: 'var(--font-heading)',
                   fontSize: 'clamp(32px,4.2vw,56px)',
                   fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.025em',
                   margin: '0 0 20px',
@@ -687,8 +687,8 @@ export default function ProductsPage() {
 
                 <Link href="/studio" className="cta-link" style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
-                  fontFamily: 'var(--font-syne)', fontWeight: 700, fontSize: 15,
-                  color: '#00C4CC', textDecoration: 'none',
+                  fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15,
+                  color: '#00b8d4', textDecoration: 'none',
                 }}>
                   Open the Studio
                   <span className="cta-arrow"><ArrowRight /></span>
@@ -715,7 +715,7 @@ export default function ProductsPage() {
           }}>
             <div>
               <h2 style={{
-                fontFamily: 'var(--font-syne)',
+                fontFamily: 'var(--font-heading)',
                 fontSize: 'clamp(28px,4vw,52px)',
                 fontWeight: 800, letterSpacing: '-0.025em', margin: '0 0 10px',
               }}>
@@ -727,16 +727,16 @@ export default function ProductsPage() {
             </div>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               <Link href="/login" style={{
-                background: '#F4F8FB', color: '#0B0F14', fontWeight: 700, fontSize: 15,
+                background: '#dceaf4', color: '#070e1a', fontWeight: 700, fontSize: 15,
                 padding: '14px 28px', borderRadius: 12, textDecoration: 'none',
-                fontFamily: 'var(--font-syne)', display: 'inline-flex', alignItems: 'center',
+                fontFamily: 'var(--font-heading)', display: 'inline-flex', alignItems: 'center',
               }}>
                 Get Started Free
               </Link>
               <Link href="/pricing" style={{
-                background: 'transparent', color: '#F4F8FB', fontWeight: 600, fontSize: 15,
+                background: 'transparent', color: '#dceaf4', fontWeight: 600, fontSize: 15,
                 padding: '14px 28px', borderRadius: 12, textDecoration: 'none',
-                fontFamily: 'var(--font-syne)', border: '1px solid #273242',
+                fontFamily: 'var(--font-heading)', border: '1px solid #183048',
                 display: 'inline-flex', alignItems: 'center',
               }}>
                 View Pricing

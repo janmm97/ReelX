@@ -218,8 +218,8 @@ function PlanCard({ plan, annual, loading, onCheckout }: {
     <motion.div
       variants={fadeRise}
       style={{
-        background: plan.highlight ? '#141D28' : '#0E1722',
-        border: plan.highlight ? '1px solid #00C4CC' : '1px solid #1E2A3A',
+        background: plan.highlight ? '#0f2035' : '#0E1722',
+        border: plan.highlight ? '1px solid #00b8d4' : '1px solid #1E2A3A',
         borderRadius: 18, padding: '26px 22px', display: 'flex', flexDirection: 'column',
         boxShadow: plan.highlight ? '0 0 52px rgba(0,196,204,0.1)' : 'none',
         position: 'relative',
@@ -228,20 +228,20 @@ function PlanCard({ plan, annual, loading, onCheckout }: {
       {plan.highlight && (
         <div style={{
           position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)',
-          background: 'linear-gradient(135deg,#00C4CC,#00F2FE)',
-          color: '#0B0F14', fontSize: 10, fontWeight: 800, letterSpacing: '0.08em',
+          background: 'linear-gradient(135deg,#00b8d4,#00d8ec)',
+          color: '#070e1a', fontSize: 10, fontWeight: 800, letterSpacing: '0.08em',
           padding: '4px 14px', borderRadius: 99, whiteSpace: 'nowrap', textTransform: 'uppercase',
         }}>Most Popular</div>
       )}
 
       {/* Name + save badge */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
-        <span style={{ fontFamily: 'var(--font-syne)', fontWeight: 700, fontSize: 17, color: '#F4F8FB' }}>
+        <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 17, color: '#dceaf4' }}>
           {plan.name}
         </span>
         {save && (
           <span style={{
-            background: 'rgba(0,196,204,0.09)', color: '#00C4CC',
+            background: 'rgba(0,196,204,0.09)', color: '#00b8d4',
             fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 99,
             border: '1px solid rgba(0,196,204,0.18)', whiteSpace: 'nowrap',
           }}>Save ${save}/yr</span>
@@ -250,7 +250,7 @@ function PlanCard({ plan, annual, loading, onCheckout }: {
 
       {/* Price */}
       <div style={{ marginBottom: 2 }}>
-        <span style={{ fontFamily: 'var(--font-syne)', fontWeight: 800, fontSize: 38, color: '#F4F8FB', lineHeight: 1 }}>
+        <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 38, color: '#dceaf4', lineHeight: 1 }}>
           {price}
         </span>
         {!plan.enterprise && !isFree && (
@@ -270,13 +270,13 @@ function PlanCard({ plan, annual, loading, onCheckout }: {
           background: 'rgba(0,196,204,0.06)', border: '1px solid rgba(0,196,204,0.14)',
           borderRadius: 8, padding: '8px 12px',
         }}>
-          <Zap size={13} color="#00C4CC" />
-          <span style={{ fontFamily: 'var(--font-syne)', fontWeight: 700, fontSize: 16, color: '#00C4CC' }}>
+          <Zap size={13} color="#00b8d4" />
+          <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, color: '#00b8d4' }}>
             {plan.credits}
           </span>
           <span style={{ fontSize: 12, color: '#4A5568' }}>{plan.creditsNote}</span>
           {plan.rollover && (
-            <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#738295' }}>
+            <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#4a7a96' }}>
               <RotateCcw size={11} />{plan.rollover}
             </span>
           )}
@@ -285,21 +285,21 @@ function PlanCard({ plan, annual, loading, onCheckout }: {
       {isFree && (
         <div style={{
           display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16,
-          background: 'rgba(39,50,66,0.4)', border: '1px solid #273242',
+          background: 'rgba(39,50,66,0.4)', border: '1px solid #183048',
           borderRadius: 8, padding: '8px 12px',
         }}>
           <Lock size={12} color="#4A5568" />
-          <span style={{ fontSize: 12, color: '#738295' }}>Hard caps — no credit wallet</span>
+          <span style={{ fontSize: 12, color: '#4a7a96' }}>Hard caps — no credit wallet</span>
         </div>
       )}
 
       {/* Desc */}
-      <p style={{ fontSize: 13, color: '#738295', lineHeight: 1.55, marginBottom: 18 }}>{plan.desc}</p>
+      <p style={{ fontSize: 13, color: '#4a7a96', lineHeight: 1.55, marginBottom: 18 }}>{plan.desc}</p>
 
       {/* CTA */}
       {plan.enterprise ? (
-        <Link href="mailto:sales@reelsy.ai" style={{
-          background: '#F4F8FB', color: '#00C4CC',
+        <Link href="mailto:support@reelx.app" style={{
+          background: '#dceaf4', color: '#00b8d4',
           fontWeight: 700, fontSize: 14,
           padding: '11px 0', borderRadius: 10, textDecoration: 'none',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
@@ -309,7 +309,7 @@ function PlanCard({ plan, annual, loading, onCheckout }: {
         </Link>
       ) : isFree ? (
         <Link href="/login" style={{
-          background: '#F4F8FB', color: '#00C4CC',
+          background: '#dceaf4', color: '#00b8d4',
           fontWeight: 700, fontSize: 14,
           padding: '11px 0', borderRadius: 10, textDecoration: 'none',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
@@ -322,7 +322,7 @@ function PlanCard({ plan, annual, loading, onCheckout }: {
           onClick={onCheckout}
           disabled={loading}
           style={{
-            background: '#F4F8FB', color: '#00C4CC',
+            background: '#dceaf4', color: '#00b8d4',
             fontWeight: 700, fontSize: 14, border: 'none', cursor: loading ? 'wait' : 'pointer',
             padding: '11px 0', borderRadius: 10, width: '100%',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
@@ -341,15 +341,15 @@ function PlanCard({ plan, annual, loading, onCheckout }: {
       <div style={{ fontSize: 11, fontWeight: 600, color: '#4A5568', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
         Models included
       </div>
-      <p style={{ fontSize: 12, color: '#738295', lineHeight: 1.5, marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #1A2535' }}>
+      <p style={{ fontSize: 12, color: '#4a7a96', lineHeight: 1.5, marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #1A2535' }}>
         {plan.modelAccess}
       </p>
 
       {/* Features */}
       <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 9 }}>
         {plan.features.map(f => (
-          <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 9, fontSize: 13, color: '#A7B4C2' }}>
-            <CheckCircle size={13} color="#00C4CC" style={{ flexShrink: 0, marginTop: 1 }} />
+          <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 9, fontSize: 13, color: '#00d8ec' }}>
+            <CheckCircle size={13} color="#00b8d4" style={{ flexShrink: 0, marginTop: 1 }} />
             {f}
           </li>
         ))}
@@ -365,7 +365,7 @@ function PlanCard({ plan, annual, loading, onCheckout }: {
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
             {plan.examples.map(ex => (
               <li key={ex} style={{ fontSize: 12, color: '#4A5568', paddingLeft: 12, position: 'relative' }}>
-                <span style={{ position: 'absolute', left: 0, color: '#273242' }}>·</span>
+                <span style={{ position: 'absolute', left: 0, color: '#183048' }}>·</span>
                 {ex}
               </li>
             ))}
@@ -395,7 +395,7 @@ export default function PricingPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0B0F14', color: '#F4F8FB' }}>
+    <div style={{ minHeight: '100vh', background: '#070e1a', color: '#dceaf4' }}>
 
       <PublicHeader />
 
@@ -410,16 +410,16 @@ export default function PricingPage() {
         <motion.div variants={stagger} initial="hidden" animate="show"
           style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
 
-          <motion.p variants={fadeRise} style={{ fontSize: 11, fontWeight: 700, color: '#738295', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+          <motion.p variants={fadeRise} style={{ fontSize: 11, fontWeight: 700, color: '#4a7a96', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
             Pricing
           </motion.p>
           <motion.h1 variants={fadeRise} style={{
-            fontFamily: 'var(--font-syne)', fontSize: 'clamp(36px,5vw,58px)',
-            fontWeight: 800, color: '#F4F8FB', lineHeight: 1.08, margin: 0,
+            fontFamily: 'var(--font-heading)', fontSize: 'clamp(36px,5vw,58px)',
+            fontWeight: 800, color: '#dceaf4', lineHeight: 1.08, margin: 0,
           }}>
             Flexible pricing that scales<br />with your needs
           </motion.h1>
-          <motion.p variants={fadeRise} style={{ color: '#738295', fontSize: 17, lineHeight: 1.6, maxWidth: 440, margin: 0 }}>
+          <motion.p variants={fadeRise} style={{ color: '#4a7a96', fontSize: 17, lineHeight: 1.6, maxWidth: 440, margin: 0 }}>
             Start free. Every paid plan runs on a unified credit wallet — one balance for images, videos, and avatar content.
           </motion.p>
 
@@ -429,8 +429,8 @@ export default function PricingPage() {
             background: 'rgba(0,196,204,0.07)', border: '1px solid rgba(0,196,204,0.18)',
             borderRadius: 99, padding: '6px 16px', marginTop: 4,
           }}>
-            <Zap size={12} color="#00C4CC" />
-            <span style={{ fontSize: 12, color: '#00C4CC', fontWeight: 500 }}>
+            <Zap size={12} color="#00b8d4" />
+            <span style={{ fontSize: 12, color: '#00b8d4', fontWeight: 500 }}>
               1 credit = $0.001 · cheapest image = 4 cr · cheapest video = 100 cr
             </span>
           </motion.div>
@@ -438,26 +438,26 @@ export default function PricingPage() {
           {/* Billing toggle */}
           <motion.div variants={fadeRise} style={{
             display: 'flex', alignItems: 'center',
-            background: '#141D28', border: '1px solid #273242', borderRadius: 99,
+            background: '#0f2035', border: '1px solid #183048', borderRadius: 99,
             padding: '4px 6px', marginTop: 8,
           }}>
             <button onClick={() => setAnnual(false)} style={{
               padding: '7px 22px', borderRadius: 99, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600,
-              background: !annual ? '#F4F8FB' : 'transparent',
-              color: !annual ? '#0B0F14' : '#738295',
+              background: !annual ? '#dceaf4' : 'transparent',
+              color: !annual ? '#070e1a' : '#4a7a96',
               transition: 'all 0.2s',
             }}>Monthly</button>
             <button onClick={() => setAnnual(true)} style={{
               padding: '7px 22px', borderRadius: 99, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600,
-              background: annual ? 'linear-gradient(135deg,#00C4CC,#00F2FE)' : 'transparent',
-              color: annual ? '#0B0F14' : '#738295',
+              background: annual ? 'linear-gradient(135deg,#00b8d4,#00d8ec)' : 'transparent',
+              color: annual ? '#070e1a' : '#4a7a96',
               transition: 'all 0.2s',
               display: 'flex', alignItems: 'center', gap: 7,
             }}>
               Annual
               <span style={{
                 background: annual ? 'rgba(11,15,20,0.2)' : 'transparent',
-                color: annual ? '#0B0F14' : '#738295',
+                color: annual ? '#070e1a' : '#4a7a96',
                 fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 99,
               }}>Save up to 20%</span>
             </button>
@@ -501,10 +501,10 @@ export default function PricingPage() {
           <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}
             style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
             <motion.div variants={fadeRise} style={{ textAlign: 'center' }}>
-              <h2 style={{ fontFamily: 'var(--font-syne)', fontWeight: 700, fontSize: 28, color: '#F4F8FB', margin: '0 0 8px' }}>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 28, color: '#dceaf4', margin: '0 0 8px' }}>
                 Need more credits?
               </h2>
-              <p style={{ color: '#738295', fontSize: 15, margin: 0 }}>
+              <p style={{ color: '#4a7a96', fontSize: 15, margin: 0 }}>
                 Top-up packs work on any plan. No expiry for 12 months. No restrictions — use on any model.
               </p>
             </motion.div>
@@ -513,30 +513,30 @@ export default function PricingPage() {
               style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16 }}>
               {TOPUPS.map(pack => (
                 <motion.div key={pack.name} variants={fadeRise} style={{
-                  background: pack.best ? '#141D28' : '#101722',
+                  background: pack.best ? '#0f2035' : '#101722',
                   border: pack.best ? '1px solid rgba(0,196,204,0.35)' : '1px solid #1E2A3A',
                   borderRadius: 14, padding: '22px 20px', position: 'relative',
                 }}>
                   {pack.best && (
                     <div style={{
                       position: 'absolute', top: -10, right: 16,
-                      background: 'rgba(0,196,204,0.12)', color: '#00C4CC',
+                      background: 'rgba(0,196,204,0.12)', color: '#00b8d4',
                       fontSize: 10, fontWeight: 700, letterSpacing: '0.06em',
                       border: '1px solid rgba(0,196,204,0.25)',
                       padding: '3px 10px', borderRadius: 99, textTransform: 'uppercase',
                     }}>Best value</div>
                   )}
-                  <div style={{ fontFamily: 'var(--font-syne)', fontWeight: 700, fontSize: 16, color: '#F4F8FB', marginBottom: 6 }}>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, color: '#dceaf4', marginBottom: 6 }}>
                     {pack.name}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
-                    <span style={{ fontFamily: 'var(--font-syne)', fontWeight: 800, fontSize: 28, color: '#F4F8FB' }}>
+                    <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 28, color: '#dceaf4' }}>
                       ${pack.price}
                     </span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 16 }}>
-                    <Zap size={12} color="#00C4CC" />
-                    <span style={{ fontSize: 14, color: '#00C4CC', fontWeight: 600 }}>{pack.credits.toLocaleString()} credits</span>
+                    <Zap size={12} color="#00b8d4" />
+                    <span style={{ fontSize: 14, color: '#00b8d4', fontWeight: 600 }}>{pack.credits.toLocaleString()} credits</span>
                     <span style={{ fontSize: 11, color: '#3A4A5C', marginLeft: 4 }}>· {pack.per}</span>
                   </div>
                   <button
@@ -544,13 +544,13 @@ export default function PricingPage() {
                     disabled={loadingKey === `topup_${pack.name.toLowerCase()}`}
                     style={{
                       display: 'block', width: '100%', textAlign: 'center', border: 'none',
-                      background: '#F4F8FB', color: '#00C4CC', fontWeight: 700, fontSize: 13,
+                      background: '#dceaf4', color: '#00b8d4', fontWeight: 700, fontSize: 13,
                       padding: '9px 0', borderRadius: 8, cursor: loadingKey === `topup_${pack.name.toLowerCase()}` ? 'wait' : 'pointer',
                       opacity: loadingKey === `topup_${pack.name.toLowerCase()}` ? 0.7 : 1,
                       transition: 'background 0.2s',
                     }}
                     onMouseEnter={e => (e.currentTarget.style.background = '#e4ecf4')}
-                    onMouseLeave={e => (e.currentTarget.style.background = '#F4F8FB')}
+                    onMouseLeave={e => (e.currentTarget.style.background = '#dceaf4')}
                   >
                     {loadingKey === `topup_${pack.name.toLowerCase()}` ? 'Redirecting…' : 'Buy pack'}
                   </button>
@@ -566,17 +566,17 @@ export default function PricingPage() {
       </section>
 
       {/* ── Model access matrix ── */}
-      <section style={{ padding: '72px 32px', background: '#0B0F14' }}>
+      <section style={{ padding: '72px 32px', background: '#070e1a' }}>
         <div style={{ maxWidth: 860, margin: '0 auto' }}>
           <motion.h2
             variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
-            style={{ fontFamily: 'var(--font-syne)', fontWeight: 700, fontSize: 28, color: '#F4F8FB', textAlign: 'center', marginBottom: 8 }}
+            style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 28, color: '#dceaf4', textAlign: 'center', marginBottom: 8 }}
           >
             Model access by plan
           </motion.h2>
           <motion.p
             variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
-            style={{ textAlign: 'center', color: '#738295', fontSize: 15, marginBottom: 40 }}
+            style={{ textAlign: 'center', color: '#4a7a96', fontSize: 15, marginBottom: 40 }}
           >
             Each tier unlocks a wider set of models. Ultra-premium video (Veo 3, Sora 2 Pro) requires Premium.
           </motion.p>
@@ -591,17 +591,17 @@ export default function PricingPage() {
                 video: 'ByteDance v1 Lite only',
               },
               {
-                tier: 'Creator', color: '#738295',
+                tier: 'Creator', color: '#4a7a96',
                 image: 'Budget + standard (FLUX.2 Klein → Riverflow Max)',
                 video: 'Standard (up to Kling 2.1 / Grok T2V)',
               },
               {
-                tier: 'Pro', color: '#A7B4C2',
+                tier: 'Pro', color: '#00d8ec',
                 image: 'Standard + premium (up to GPT-5 Image)',
                 video: 'Premium (up to Runway Turbo / Kling 2.6)',
               },
               {
-                tier: 'Premium', color: '#00C4CC',
+                tier: 'Premium', color: '#00b8d4',
                 image: 'All — incl. Gemini 3 Pro ($0.12/gen)',
                 video: 'All — incl. Veo 3, Sora 2 Pro, Kling 3 Audio',
               },
@@ -611,16 +611,16 @@ export default function PricingPage() {
                 gap: 0, borderBottom: i < 3 ? '1px solid #1A2535' : 'none',
                 padding: '16px 0',
               }}>
-                <span style={{ fontFamily: 'var(--font-syne)', fontWeight: 700, fontSize: 14, color: row.color, display: 'flex', alignItems: 'center' }}>
+                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14, color: row.color, display: 'flex', alignItems: 'center' }}>
                   {row.tier}
                 </span>
                 <div style={{ paddingRight: 20 }}>
                   <div style={{ fontSize: 10, fontWeight: 600, color: '#3A4A5C', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Images</div>
-                  <div style={{ fontSize: 13, color: '#738295', lineHeight: 1.5 }}>{row.image}</div>
+                  <div style={{ fontSize: 13, color: '#4a7a96', lineHeight: 1.5 }}>{row.image}</div>
                 </div>
                 <div>
                   <div style={{ fontSize: 10, fontWeight: 600, color: '#3A4A5C', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Videos</div>
-                  <div style={{ fontSize: 13, color: '#738295', lineHeight: 1.5 }}>{row.video}</div>
+                  <div style={{ fontSize: 13, color: '#4a7a96', lineHeight: 1.5 }}>{row.video}</div>
                 </div>
               </motion.div>
             ))}
@@ -630,10 +630,10 @@ export default function PricingPage() {
 
       {/* ── Footer strip ── */}
       <div style={{ borderTop: '1px solid #1E2A3A', padding: '40px 32px', background: '#0D1520', textAlign: 'center' }}>
-        <p style={{ fontSize: 15, color: '#738295', margin: '0 0 6px' }}>
+        <p style={{ fontSize: 15, color: '#4a7a96', margin: '0 0 6px' }}>
           Need a custom contract, white-label, or 25,000+ credits/month?
         </p>
-        <Link href="#" style={{ fontSize: 15, color: '#00C4CC', textDecoration: 'none', fontWeight: 600 }}>
+        <Link href="#" style={{ fontSize: 15, color: '#00b8d4', textDecoration: 'none', fontWeight: 600 }}>
           Talk to our team →
         </Link>
       </div>

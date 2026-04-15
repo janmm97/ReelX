@@ -170,7 +170,7 @@ const MODELS: {
     label: 'FLUX.2 Flex',
     badge: 'Black Forest',
     desc: 'Flexible FLUX model with high context window and quality output.',
-    color: 'from-violet-500 to-[#00F2FE]',
+    color: 'from-violet-500 to-[#00d8ec]',
     tier: 'standard',
     cost: '$14.65/M',
   },
@@ -179,7 +179,7 @@ const MODELS: {
     label: 'FLUX.2 Max',
     badge: 'Black Forest',
     desc: 'Maximum quality FLUX generation — ultra-sharp details.',
-    color: 'from-[#00C4CC] to-violet-600',
+    color: 'from-[#00b8d4] to-violet-600',
     tier: 'standard',
     cost: '$17.09/M',
   },
@@ -326,7 +326,7 @@ const VIDEO_MODELS: VideoModelDef[] = [
     label: 'Runway Aleph',
     badge: 'Runway',
     desc: 'Advanced Runway model — high-fidelity scenes with complex motion.',
-    color: 'from-violet-500 to-[#00F2FE]',
+    color: 'from-violet-500 to-[#00d8ec]',
     tier: 'standard',
   },
   {
@@ -399,7 +399,7 @@ const VIDEO_MODELS: VideoModelDef[] = [
     label: 'Veo 3.1 with Audio',
     badge: 'Google',
     desc: 'Veo 3.1 Quality with synchronised background audio.',
-    color: 'from-blue-600 to-[#00F2FE]',
+    color: 'from-blue-600 to-[#00d8ec]',
     tier: 'premium',
   },
   {
@@ -407,7 +407,7 @@ const VIDEO_MODELS: VideoModelDef[] = [
     label: 'Kling 3.0 with Audio',
     badge: 'Kuaishou',
     desc: 'Kling 3.0 pro mode with sound effects enabled. Up to 1080p.',
-    color: 'from-[#00C4CC] to-indigo-500',
+    color: 'from-[#00b8d4] to-indigo-500',
     tier: 'premium',
   },
   {
@@ -447,7 +447,7 @@ const VIDEO_MODELS: VideoModelDef[] = [
     label: 'Kling 2.5 Turbo',
     badge: 'Kuaishou',
     desc: 'Kling 2.5 Turbo Pro — fast generation with high visual quality.',
-    color: 'from-violet-500 to-[#00F2FE]',
+    color: 'from-violet-500 to-[#00d8ec]',
     tier: 'standard',
   },
   {
@@ -584,7 +584,7 @@ const I2V_MODELS: I2VModelDef[] = [
     label: 'Kling 3.0 with Audio',
     badge: 'Kuaishou',
     desc: 'Kling 3.0 pro mode with sound effects. Up to 1080p.',
-    color: 'from-[#00C4CC] to-indigo-500',
+    color: 'from-[#00b8d4] to-indigo-500',
     tier: 'premium',
   },
   {
@@ -616,7 +616,7 @@ const I2V_MODELS: I2VModelDef[] = [
     label: 'Kling 2.5 Turbo',
     badge: 'Kuaishou',
     desc: 'Kling 2.5 Turbo Pro image-to-video — fast with high fidelity.',
-    color: 'from-violet-500 to-[#00F2FE]',
+    color: 'from-violet-500 to-[#00d8ec]',
     tier: 'standard',
   },
   {
@@ -710,7 +710,7 @@ async function downloadImage(url: string, filename = 'instaart.png') {
 
 // ── Main component ───────────────────────────────────────────────────────────
 const ONBOARDING_STEPS = [
-  { heading: 'What brings you to Reelsy?', options: ['Marketing', 'Content creation', 'Agency work', 'Founder'] },
+  { heading: 'What brings you to Reelx?', options: ['Marketing', 'Content creation', 'Agency work', 'Founder'] },
   { heading: 'What do you want to create?', options: ['Images', 'Videos', 'Avatar videos', 'All of the above'] },
   { heading: "You're ready.", options: [], ctas: true },
 ] as const
@@ -732,7 +732,7 @@ function OnboardingOverlay({
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
     }}>
       <div style={{
-        background: '#141D28', border: '1px solid #273242', borderRadius: 20,
+        background: '#0f2035', border: '1px solid #183048', borderRadius: 20,
         padding: 40, width: '100%', maxWidth: 520,
         display: 'flex', flexDirection: 'column', gap: 24,
       }}>
@@ -740,12 +740,12 @@ function OnboardingOverlay({
           {ONBOARDING_STEPS.map((_, i) => (
             <div key={i} style={{
               height: 3, flex: 1, borderRadius: 99,
-              background: i <= step ? 'linear-gradient(135deg,#00C4CC,#00F2FE)' : '#273242',
+              background: i <= step ? 'linear-gradient(135deg,#00b8d4,#00d8ec)' : '#183048',
               transition: 'background 0.3s',
             }} />
           ))}
         </div>
-        <h2 style={{ fontFamily: 'var(--font-syne)', fontSize: 22, fontWeight: 700, color: '#F4F8FB', margin: 0 }}>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 700, color: '#dceaf4', margin: 0 }}>
           {current.heading}
         </h2>
         {current.options.length > 0 && (
@@ -755,9 +755,9 @@ function OnboardingOverlay({
               return (
                 <button key={opt} onClick={() => onSelect(opt)} style={{
                   background: selected ? 'rgba(0,196,204,0.12)' : '#101722',
-                  border: selected ? '1px solid #00C4CC' : '1px solid #273242',
+                  border: selected ? '1px solid #00b8d4' : '1px solid #183048',
                   borderRadius: 12, padding: '14px 16px', textAlign: 'left',
-                  color: selected ? '#F4F8FB' : '#A7B4C2', fontSize: 14, cursor: 'pointer',
+                  color: selected ? '#dceaf4' : '#00d8ec', fontSize: 14, cursor: 'pointer',
                   transition: 'all 0.15s',
                   boxShadow: selected ? '0 0 16px rgba(0,196,204,0.2)' : 'none',
                 }}>{opt}</button>
@@ -1197,7 +1197,7 @@ function DashboardInner() {
   }
 
   return (
-    <div className="flex flex-col h-screen text-white overflow-hidden" style={{ background: '#0B0F14' }}>
+    <div className="flex flex-col h-screen text-white overflow-hidden" style={{ background: '#070e1a' }}>
 
       {/* ── Toast stack ── */}
       <div className="fixed bottom-5 right-5 z-[100] flex flex-col gap-2 items-end pointer-events-none">
@@ -1222,25 +1222,25 @@ function DashboardInner() {
       {/* ── Top header ── */}
       <header style={{
         height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 20px', background: '#101722', borderBottom: '1px solid #273242',
+        padding: '0 20px', background: '#101722', borderBottom: '1px solid #183048',
         flexShrink: 0, zIndex: 40,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Image src="/For Rebranding/reelsy-icon.png" alt="Reelsy" width={26} height={26} style={{ objectFit: 'contain' }} />
+          <Image src="/brand/reelx-icon.png" alt="Reelx" width={26} height={26} style={{ objectFit: 'contain' }} />
         </div>
         {/* Search bar */}
         <div style={{
           flex: 1, maxWidth: 420, margin: '0 24px',
-          background: '#141D28', border: '1px solid #273242',
+          background: '#0f2035', border: '1px solid #183048',
           borderRadius: 10, padding: '6px 14px', display: 'flex', alignItems: 'center', gap: 8,
         }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <circle cx="11" cy="11" r="7" stroke="#738295" strokeWidth="2"/>
-            <path d="M16.5 16.5L21 21" stroke="#738295" strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="11" cy="11" r="7" stroke="#4a7a96" strokeWidth="2"/>
+            <path d="M16.5 16.5L21 21" stroke="#4a7a96" strokeWidth="2" strokeLinecap="round"/>
           </svg>
           <input
             placeholder="Search your creations…"
-            style={{ background: 'none', border: 'none', outline: 'none', color: '#F4F8FB', fontSize: 13, width: '100%' }}
+            style={{ background: 'none', border: 'none', outline: 'none', color: '#dceaf4', fontSize: 13, width: '100%' }}
           />
         </div>
         {/* Right controls */}
@@ -1251,15 +1251,15 @@ function DashboardInner() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={user.avatar_url} alt={user.name ?? ''} style={{ width: 30, height: 30, borderRadius: '50%', objectFit: 'cover' }} />
               ) : (
-                <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#141D28', border: '1px solid #273242', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#738295' }}>
+                <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#0f2035', border: '1px solid #183048', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#4a7a96' }}>
                   {(user.name ?? user.email)[0].toUpperCase()}
                 </div>
               )}
               <button
                 onClick={handleSignOut}
-                style={{ fontSize: 12, color: '#738295', background: 'none', border: 'none', cursor: 'pointer' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#F4F8FB')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#738295')}
+                style={{ fontSize: 12, color: '#4a7a96', background: 'none', border: 'none', cursor: 'pointer' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#dceaf4')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#4a7a96')}
               >Sign out</button>
             </>
           )}
@@ -1271,7 +1271,7 @@ function DashboardInner() {
 
         {/* ── Sidebar nav ── */}
         <nav style={{
-          width: sidebarCollapsed ? 52 : 192, background: '#101722', borderRight: '1px solid #273242',
+          width: sidebarCollapsed ? 52 : 192, background: '#101722', borderRight: '1px solid #183048',
           display: 'flex', flexDirection: 'column', flexShrink: 0,
           overflowY: 'auto', transition: 'width 0.2s ease', overflow: 'hidden',
         }}>
@@ -1281,12 +1281,12 @@ function DashboardInner() {
               onClick={() => setSidebarCollapsed(prev => !prev)}
               title={sidebarCollapsed ? 'Expand panel' : 'Collapse panel'}
               style={{
-                background: 'none', border: '1px solid #273242', borderRadius: 6,
+                background: 'none', border: '1px solid #183048', borderRadius: 6,
                 width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', color: '#738295', flexShrink: 0,
+                cursor: 'pointer', color: '#4a7a96', flexShrink: 0,
               }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#F4F8FB')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#738295')}
+              onMouseEnter={e => (e.currentTarget.style.color = '#dceaf4')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#4a7a96')}
             >
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                 {sidebarCollapsed
@@ -1313,12 +1313,12 @@ function DashboardInner() {
                   padding: sidebarCollapsed ? '10px 0' : '9px 20px',
                   justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
                   fontSize: 13,
-                  color: '#738295',
+                  color: '#4a7a96',
                   textDecoration: 'none', transition: 'color 0.15s',
                   whiteSpace: 'nowrap',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#F4F8FB')}
-                onMouseLeave={e => (e.currentTarget.style.color = '#738295')}
+                onMouseEnter={e => (e.currentTarget.style.color = '#dceaf4')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#4a7a96')}
               >
                 <span style={{ fontSize: 14, width: 16, textAlign: 'center', flexShrink: 0 }}>{item.icon}</span>
                 {!sidebarCollapsed && item.label}
@@ -1327,7 +1327,7 @@ function DashboardInner() {
           </div>
 
           {!sidebarCollapsed && (
-            <div style={{ padding: '16px 16px', borderTop: '1px solid #273242' }}>
+            <div style={{ padding: '16px 16px', borderTop: '1px solid #183048' }}>
               <Link href="/pricing" className="btn-primary" style={{ display: 'block', textAlign: 'center', fontSize: 12, padding: '7px 0' }}>
                 Upgrade
               </Link>
@@ -1336,7 +1336,7 @@ function DashboardInner() {
         </nav>
 
         {/* ── Left Panel ── */}
-        <aside className="w-[340px] shrink-0 flex flex-col border-r overflow-y-auto" style={{ borderColor: '#273242', background: '#101722' }}>
+        <aside className="w-[340px] shrink-0 flex flex-col border-r overflow-y-auto" style={{ borderColor: '#183048', background: '#101722' }}>
 
           {/* Header */}
           <div className="px-5 pt-5 pb-4 border-b border-white/[0.06]">
@@ -1391,7 +1391,7 @@ function DashboardInner() {
                   onClick={handleEnhancePrompt}
                   disabled={!prompt.trim() || enhancingPrompt || loading}
                   title="Enhance prompt with AI"
-                  className={`transition-colors p-0.5 rounded ${enhancingPrompt ? 'text-[#00C4CC] animate-pulse' : 'text-slate-600 hover:text-[#00C4CC]'} disabled:opacity-40 disabled:cursor-not-allowed`}
+                  className={`transition-colors p-0.5 rounded ${enhancingPrompt ? 'text-[#00b8d4] animate-pulse' : 'text-slate-600 hover:text-[#00b8d4]'} disabled:opacity-40 disabled:cursor-not-allowed`}
                 >
                   {enhancingPrompt ? (
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="animate-spin">
@@ -1430,7 +1430,7 @@ function DashboardInner() {
               onClick={() => setPromptExpanded(false)}
             >
               <div
-                className="relative bg-[#141D28] border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col"
+                className="relative bg-[#0f2035] border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col"
                 style={{ maxHeight: '80vh' }}
                 onClick={(e) => e.stopPropagation()}
               >
@@ -1445,8 +1445,8 @@ function DashboardInner() {
                       title="Enhance with AI"
                       className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-all
                         ${enhancingPrompt
-                          ? 'border-[#00C4CC]/40 text-[#00C4CC] bg-[#00C4CC]/10'
-                          : 'border-white/10 text-slate-400 hover:border-[#00C4CC]/40 hover:text-[#00C4CC] hover:bg-[#00C4CC]/5'
+                          ? 'border-[#00b8d4]/40 text-[#00b8d4] bg-[#00b8d4]/10'
+                          : 'border-white/10 text-slate-400 hover:border-[#00b8d4]/40 hover:text-[#00b8d4] hover:bg-[#00b8d4]/5'
                         } disabled:opacity-40 disabled:cursor-not-allowed`}
                     >
                       {enhancingPrompt ? (
@@ -1476,7 +1476,7 @@ function DashboardInner() {
                         : 'A cosmic library floating in deep space, bookshelves carved from nebula clouds, golden light spilling between the stars…'
                     }
                     disabled={loading}
-                    className="flex-1 w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 resize-none focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50 disabled:opacity-50 leading-relaxed"
+                    className="flex-1 w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 resize-none focus:outline-none focus:ring-1 focus:ring-[#00b8d4]/50 disabled:opacity-50 leading-relaxed"
                     style={{ minHeight: 280 }}
                     autoFocus
                   />
@@ -1484,7 +1484,7 @@ function DashboardInner() {
                     <span className="text-[11px] text-slate-600">{prompt.length} chars</span>
                     <button
                       onClick={() => setPromptExpanded(false)}
-                      className="px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-[#00C4CC] to-[#00F2FE] text-[#0B0F14] hover:opacity-90 transition-opacity"
+                      className="px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-[#00b8d4] to-[#00d8ec] text-[#070e1a] hover:opacity-90 transition-opacity"
                     >
                       Done
                     </button>
@@ -1533,7 +1533,7 @@ function DashboardInner() {
                         : setModel(e.target.value as Model)
                       }
                       disabled={loading}
-                      className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
+                      className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#00b8d4]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
                     >
                       {imageMode === 'blend' ? (
                         MODELS.filter((m) => BLEND_MODEL_IDS.has(m.id)).map((m) => (
@@ -1604,7 +1604,7 @@ function DashboardInner() {
                         </div>
                       ))}
                       {blendImages.length < 8 && (
-                        <label className="shrink-0 w-20 h-20 rounded-lg border-2 border-dashed border-white/[0.1] hover:border-[#00C4CC]/40 transition-colors flex flex-col items-center justify-center gap-1 cursor-pointer">
+                        <label className="shrink-0 w-20 h-20 rounded-lg border-2 border-dashed border-white/[0.1] hover:border-[#00b8d4]/40 transition-colors flex flex-col items-center justify-center gap-1 cursor-pointer">
                           <UploadIcon />
                           <span className="text-[9px] text-slate-500">Add image</span>
                           <input
@@ -1715,12 +1715,12 @@ function DashboardInner() {
                               setUploadedImages(prev => prev.map((x, idx) => idx === i ? { ...x, description: val } : x))
                             }}
                             placeholder="describe…"
-                            className="w-20 bg-white/[0.05] border border-white/[0.08] rounded px-1.5 py-1 text-[10px] text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50"
+                            className="w-20 bg-white/[0.05] border border-white/[0.08] rounded px-1.5 py-1 text-[10px] text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-[#00b8d4]/50"
                           />
                         </div>
                       ))}
                       {/* Add image tile */}
-                      <label className="shrink-0 w-20 h-20 rounded-lg border-2 border-dashed border-white/[0.1] hover:border-[#00C4CC]/40 transition-colors flex flex-col items-center justify-center gap-1 cursor-pointer">
+                      <label className="shrink-0 w-20 h-20 rounded-lg border-2 border-dashed border-white/[0.1] hover:border-[#00b8d4]/40 transition-colors flex flex-col items-center justify-center gap-1 cursor-pointer">
                         <UploadIcon />
                         <span className="text-[9px] text-slate-500">Add image</span>
                         <input
@@ -1746,7 +1746,7 @@ function DashboardInner() {
                         value={videoModel}
                         onChange={(e) => setVideoModel(e.target.value as VideoModel)}
                         disabled={loading}
-                        className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
+                        className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#00b8d4]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
                       >
                         <optgroup label="★" className="bg-[#1a1a2e]">
                           {VIDEO_MODELS.filter((m) => m.tier === 'budget').map((m) => (
@@ -1769,7 +1769,7 @@ function DashboardInner() {
                         value={i2vModel}
                         onChange={(e) => setI2vModel(e.target.value as I2VModel)}
                         disabled={loading}
-                        className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
+                        className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#00b8d4]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
                       >
                         <optgroup label="★" className="bg-[#1a1a2e]">
                           {I2V_MODELS.filter((m) => m.tier === 'budget').map((m) => (
@@ -1862,7 +1862,7 @@ function DashboardInner() {
                 </PanelRow>
 
                 {parseInt(videoDuration, 10) >= 30 && (
-                  <p className="text-[10px] text-[#00C4CC]/70 px-1">
+                  <p className="text-[10px] text-[#00b8d4]/70 px-1">
                     Long video: {Math.ceil(parseInt(videoDuration, 10) / 10)} × 10 s clips stitched. Use Kling 3.0, Wan 2.7, or ByteDance V1.
                   </p>
                 )}
@@ -1893,7 +1893,7 @@ function DashboardInner() {
                 (tab === 'video' && videoMode === 'image' && uploadedImages.length === 0) ||
                 (tab === 'image' && imageMode === 'blend' && blendImages.length < 2)
               }
-              className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#00C4CC] via-violet-600 to-[#00F2FE] hover:from-[#00C4CC] hover:via-violet-500 hover:to-[#00F2FE] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_0_24px_rgba(139,92,246,0.35)] hover:shadow-[0_0_36px_rgba(139,92,246,0.55)] active:scale-[0.98] flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-[#00b8d4] via-violet-600 to-[#00d8ec] hover:from-[#00b8d4] hover:via-violet-500 hover:to-[#00d8ec] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_0_24px_rgba(139,92,246,0.35)] hover:shadow-[0_0_36px_rgba(139,92,246,0.55)] active:scale-[0.98] flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -1928,9 +1928,9 @@ function DashboardInner() {
             {loading ? (
               <div className="flex flex-col items-center gap-4">
                 <div className="relative w-24 h-24">
-                  <div className="absolute inset-0 rounded-full border-2 border-[#00C4CC]/30 animate-ping" />
-                  <div className="absolute inset-2 rounded-full border-2 border-[#00C4CC]/50 animate-spin" style={{ animationDuration: '2s' }} />
-                  <div className="absolute inset-4 rounded-full border-2 border-[#00F2FE]/40 animate-spin" style={{ animationDuration: '1.5s', animationDirection: 'reverse' }} />
+                  <div className="absolute inset-0 rounded-full border-2 border-[#00b8d4]/30 animate-ping" />
+                  <div className="absolute inset-2 rounded-full border-2 border-[#00b8d4]/50 animate-spin" style={{ animationDuration: '2s' }} />
+                  <div className="absolute inset-4 rounded-full border-2 border-[#00d8ec]/40 animate-spin" style={{ animationDuration: '1.5s', animationDirection: 'reverse' }} />
                   <div className="absolute inset-0 flex items-center justify-center text-2xl">✦</div>
                 </div>
                 <p className="text-sm text-slate-400 animate-pulse">
@@ -2011,7 +2011,7 @@ function DashboardInner() {
                 </div>
                 <button
                   onClick={() => useImageForVideo(currentImage.url, currentImage.prompt)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#141D28]/15 border border-[#00C4CC]/30 text-[#00F2FE] hover:bg-[#141D28]/25 hover:text-[#00C4CC] transition-all text-xs font-medium"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0f2035]/15 border border-[#00b8d4]/30 text-[#00d8ec] hover:bg-[#0f2035]/25 hover:text-[#00b8d4] transition-all text-xs font-medium"
                 >
                   <svg width="13" height="13" viewBox="0 0 13 13" fill="none" className="shrink-0">
                     <rect x="1" y="2.5" width="7" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
@@ -2046,7 +2046,7 @@ function DashboardInner() {
             ) : (
               <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-none">
                 {history.map((item) => (
-                  <div key={item.id} className="group shrink-0 w-28 relative rounded-xl overflow-hidden ring-1 ring-white/10 hover:ring-[#00C4CC]/50 hover:scale-105 transition-all duration-200">
+                  <div key={item.id} className="group shrink-0 w-28 relative rounded-xl overflow-hidden ring-1 ring-white/10 hover:ring-[#00b8d4]/50 hover:scale-105 transition-all duration-200">
                     <button onClick={() => setExpanded(item)} className="block w-full">
                       {item.kind === 'image' ? (
                         <>
@@ -2058,7 +2058,7 @@ function DashboardInner() {
                         </>
                       ) : (
                         <div className="w-28 h-28 bg-black/40 flex flex-col items-center justify-center gap-1">
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-[#00C4CC]">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-[#00b8d4]">
                             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
                             <path d="M10 8.5l6 3.5-6 3.5V8.5z" fill="currentColor" />
                           </svg>
@@ -2100,7 +2100,7 @@ function DashboardInner() {
           onClick={() => setExpanded(null)}
         >
           <div
-            className="relative bg-[#141D28] border border-white/10 rounded-2xl overflow-hidden max-w-2xl w-full shadow-2xl"
+            className="relative bg-[#0f2035] border border-white/10 rounded-2xl overflow-hidden max-w-2xl w-full shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             {expanded.kind === 'image' ? (
@@ -2141,7 +2141,7 @@ function DashboardInner() {
                   <>
                     <a
                       href={expanded.video_url}
-                      download="reelsy-video.mp4"
+                      download="reelx-video.mp4"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white border border-white/10 hover:border-white/30 px-3 py-1.5 rounded-lg transition-all"
@@ -2222,7 +2222,7 @@ function PanelSelect({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#00C4CC]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
+        className="appearance-none bg-white/[0.06] border border-white/[0.08] rounded-lg pl-3 pr-7 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#00b8d4]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer min-w-[140px] max-w-[170px]"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value} className="bg-[#1a1a2e] text-white">

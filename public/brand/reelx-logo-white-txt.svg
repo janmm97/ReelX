@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 228 56" width="228" height="56" role="img" aria-label="Reelx">
+  <!-- Icon mark -->
+  <image href="/brand/reelsy-icon.png" x="0" y="0" width="56" height="56"/>
+  <!-- Wordmark -->
+  <text
+    x="70"
+    y="39"
+    font-family="'Open Sans', 'FreeSans', 'Liberation Sans', Arial, system-ui, sans-serif"
+    font-size="33"
+    font-weight="400"
+    letter-spacing="-0.5"
+    fill="#e6e6fa"
+  >reelx</text>
+</svg>

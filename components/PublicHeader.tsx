@@ -3,11 +3,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
 
-const NAV_LINKS: [string, string][] = [
-  ['Products', '/products'],
-  ['FAQ',      '/#faq'],
-  ['Contact',  '/contact'],
-]
 
 export default function PublicHeader() {
   return (
@@ -25,42 +20,27 @@ export default function PublicHeader() {
         {/* Logo */}
         <Link href="/">
           <Image
-            src="/For Rebranding/reelsy-logo-white-txt.png"
-            alt="Reelsy"
-            width={112} height={32}
+            src="/brand/newlogo.png"
+            alt="Reelx"
+            width={160} height={46}
             style={{ objectFit: 'contain' }}
           />
         </Link>
 
-        {/* Nav */}
-        <nav style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
-          {NAV_LINKS.map(([label, href]) => (
-            <Link
-              key={label}
-              href={href}
-              style={{ color: '#A7B4C2', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#F4F8FB')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#A7B4C2')}
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
-
         {/* Actions */}
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <Link href="/login" style={{ color: '#F4F8FB', fontSize: 14, textDecoration: 'none', fontWeight: 500 }}>
+          <Link href="/login" style={{ color: '#ffffff', fontSize: 14, textDecoration: 'none', fontWeight: 500 }}>
             Sign In
           </Link>
           <Link
             href="/login"
             style={{
-              background: '#F4F8FB', color: '#0B0F14', fontWeight: 600, fontSize: 13,
+              background: '#ffffff', color: '#070e1a', fontWeight: 600, fontSize: 13,
               padding: '8px 18px', borderRadius: 10, textDecoration: 'none',
               display: 'inline-flex', alignItems: 'center', transition: 'background 0.2s',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#e4ecf4')}
-            onMouseLeave={e => (e.currentTarget.style.background = '#F4F8FB')}
+            onMouseEnter={e => (e.currentTarget.style.background = '#dceaf4')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#ffffff')}
           >
             Get Started
           </Link>
