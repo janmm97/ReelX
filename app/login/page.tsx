@@ -5,6 +5,32 @@ import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
+/* ── Gallery columns ────────────────────────────────────────────── */
+const COL1 = [
+  '/media/1 ia.png',
+  '/media/asian_man.mp4',
+  '/media/4 ia.png',
+  '/media/7a.png',
+  '/Surreal floating islands above clouds at golden hour.png',
+  '/media/electric_pin.png',
+]
+const COL2 = [
+  '/media/cr_cologne.mp4',
+  '/media/2 ia.png',
+  '/media/5 ia.png',
+  '/media/8a.png',
+  '/Watercolor painting of a Japanese garden in autumn.png',
+  '/media/3 ia.png',
+]
+const COL3 = [
+  '/media/6 ia.png',
+  '/media/video-generation.mp4',
+  '/A cyberpunk city at sunset with neon reflections on wet streets.png',
+  '/media/upscaled-video.mp4',
+  '/Ethereal forest with bioluminescent mushrooms and fireflies.png',
+  '/media/your_avatar.png',
+]
+
 function GoogleIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 48 48">
@@ -13,6 +39,48 @@ function GoogleIcon() {
       <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
       <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
     </svg>
+  )
+}
+
+const WATERFALL_STYLES = `
+  @keyframes wf-up   { from { transform: translateY(0%);   } to { transform: translateY(-50%); } }
+  @keyframes wf-down { from { transform: translateY(-50%); } to { transform: translateY(0%);   } }
+`
+
+function WaterfallColumn({ images, direction, duration }: {
+  images: string[]
+  direction: 'up' | 'down'
+  duration: number
+}) {
+  const doubled = [...images, ...images]
+  return (
+    <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', height: '100%' }}>
+      <div style={{
+        display: 'flex', flexDirection: 'column', gap: 6,
+        animation: `${direction === 'up' ? 'wf-up' : 'wf-down'} ${duration}s linear infinite`,
+        willChange: 'transform',
+      }}>
+        {doubled.map((src, i) => {
+          const isVideo = src.endsWith('.mp4')
+          return (
+            <div key={i} style={{
+              position: 'relative', width: '100%', aspectRatio: '3/4',
+              borderRadius: 10, overflow: 'hidden', flexShrink: 0,
+            }}>
+              {isVideo ? (
+                <video
+                  src={src}
+                  autoPlay muted loop playsInline
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                />
+              ) : (
+                <Image src={src} alt="" fill sizes="17vw" style={{ objectFit: 'cover' }} />
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
   )
 }
 
@@ -31,18 +99,13 @@ function AuthCard() {
   return (
     <div style={{
       background: '#0f2035', border: '1px solid #183048', borderRadius: 20,
-      padding: 40, width: '100%', maxWidth: 400,
+      padding: 40, width: '100%', maxWidth: 380,
       display: 'flex', flexDirection: 'column', gap: 24, alignItems: 'center',
     }}>
-      <Image
-        src="/brand/reelsy-icon.png"
-        alt="Reelx"
-        width={48} height={48}
-        style={{ objectFit: 'contain' }}
-      />
+      <Image src="/brand/reelsy-icon.png" alt="Reelx" width={48} height={48} style={{ objectFit: 'contain' }} />
 
       <div style={{ textAlign: 'center' }}>
-        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 700, color: '#dceaf4', margin: '0 0 8px' }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 700, color: '#dceaf4', margin: '0 0 8px' }}>
           {isSignup ? 'Create your Reelx workspace' : 'Sign in to Reelx'}
         </h1>
         <p style={{ fontSize: 14, color: '#4a7a96', margin: 0, lineHeight: 1.5 }}>
@@ -69,9 +132,9 @@ function AuthCard() {
 
       <p style={{ fontSize: 12, color: '#4a7a96', textAlign: 'center', lineHeight: 1.6, margin: 0 }}>
         By continuing you agree to the{' '}
-        <a href="#" style={{ color: '#00d8ec', textDecoration: 'underline' }}>Terms of Service</a>
+        <a href="/legal" style={{ color: '#00d8ec', textDecoration: 'underline' }}>Terms of Service</a>
         {' '}and{' '}
-        <a href="#" style={{ color: '#00d8ec', textDecoration: 'underline' }}>Privacy Policy</a>.
+        <a href="/privacy" style={{ color: '#00d8ec', textDecoration: 'underline' }}>Privacy Policy</a>.
       </p>
     </div>
   )
@@ -79,66 +142,67 @@ function AuthCard() {
 
 export default function LoginPage() {
   return (
-    <div style={{ minHeight: '100vh', display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
-      {/* Left brand panel */}
+    /* overflow:hidden + height:100vh prevents any page scroll */
+    <div style={{
+      height: '100vh', overflow: 'hidden',
+      display: 'grid', gridTemplateColumns: '1fr 1fr',
+    }}>
+
+      {/* ── Left: auth ───────────────────────────────────────── */}
       <div style={{
-        background: '#0D1520', display: 'flex', flexDirection: 'column',
-        justifyContent: 'center', padding: '64px 56px', position: 'relative', overflow: 'hidden',
+        background: '#070e1a',
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        padding: '40px', position: 'relative',
+        height: '100vh',
       }}>
-        {/* Grid texture */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: 'linear-gradient(#183048 1px,transparent 1px),linear-gradient(90deg,#183048 1px,transparent 1px)',
-          backgroundSize: '40px 40px', opacity: 0.06, pointerEvents: 'none',
-        }} />
-        {/* Cyan bloom */}
-        <div style={{
-          position: 'absolute', bottom: '-10%', right: '-10%', width: 480, height: 480,
-          borderRadius: '50%', background: 'radial-gradient(circle,rgba(0,184,212,0.1) 0%,transparent 70%)',
-          pointerEvents: 'none',
-        }} />
-        {/* Ribbon line accent */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#00b8d4,transparent)' }} />
-
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <Image src="/brand/newlogo.png" alt="Reelx" width={120} height={34} style={{ objectFit: 'contain', marginBottom: 48 }} />
-
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(28px,3vw,44px)', fontWeight: 800, color: '#dceaf4', lineHeight: 1.1, marginBottom: 16 }}>
-            Create visuals<br />in motion
-          </h2>
-          <p style={{ fontSize: 16, color: '#4a7a96', lineHeight: 1.6, maxWidth: 380, marginBottom: 48 }}>
-            Image, video, and avatar workflows in one AI studio.
-          </p>
-
-          {/* Decorative capability cards */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 360 }}>
-            {[
-              { label: 'Text to Image', detail: 'GPT-5 Image · 1.2s' },
-              { label: 'Text to Video', detail: 'Veo 3.1 Fast · 8s' },
-              { label: 'Avatar to Video', detail: 'Studio · ElevenLabs' },
-            ].map(item => (
-              <div key={item.label} style={{
-                background: 'rgba(20,29,40,0.72)', border: '1px solid #183048',
-                borderRadius: 10, padding: '10px 16px',
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                backdropFilter: 'blur(12px)',
-              }}>
-                <span style={{ fontSize: 13, color: '#dceaf4' }}>{item.label}</span>
-                <span style={{ fontSize: 11, color: '#4a7a96' }}>{item.detail}</span>
-              </div>
-            ))}
-          </div>
+        {/* Logo top-left */}
+        <div style={{ position: 'absolute', top: 12, left: 36 }}>
+          <Image src="/brand/newlogo.png" alt="Reelx" width={130} height={38} style={{ objectFit: 'contain' }} />
         </div>
-      </div>
 
-      {/* Right auth panel */}
-      <div style={{
-        background: '#101722', display: 'flex', alignItems: 'center',
-        justifyContent: 'center', padding: 40,
-      }}>
-        <Suspense fallback={null}>
+        {/* Auth card — always centered, never clipped */}
+        <Suspense fallback={
+          <div style={{
+            background: '#0f2035', border: '1px solid #183048', borderRadius: 20,
+            padding: 40, width: '100%', maxWidth: 380,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            height: 240, color: '#4a7a96', fontSize: 14,
+          }}>
+            Loading…
+          </div>
+        }>
           <AuthCard />
         </Suspense>
+      </div>
+
+      {/* ── Right: waterfall gallery ─────────────────────────── */}
+      <div style={{
+        position: 'relative', overflow: 'hidden',
+        background: '#070e1a', display: 'flex',
+        gap: 6, padding: 6, height: '100vh',
+        alignItems: 'flex-start',
+      }}>
+        <style>{WATERFALL_STYLES}</style>
+        {/* col 1 — downward */}
+        <WaterfallColumn images={COL1} direction="down" duration={24} />
+        {/* col 2 — upward */}
+        <WaterfallColumn images={COL2} direction="up" duration={24} />
+        {/* col 3 — downward */}
+        <WaterfallColumn images={COL3} direction="down" duration={24} />
+
+        {/* top / bottom fade */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          background: 'linear-gradient(to bottom, #070e1a 0%, transparent 10%, transparent 90%, #070e1a 100%)',
+          zIndex: 2,
+        }} />
+        {/* left-edge blend into auth panel */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          background: 'linear-gradient(to right, #070e1a 0%, transparent 10%)',
+          zIndex: 2,
+        }} />
       </div>
     </div>
   )

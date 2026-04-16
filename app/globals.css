@@ -143,6 +143,12 @@ body {
 .waveform-bar:nth-child(6) { animation-delay: 0.2s; }
 .waveform-bar:nth-child(7) { animation-delay: 0.1s; }
 
+/* ── Gallery waterfall (login) ── */
+@keyframes waterfall-down { from { transform: translateY(-50%); } to { transform: translateY(0%); } }
+@keyframes waterfall-up   { from { transform: translateY(0%); }   to { transform: translateY(-50%); } }
+.waterfall-down { animation: waterfall-down 25s linear infinite; }
+.waterfall-up   { animation: waterfall-up   20s linear infinite; }
+
 /* ── Marquee ── */
 @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 .animate-marquee { animation: marquee 30s linear infinite; }

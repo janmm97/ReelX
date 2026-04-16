@@ -1168,7 +1168,7 @@ const FOOTER_LINKS: [string, string][] = [
 
 function Footer() {
   return (
-    <footer style={{ background: '#0D1520', borderTop: '1px solid #183048', padding: '32px' }}>
+    <footer style={{ background: '#0D1520', borderTop: '1px solid #183048', padding: '10px 32px' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
         <Image src="/brand/newlogo.png" alt="Reelx" width={140} height={40} style={{ objectFit: 'contain' }} />
         <nav style={{ display: 'flex', gap: 28, flexWrap: 'wrap', alignItems: 'center' }}>

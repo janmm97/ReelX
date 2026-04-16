@@ -14,7 +14,7 @@ export default function PublicHeader() {
       padding: '0 32px',
     }}>
       <div style={{
-        maxWidth: 1280, margin: '0 auto', height: 64,
+        maxWidth: 1280, margin: '0 auto', height: 110,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         {/* Logo */}
@@ -22,7 +22,7 @@ export default function PublicHeader() {
           <Image
             src="/brand/newlogo.png"
             alt="Reelx"
-            width={160} height={46}
+            width={251} height={100}
             style={{ objectFit: 'contain' }}
           />
         </Link>
