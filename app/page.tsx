@@ -40,9 +40,9 @@ function Header() {
           {([['Product', '/products'], ['Pricing', '/pricing'], ['FAQ', '#faq']] as const).map(([n, href]) => (
             <Link key={n}
               href={href}
-              style={{ color: '#00d8ec', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#dceaf4')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#00d8ec')}
+              style={{ color: '#ffffff', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#00d8ec')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#ffffff')}
             >{n}</Link>
           ))}
         </nav>

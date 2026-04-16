@@ -6,7 +6,7 @@ import PublicHeader from '@/components/PublicHeader'
 export default function ContactPage() {
   return (
     <div style={{ background: '#070e1a', minHeight: '100vh', color: '#dceaf4', display: 'flex', flexDirection: 'column' }}>
-      <PublicHeader />
+      <PublicHeader compact />
 
       {/* Centred content */}
       <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '64px 32px' }}>

@@ -441,7 +441,7 @@ export default function ProductsPage() {
 
       <div style={{ background: '#070e1a', minHeight: '100vh', color: '#dceaf4', fontFamily: 'var(--font-body-text)' }}>
 
-        <PublicHeader />
+        <PublicHeader compact />
 
         {/* ── Hero ────────────────────────────────────────────── */}
         <section style={{ padding: 'clamp(56px,7vw,96px) 32px clamp(40px,5vw,64px)' }}>

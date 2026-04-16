@@ -10,7 +10,7 @@ export const metadata = {
 export default function LegalPage() {
   return (
     <div style={{ background: '#070e1a', minHeight: '100vh', color: '#dceaf4' }}>
-      <PublicHeader />
+      <PublicHeader compact />
 
       {/* Body */}
       <main style={{ maxWidth: 760, margin: '0 auto', padding: '72px 32px 96px' }}>

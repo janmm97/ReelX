@@ -3,8 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 
-
-export default function PublicHeader() {
+export default function PublicHeader({ compact = false }: { compact?: boolean }) {
   return (
     <header style={{
       position: 'sticky', top: 0, zIndex: 50,
@@ -14,7 +13,8 @@ export default function PublicHeader() {
       padding: '0 32px',
     }}>
       <div style={{
-        maxWidth: 1280, margin: '0 auto', height: 110,
+        maxWidth: 1280, margin: '0 auto',
+        height: compact ? 64 : 110,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         {/* Logo */}
@@ -22,7 +22,8 @@ export default function PublicHeader() {
           <Image
             src="/brand/newlogo.png"
             alt="Reelx"
-            width={251} height={100}
+            width={compact ? 120 : 251}
+            height={compact ? 34 : 100}
             style={{ objectFit: 'contain' }}
           />
         </Link>

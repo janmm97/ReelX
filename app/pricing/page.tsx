@@ -397,7 +397,7 @@ export default function PricingPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#070e1a', color: '#dceaf4' }}>
 
-      <PublicHeader />
+      <PublicHeader compact />
 
       {/* ── Hero ── */}
       <section style={{ padding: '72px 32px 0', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
