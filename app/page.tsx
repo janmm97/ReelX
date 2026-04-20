@@ -26,35 +26,35 @@ function Header() {
   return (
     <header style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
-      background: scrolled ? 'rgba(11,15,20,0.88)' : 'transparent',
+      background: scrolled ? 'rgba(0,0,0,0.88)' : 'transparent',
       backdropFilter: scrolled ? 'blur(14px)' : 'none',
-      borderBottom: scrolled ? '1px solid #183048' : '1px solid transparent',
+      borderBottom: scrolled ? '1px solid #1C1C1C' : '1px solid transparent',
       transition: 'all 0.3s cubic-bezier(0.25,0.1,0.25,1)',
       padding: '0 32px',
     }}>
       <div style={{ maxWidth: 1280, margin: '0 auto', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link href="/">
-          <Image src="/brand/newlogo.png" alt="Reelx" width={112} height={32} style={{ objectFit: 'contain' }} />
+          <Image src="/brand/reelx-logo-white-svg.svg" alt="Reelx" width={100} height={28} style={{ objectFit: 'contain' }} />
         </Link>
         <nav style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
           {([['Product', '/products'], ['Pricing', '/pricing'], ['FAQ', '#faq']] as const).map(([n, href]) => (
             <Link key={n}
               href={href}
               style={{ color: '#ffffff', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#00d8ec')}
+              onMouseEnter={e => (e.currentTarget.style.color = '#E8E8E8')}
               onMouseLeave={e => (e.currentTarget.style.color = '#ffffff')}
             >{n}</Link>
           ))}
         </nav>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <Link href="/login" style={{ color: '#dceaf4', fontSize: 14, textDecoration: 'none', fontWeight: 500 }}>Sign In</Link>
+          <Link href="/login" style={{ color: '#FFFFFF', fontSize: 14, textDecoration: 'none', fontWeight: 500 }}>Sign In</Link>
           <Link href="/login" style={{
-            background: '#dceaf4', color: '#070e1a', fontWeight: 600, fontSize: 13,
+            background: '#FFFFFF', color: '#000000', fontWeight: 600, fontSize: 13,
             padding: '8px 18px', borderRadius: 10, textDecoration: 'none',
             display: 'inline-flex', alignItems: 'center', transition: 'background 0.2s',
           }}
             onMouseEnter={e => (e.currentTarget.style.background = '#e4ecf4')}
-            onMouseLeave={e => (e.currentTarget.style.background = '#dceaf4')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}
           >Get Started</Link>
         </div>
       </div>
@@ -153,7 +153,7 @@ function HeroChatPanel() {
             display: 'flex', alignItems: 'center', gap: 6,
             padding: '6px 20px', borderRadius: 100, border: 'none', cursor: 'pointer',
             background: mode === m.id ? 'rgba(255,255,255,0.10)' : 'transparent',
-            color: mode === m.id ? '#dceaf4' : 'rgba(255,255,255,0.35)',
+            color: mode === m.id ? '#FFFFFF' : 'rgba(255,255,255,0.35)',
             fontSize: 13, fontWeight: 500, transition: 'all 0.2s', letterSpacing: '0.01em',
           }}
             onMouseEnter={e => { if (mode !== m.id) e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
@@ -168,7 +168,7 @@ function HeroChatPanel() {
       {/* Main input card */}
       <div style={{
         width: '100%',
-        background: 'rgba(18,22,30,0.82)',
+        background: 'rgba(0,0,0,0.82)',
         backdropFilter: 'blur(40px) saturate(180%)',
         WebkitBackdropFilter: 'blur(40px) saturate(180%)',
         border: `1px solid ${focused ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.08)'}`,
@@ -192,7 +192,7 @@ function HeroChatPanel() {
             placeholder={MODE_PLACEHOLDER[mode]}
             style={{
               flex: 1, background: 'none', border: 'none', outline: 'none',
-              fontSize: 15, color: '#dceaf4', caretColor: '#00b8d4',
+              fontSize: 15, color: '#FFFFFF', caretColor: '#FFFFFF',
               lineHeight: 1.5, padding: '2px 0',
               fontFamily: 'inherit',
             }}
@@ -264,7 +264,7 @@ function HeroChatPanel() {
                     transition={{ duration: 0.16, ease: [0.25, 0.1, 0.25, 1] }}
                     style={{
                       position: 'absolute', bottom: 'calc(100% + 8px)', left: 0, zIndex: 100,
-                      background: 'rgba(16,20,28,0.97)',
+                      background: 'rgba(0,0,0,0.97)',
                       backdropFilter: 'blur(40px)',
                       border: '1px solid rgba(255,255,255,0.1)',
                       borderRadius: 14,
@@ -292,7 +292,7 @@ function HeroChatPanel() {
                           onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent' }}
                         >
                           <span style={{ width: 7, height: 7, borderRadius: '50%', background: m.badgeColor, flexShrink: 0, boxShadow: `0 0 7px ${m.badgeColor}99` }} />
-                          <span style={{ flex: 1, fontSize: 12.5, color: isSelected ? '#dceaf4' : 'rgba(255,255,255,0.65)', fontWeight: isSelected ? 600 : 400 }}>{m.label}</span>
+                          <span style={{ flex: 1, fontSize: 12.5, color: isSelected ? '#FFFFFF' : 'rgba(255,255,255,0.65)', fontWeight: isSelected ? 600 : 400 }}>{m.label}</span>
                           <span style={{
                             fontSize: 9.5, fontWeight: 700, padding: '2px 7px', borderRadius: 5,
                             background: `${m.badgeColor}18`,
@@ -315,7 +315,7 @@ function HeroChatPanel() {
           {/* Send button */}
           <button onClick={goToLogin} style={{
             width: 34, height: 34, borderRadius: '50%', border: 'none', cursor: 'pointer', flexShrink: 0,
-            background: hasPrompt ? '#dceaf4' : 'rgba(255,255,255,0.08)',
+            background: hasPrompt ? '#FFFFFF' : 'rgba(255,255,255,0.08)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             boxShadow: hasPrompt ? '0 2px 12px rgba(244,248,251,0.25)' : 'none',
             transition: 'all 0.2s',
@@ -324,7 +324,7 @@ function HeroChatPanel() {
             onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M7 11.5V2.5M7 2.5L3 6.5M7 2.5L11 6.5" stroke={hasPrompt ? '#070e1a' : 'rgba(255,255,255,0.3)'} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M7 11.5V2.5M7 2.5L3 6.5M7 2.5L11 6.5" stroke={hasPrompt ? '#000000' : 'rgba(255,255,255,0.3)'} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
         </div>
@@ -344,7 +344,7 @@ function Hero() {
     <section style={{
       height: '100vh', minHeight: 600,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: '#070e1a', position: 'relative', overflow: 'hidden',
+      background: '#000000', position: 'relative', overflow: 'hidden',
     }}>
       {/* Video background */}
       <video
@@ -360,15 +360,15 @@ function Hero() {
       {/* Overlays — darken + centre-vignette so chat UI reads clearly */}
       <div style={{
         position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
-        background: 'rgba(8,11,16,0.52)',
+        background: 'rgba(0,0,0,0.52)',
       }} />
       <div style={{
         position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse 75% 65% at 50% 58%, rgba(8,11,16,0.78) 0%, rgba(8,11,16,0.30) 55%, transparent 100%)',
+        background: 'radial-gradient(ellipse 75% 65% at 50% 58%, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.30) 55%, transparent 100%)',
       }} />
       <div style={{
         position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
-        background: 'linear-gradient(180deg, rgba(8,11,16,0.65) 0%, transparent 18%, transparent 72%, rgba(8,11,16,0.85) 100%)',
+        background: 'linear-gradient(180deg, rgba(0,0,0,0.65) 0%, transparent 18%, transparent 72%, rgba(0,0,0,0.85) 100%)',
       }} />
 
       {/* Chat UI */}
@@ -415,8 +415,8 @@ function ImageGenPreview() {
       {/* Image preview — fills full height */}
       <div style={{
         flexShrink: 0, width: 220,
-        borderRadius: 12, overflow: 'hidden', border: '1px solid #1E2A3A',
-        background: '#0D1420', minHeight: 280,
+        borderRadius: 12, overflow: 'hidden', border: '1px solid #1C1C1C',
+        background: '#161616', minHeight: 280,
       }}>
         <img
           src="/media/image-gen-svg/5.svg"
@@ -430,38 +430,38 @@ function ImageGenPreview() {
 
         {/* Prompt box */}
         <div style={{
-          flex: 1, background: '#0D1420', border: '1px solid #1E2A3A',
+          flex: 1, background: '#161616', border: '1px solid #1C1C1C',
           borderRadius: 10, padding: '12px 14px', overflow: 'hidden',
         }}>
-          <div style={{ fontSize: 10, color: '#3A4A5C', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Prompt</div>
-          <div style={{ fontSize: 11, color: '#8A9BB0', lineHeight: 1.65, display: '-webkit-box', WebkitLineClamp: 8, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          <div style={{ fontSize: 10, color: '#505050', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Prompt</div>
+          <div style={{ fontSize: 11, color: '#999999', lineHeight: 1.65, display: '-webkit-box', WebkitLineClamp: 8, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
             A hyper-detailed centered close-up beauty portrait of a woman with her eyes closed, her face emerging through swirling clouds of colored smoke, with cyan-blue smoke flowing around the left side of her face and magenta-red smoke wrapping the right side, blending softly across the composition, featuring glossy lips, smooth luminous skin, dramatic metallic eye makeup, soft shadows, neon cinematic lighting, high contrast, an ethereal surreal atmosphere, a dark background, symmetrical framing, ultra-sharp focus on the face, volumetric smoke, vibrant color grading, and a luxury fashion editorial style in a vertical composition.
           </div>
         </div>
 
         {/* Model + size in a single unified row */}
         <div style={{
-          background: '#0D1420', border: '1px solid #1E2A3A',
+          background: '#161616', border: '1px solid #1C1C1C',
           borderRadius: 8, padding: '8px 12px',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#00b8d4', boxShadow: '0 0 6px #00b8d488' }} />
-            <span style={{ fontSize: 11.5, color: '#00d8ec', fontWeight: 500 }}>GPT-5 Image</span>
+            <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#FFFFFF', boxShadow: '0 0 6px rgba(255,255,255,0.2)' }} />
+            <span style={{ fontSize: 11.5, color: '#E8E8E8', fontWeight: 500 }}>GPT-5 Image</span>
           </div>
-          <span style={{ fontSize: 11, color: '#4A5C6E', letterSpacing: '0.02em' }}>1024×1024</span>
+          <span style={{ fontSize: 11, color: '#787878', letterSpacing: '0.02em' }}>1024×1024</span>
         </div>
 
         {/* Generate button */}
         <button style={{
-          background: 'linear-gradient(90deg,#00b8d4,#00d8ec)',
+          background: '#FFFFFF',
           border: 'none', borderRadius: 8, padding: '10px 14px',
-          fontSize: 12, fontWeight: 600, color: '#0A101A', cursor: 'pointer',
+          fontSize: 12, fontWeight: 600, color: '#000000', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
           letterSpacing: '0.01em',
         }}>
           <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-            <polygon points="2,1 11,6 2,11" fill="#0A101A"/>
+            <polygon points="2,1 11,6 2,11" fill="#000000"/>
           </svg>
           Generate Image
         </button>
@@ -478,8 +478,8 @@ function VideoGenPreview() {
       {/* Video preview — fills full height */}
       <div style={{
         flexShrink: 0, width: 220,
-        borderRadius: 12, overflow: 'hidden', border: '1px solid #1E2A3A',
-        background: '#0D1420', minHeight: 280,
+        borderRadius: 12, overflow: 'hidden', border: '1px solid #1C1C1C',
+        background: '#161616', minHeight: 280,
       }}>
         <video autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}>
           <source src="/media/video-generation.mp4" type="video/mp4" />
@@ -491,38 +491,38 @@ function VideoGenPreview() {
 
         {/* Prompt box */}
         <div style={{
-          flex: 1, background: '#0D1420', border: '1px solid #1E2A3A',
+          flex: 1, background: '#161616', border: '1px solid #1C1C1C',
           borderRadius: 10, padding: '12px 14px', overflow: 'hidden',
         }}>
-          <div style={{ fontSize: 10, color: '#3A4A5C', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Prompt</div>
-          <div style={{ fontSize: 11, color: '#8A9BB0', lineHeight: 1.65, display: '-webkit-box', WebkitLineClamp: 9, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          <div style={{ fontSize: 10, color: '#505050', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Prompt</div>
+          <div style={{ fontSize: 11, color: '#999999', lineHeight: 1.65, display: '-webkit-box', WebkitLineClamp: 9, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
             Create a realistic vertical 9:16 UGC-style selfie video of a 28-year-old woman promoting HERA skincare. She is filming herself in a bright, modern bathroom with soft morning light, speaking directly to the front-facing camera in a natural, authentic, live social media style. She looks polished but relatable, with healthy glowing skin, minimal elegant makeup, and a clean beauty aesthetic that fits a premium Korean skincare brand. She holds a sleek HERA skincare product, shows it close to the camera, talks about how it feels on the skin, then applies a small amount to her cheek and gently blends it in while continuing to speak.
           </div>
         </div>
 
         {/* Model + format unified row */}
         <div style={{
-          background: '#0D1420', border: '1px solid #1E2A3A',
+          background: '#161616', border: '1px solid #1C1C1C',
           borderRadius: 8, padding: '8px 12px',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#00b8d4', boxShadow: '0 0 6px #00b8d488' }} />
-            <span style={{ fontSize: 11.5, color: '#00d8ec', fontWeight: 500 }}>Veo 3.1 Fast</span>
+            <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#FFFFFF', boxShadow: '0 0 6px rgba(255,255,255,0.2)' }} />
+            <span style={{ fontSize: 11.5, color: '#E8E8E8', fontWeight: 500 }}>Veo 3.1 Fast</span>
           </div>
-          <span style={{ fontSize: 11, color: '#4A5C6E', letterSpacing: '0.02em' }}>9:16 · 8s</span>
+          <span style={{ fontSize: 11, color: '#787878', letterSpacing: '0.02em' }}>9:16 · 8s</span>
         </div>
 
         {/* Generate button */}
         <button style={{
-          background: 'linear-gradient(90deg,#00b8d4,#00d8ec)',
+          background: '#FFFFFF',
           border: 'none', borderRadius: 8, padding: '10px 14px',
-          fontSize: 12, fontWeight: 600, color: '#0A101A', cursor: 'pointer',
+          fontSize: 12, fontWeight: 600, color: '#000000', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
           letterSpacing: '0.01em',
         }}>
           <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-            <polygon points="2,1 11,6 2,11" fill="#0A101A"/>
+            <polygon points="2,1 11,6 2,11" fill="#000000"/>
           </svg>
           Generate Video
         </button>
@@ -539,19 +539,19 @@ function StudioPreview() {
       {/* Avatar stage — fills full height */}
       <div style={{
         position: 'relative', flexShrink: 0, width: 220,
-        borderRadius: 12, overflow: 'hidden', border: '1px solid #1E2A3A',
-        background: '#0D1420', minHeight: 280,
+        borderRadius: 12, overflow: 'hidden', border: '1px solid #1C1C1C',
+        background: '#161616', minHeight: 280,
       }}>
         <video autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}>
           <source src="/media/asian_man.mp4" type="video/mp4" />
         </video>
         <div style={{
           position: 'absolute', top: 8, left: 8,
-          background: 'rgba(0,196,204,0.15)', border: '1px solid rgba(0,196,204,0.3)',
+          background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)',
           borderRadius: 6, padding: '3px 8px', display: 'flex', alignItems: 'center', gap: 5,
         }}>
-          <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#00b8d4' }} />
-          <span style={{ fontSize: 10, color: '#00b8d4', fontWeight: 600, letterSpacing: '0.06em' }}>STAGE</span>
+          <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#FFFFFF' }} />
+          <span style={{ fontSize: 10, color: '#FFFFFF', fontWeight: 600, letterSpacing: '0.06em' }}>STAGE</span>
         </div>
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0,
@@ -569,18 +569,18 @@ function StudioPreview() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
 
         {/* Model toggle */}
-        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid #1E2A3A', borderRadius: 8, padding: 3, display: 'flex', gap: 3 }}>
+        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid #1C1C1C', borderRadius: 8, padding: 3, display: 'flex', gap: 3 }}>
           {['InfiniteTalk', 'Kling Avatar'].map((m, i) => (
             <div key={m} style={{
               flex: 1, textAlign: 'center', padding: '5px 0', borderRadius: 6, fontSize: 10, fontWeight: 600,
-              background: i === 0 ? 'linear-gradient(90deg,#00b8d4,#00d8ec)' : 'transparent',
-              color: i === 0 ? '#070e1a' : '#4A5C6E',
+              background: i === 0 ? '#FFFFFF' : 'transparent',
+              color: i === 0 ? '#000000' : '#787878',
             }}>{m}</div>
           ))}
         </div>
 
         {/* Portrait upload */}
-        <div style={{ background: '#0D1420', border: '1px dashed #183048', borderRadius: 9, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ background: '#161616', border: '1px dashed #1C1C1C', borderRadius: 9, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
           <Image
             src="/media/your_avatar.png"
             alt="Portrait"
@@ -588,41 +588,41 @@ function StudioPreview() {
             style={{ borderRadius: 6, objectFit: 'cover', flexShrink: 0 }}
           />
           <div>
-            <div style={{ fontSize: 9, color: '#3A4A5C', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Portrait Image</div>
-            <div style={{ fontSize: 10, color: '#4a7a96' }}>your_avatar.png</div>
+            <div style={{ fontSize: 9, color: '#505050', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Portrait Image</div>
+            <div style={{ fontSize: 10, color: '#787878' }}>your_avatar.png</div>
           </div>
         </div>
 
         {/* Audio upload */}
-        <div style={{ background: '#0D1420', border: '1px dashed #183048', borderRadius: 9, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ flexShrink: 0, width: 28, height: 28, borderRadius: 6, background: 'rgba(0,196,204,0.1)', border: '1px solid rgba(0,196,204,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ background: '#161616', border: '1px dashed #1C1C1C', borderRadius: 9, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ flexShrink: 0, width: 28, height: 28, borderRadius: 6, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-              <path d="M9 18V5l12-2v13" stroke="#00b8d4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <circle cx="6" cy="18" r="3" stroke="#00b8d4" strokeWidth="1.5"/>
-              <circle cx="18" cy="16" r="3" stroke="#00b8d4" strokeWidth="1.5"/>
+              <path d="M9 18V5l12-2v13" stroke="#999999" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="6" cy="18" r="3" stroke="#999999" strokeWidth="1.5"/>
+              <circle cx="18" cy="16" r="3" stroke="#999999" strokeWidth="1.5"/>
             </svg>
           </div>
           <div>
-            <div style={{ fontSize: 9, color: '#3A4A5C', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Audio</div>
-            <div style={{ fontSize: 10, color: '#4a7a96' }}>voiceover_take1.mp3 · 2.4 MB</div>
+            <div style={{ fontSize: 9, color: '#505050', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Audio</div>
+            <div style={{ fontSize: 10, color: '#787878' }}>voiceover_take1.mp3 · 2.4 MB</div>
           </div>
         </div>
 
         {/* Motion prompt */}
-        <div style={{ background: '#0D1420', border: '1px solid #1E2A3A', borderRadius: 9, padding: '8px 12px' }}>
-          <div style={{ fontSize: 9, color: '#3A4A5C', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Motion Prompt</div>
-          <div style={{ fontSize: 11, color: '#4A5C6E' }}>speak naturally with slight head movement</div>
+        <div style={{ background: '#161616', border: '1px solid #1C1C1C', borderRadius: 9, padding: '8px 12px' }}>
+          <div style={{ fontSize: 9, color: '#505050', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Motion Prompt</div>
+          <div style={{ fontSize: 11, color: '#787878' }}>speak naturally with slight head movement</div>
         </div>
 
         {/* Generate button */}
         <button style={{
-          background: 'linear-gradient(90deg,#00b8d4,#00d8ec)',
+          background: '#FFFFFF',
           border: 'none', borderRadius: 8, padding: '9px 14px', marginTop: 'auto',
-          fontSize: 12, fontWeight: 600, color: '#0A101A', cursor: 'pointer',
+          fontSize: 12, fontWeight: 600, color: '#000000', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
         }}>
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <polygon points="2,1 11,6 2,11" fill="#0A101A"/>
+            <polygon points="2,1 11,6 2,11" fill="#000000"/>
           </svg>
           Generate Take
         </button>
@@ -657,17 +657,17 @@ function FeatureShowcase() {
   }, [activeIdx, tick])
 
   return (
-    <section style={{ padding: '56px 32px 64px', background: '#101722', borderTop: '1px solid #183048' }}>
+    <section style={{ padding: '56px 32px 64px', background: '#101010', borderTop: '1px solid #1C1C1C' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto' }}>
         <motion.h2
           variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
-          style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 700, color: '#dceaf4', marginBottom: 6 }}
+          style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 700, color: '#FFFFFF', marginBottom: 6 }}
         >
           Everything you need to create
         </motion.h2>
         <motion.p
           variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
-          style={{ color: '#4a7a96', fontSize: 16, marginBottom: 36, lineHeight: 1.5 }}
+          style={{ color: '#787878', fontSize: 16, marginBottom: 36, lineHeight: 1.5 }}
         >
           Three powerful tools, one unified workspace.
         </motion.p>
@@ -682,19 +682,19 @@ function FeatureShowcase() {
                     style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: '20px 0', width: '100%' }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: active ? 12 : 0 }}>
-                      <f.Icon size={17} color={active ? '#00b8d4' : '#3A4A5C'} />
-                      <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 17, color: active ? '#dceaf4' : '#4A5C6E', transition: 'color 0.25s' }}>{f.label}</span>
+                      <f.Icon size={17} color={active ? '#FFFFFF' : '#505050'} />
+                      <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 17, color: active ? '#FFFFFF' : '#787878', transition: 'color 0.25s' }}>{f.label}</span>
                     </div>
                     {active && (
                       <>
-                        <p style={{ fontSize: 14, color: '#00d8ec', lineHeight: 1.65, margin: '0 0 16px', paddingLeft: 29 }}>{f.desc}</p>
-                        <div style={{ height: 2, background: '#183048', borderRadius: 99 }}>
-                          <div style={{ height: '100%', width: `${progress}%`, background: 'linear-gradient(90deg,#00b8d4,#00d8ec)', borderRadius: 99, transition: 'width 0.08s linear' }} />
+                        <p style={{ fontSize: 14, color: '#E8E8E8', lineHeight: 1.65, margin: '0 0 16px', paddingLeft: 29 }}>{f.desc}</p>
+                        <div style={{ height: 2, background: '#1C1C1C', borderRadius: 99 }}>
+                          <div style={{ height: '100%', width: `${progress}%`, background: '#FFFFFF', borderRadius: 99, transition: 'width 0.08s linear' }} />
                         </div>
                       </>
                     )}
                   </button>
-                  {i < FEATURES.length - 1 && <div style={{ height: 1, background: '#1E2A3A' }} />}
+                  {i < FEATURES.length - 1 && <div style={{ height: 1, background: '#1C1C1C' }} />}
                 </div>
               )
             })}
@@ -705,7 +705,7 @@ function FeatureShowcase() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0, transition: { duration: 0.38, ease: [0.25, 0.1, 0.25, 1] } }}
               exit={{ opacity: 0, y: -10, transition: { duration: 0.22, ease: [0.25, 0.1, 0.25, 1] } }}
-              style={{ background: '#0f2035', border: '1px solid #183048', borderRadius: 16, padding: 28, minHeight: 360, display: 'flex', flexDirection: 'column' }}
+              style={{ background: '#161616', border: '1px solid #1C1C1C', borderRadius: 16, padding: 28, minHeight: 360, display: 'flex', flexDirection: 'column' }}
             >
               {activeIdx === 0 ? <ImageGenPreview /> : activeIdx === 1 ? <VideoGenPreview /> : <StudioPreview />}
             </motion.div>
@@ -733,7 +733,7 @@ const HIGHLIGHT_PLANS = [
       'Studio avatar video',
       'Email support',
     ],
-    accent: '#34D399',
+    accent: '#E8E8E8',
     highlight: false,
   },
   {
@@ -752,7 +752,7 @@ const HIGHLIGHT_PLANS = [
       'Priority generation queue',
       'Priority support',
     ],
-    accent: '#00b8d4',
+    accent: '#FFFFFF',
     highlight: true,
   },
   {
@@ -771,7 +771,7 @@ const HIGHLIGHT_PLANS = [
       'Studio + long-form avatar video',
       'Dedicated support',
     ],
-    accent: '#A78BFA',
+    accent: '#D4D4D4',
     highlight: false,
   },
 ]
@@ -781,37 +781,37 @@ function PricingHighlight() {
   const router = useRouter()
 
   return (
-    <section style={{ padding: '96px 32px', background: '#070e1a', borderTop: '1px solid #183048' }}>
+    <section style={{ padding: '96px 32px', background: '#000000', borderTop: '1px solid #1C1C1C' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 52, flexWrap: 'wrap', gap: 20 }}>
           <div>
             <motion.p variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
-              style={{ fontSize: 11, fontWeight: 700, color: '#4a7a96', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>
+              style={{ fontSize: 11, fontWeight: 700, color: '#787878', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>
               Plans & Pricing
             </motion.p>
             <motion.h2 variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
-              style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 700, color: '#dceaf4', margin: 0 }}>
+              style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
               Simple, flexible credits
             </motion.h2>
           </div>
           {/* Annual toggle */}
           <motion.div variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
             style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 13, color: annual ? '#4a7a96' : '#dceaf4', transition: 'color 0.2s' }}>Monthly</span>
+            <span style={{ fontSize: 13, color: annual ? '#787878' : '#FFFFFF', transition: 'color 0.2s' }}>Monthly</span>
             <button onClick={() => setAnnual(a => !a)} style={{
               width: 44, height: 24, borderRadius: 99, border: 'none', cursor: 'pointer', position: 'relative',
-              background: annual ? 'linear-gradient(135deg,#00b8d4,#00d8ec)' : '#183048',
+              background: annual ? '#FFFFFF' : '#1C1C1C',
               transition: 'background 0.3s',
             }}>
               <div style={{
                 position: 'absolute', top: 3, left: annual ? 'calc(100% - 21px)' : 3,
-                width: 18, height: 18, borderRadius: '50%', background: '#dceaf4',
-                transition: 'left 0.3s',
+                width: 18, height: 18, borderRadius: '50%', background: annual ? '#000000' : '#FFFFFF',
+                transition: 'left 0.3s, background 0.3s',
               }} />
             </button>
-            <span style={{ fontSize: 13, color: annual ? '#dceaf4' : '#4a7a96', transition: 'color 0.2s' }}>
-              Annual <span style={{ color: '#00b8d4', fontWeight: 600, fontSize: 11 }}>–24%</span>
+            <span style={{ fontSize: 13, color: annual ? '#FFFFFF' : '#787878', transition: 'color 0.2s' }}>
+              Annual <span style={{ color: '#FFFFFF', fontWeight: 600, fontSize: 11 }}>–24%</span>
             </span>
           </motion.div>
         </div>
@@ -823,8 +823,8 @@ function PricingHighlight() {
               key={plan.name}
               variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
               style={{
-                background: plan.highlight ? 'rgba(0,196,204,0.05)' : '#101722',
-                border: `1px solid ${plan.highlight ? 'rgba(0,196,204,0.35)' : '#183048'}`,
+                background: plan.highlight ? 'rgba(255,255,255,0.03)' : '#101010',
+                border: `1px solid ${plan.highlight ? 'rgba(255,255,255,0.18)' : '#1C1C1C'}`,
                 borderRadius: 20, padding: 28, position: 'relative', overflow: 'hidden',
               }}
             >
@@ -832,7 +832,7 @@ function PricingHighlight() {
               {plan.highlight && (
                 <div style={{
                   position: 'absolute', top: 0, left: 0, right: 0, height: '40%',
-                  background: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,196,204,0.12) 0%, transparent 70%)',
+                  background: 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255,255,255,0.06) 0%, transparent 70%)',
                   pointerEvents: 'none',
                 }} />
               )}
@@ -841,45 +841,45 @@ function PricingHighlight() {
               {plan.badge && (
                 <div style={{
                   display: 'inline-flex', alignItems: 'center', gap: 6,
-                  background: `${plan.accent}18`, border: `1px solid ${plan.accent}40`,
+                  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)',
                   borderRadius: 99, padding: '4px 12px', marginBottom: 16,
                 }}>
-                  <span style={{ fontSize: 11, color: plan.accent, fontWeight: 600, letterSpacing: '0.04em' }}>{plan.badge}</span>
+                  <span style={{ fontSize: 11, color: '#E8E8E8', fontWeight: 600, letterSpacing: '0.04em' }}>{plan.badge}</span>
                 </div>
               )}
 
               <div style={{ marginBottom: plan.badge ? 0 : 16 }}>
-                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 22, color: '#dceaf4', marginBottom: 6 }}>{plan.name}</div>
-                <div style={{ fontSize: 13, color: '#4a7a96', lineHeight: 1.5, marginBottom: 20 }}>{plan.desc}</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 22, color: '#FFFFFF', marginBottom: 6 }}>{plan.name}</div>
+                <div style={{ fontSize: 13, color: '#787878', lineHeight: 1.5, marginBottom: 20 }}>{plan.desc}</div>
               </div>
 
               {/* Price */}
               <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, marginBottom: 6 }}>
-                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 42, color: '#dceaf4', lineHeight: 1 }}>
+                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 42, color: '#FFFFFF', lineHeight: 1 }}>
                   ${annual ? plan.annualPrice : plan.monthlyPrice}
                 </span>
-                <span style={{ fontSize: 13, color: '#4a7a96', marginBottom: 6 }}>/mo</span>
+                <span style={{ fontSize: 13, color: '#787878', marginBottom: 6 }}>/mo</span>
               </div>
               {annual && (
-                <div style={{ fontSize: 12, color: '#00b8d4', marginBottom: 4 }}>Billed annually</div>
+                <div style={{ fontSize: 12, color: '#FFFFFF', marginBottom: 4 }}>Billed annually</div>
               )}
 
               {/* Credits */}
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                background: `${plan.accent}12`, border: `1px solid ${plan.accent}25`,
+                background: 'rgba(255,255,255,0.04)', border: '1px solid #2C2C2C',
                 borderRadius: 10, padding: '10px 14px', marginBottom: 24, marginTop: 16,
               }}>
-                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 18, color: plan.accent }}>{plan.credits}</span>
-                <span style={{ fontSize: 12, color: '#4a7a96' }}>{plan.creditsNote}</span>
+                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 18, color: '#FFFFFF' }}>{plan.credits}</span>
+                <span style={{ fontSize: 12, color: '#787878' }}>{plan.creditsNote}</span>
               </div>
 
               {/* Features */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
                 {plan.features.map(f => (
                   <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 9 }}>
-                    <CheckCircle size={14} color={plan.accent} style={{ flexShrink: 0, marginTop: 1 }} />
-                    <span style={{ fontSize: 13, color: '#00d8ec', lineHeight: 1.5 }}>{f}</span>
+                    <CheckCircle size={14} color="#E8E8E8" style={{ flexShrink: 0, marginTop: 1 }} />
+                    <span style={{ fontSize: 13, color: '#E8E8E8', lineHeight: 1.5 }}>{f}</span>
                   </div>
                 ))}
               </div>
@@ -888,9 +888,10 @@ function PricingHighlight() {
               <button onClick={() => router.push('/login')} style={{
                 width: '100%', padding: '13px 0', borderRadius: 12, border: 'none', cursor: 'pointer',
                 fontWeight: 700, fontSize: 14,
-                background: plan.highlight ? 'linear-gradient(135deg,#00b8d4,#00d8ec)' : `${plan.accent}18`,
-                color: plan.highlight ? '#070e1a' : plan.accent,
-                boxShadow: plan.highlight ? '0 0 20px rgba(0,196,204,0.3)' : 'none',
+                background: plan.highlight ? '#FFFFFF' : 'rgba(255,255,255,0.06)',
+                color: plan.highlight ? '#000000' : '#E8E8E8',
+                border: plan.highlight ? 'none' : '1px solid #2C2C2C',
+                boxShadow: 'none',
                 transition: 'opacity 0.2s, box-shadow 0.2s',
               }}
                 onMouseEnter={e => { e.currentTarget.style.opacity = '0.88' }}
@@ -906,12 +907,12 @@ function PricingHighlight() {
         <motion.div variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
           style={{ marginTop: 28 }}>
           <Link href="/pricing" style={{
-            fontSize: 14, color: '#4a7a96', textDecoration: 'none',
+            fontSize: 14, color: '#787878', textDecoration: 'none',
             display: 'inline-flex', alignItems: 'center', gap: 6,
             transition: 'color 0.2s',
           }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#00d8ec')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#4a7a96')}
+            onMouseEnter={e => (e.currentTarget.style.color = '#E8E8E8')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#787878')}
           >
             See all plans including Free & Enterprise <ArrowRight size={14} />
           </Link>
@@ -954,16 +955,16 @@ const GALLERY_CARDS: GalleryCard[] = [
 
 function GallerySection() {
   return (
-    <section style={{ background: '#080C10', borderTop: '1px solid #1E2A3A', padding: '96px 32px 80px' }}>
+    <section style={{ background: '#000000', borderTop: '1px solid #1C1C1C', padding: '96px 32px 80px' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto' }}>
         {/* Label */}
         <motion.p variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
-          style={{ fontSize: 11, fontWeight: 700, color: '#4A5C6E', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>
+          style={{ fontSize: 11, fontWeight: 700, color: '#787878', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>
           Gallery
         </motion.p>
         {/* Heading */}
         <motion.h2 variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
-          style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(26px,3.5vw,42px)', fontWeight: 700, color: '#dceaf4', margin: '0 0 56px', lineHeight: 1.15 }}>
+          style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(26px,3.5vw,42px)', fontWeight: 700, color: '#FFFFFF', margin: '0 0 56px', lineHeight: 1.15 }}>
           Made with Reelx
         </motion.h2>
 
@@ -994,7 +995,7 @@ function GallerySection() {
                 borderRadius: 14,
                 overflow: 'hidden',
                 position: 'relative',
-                background: '#0D1420',
+                background: '#161616',
                 cursor: 'pointer',
                 ...(card.col ? { gridColumn: card.col } : {}),
               }}
@@ -1038,8 +1039,8 @@ function GallerySection() {
           style={{ marginTop: 48, textAlign: 'center' }}>
           <Link href="/login" style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: 'linear-gradient(135deg, #0e7490 0%, #6d28d9 100%)',
-            color: '#dceaf4', fontWeight: 600, fontSize: 14,
+            background: '#FFFFFF',
+            color: '#000000', fontWeight: 600, fontSize: 14,
             padding: '12px 28px', borderRadius: 12, textDecoration: 'none',
             transition: 'opacity 0.2s',
           }}
@@ -1090,14 +1091,14 @@ function FAQ() {
   const [open, setOpen] = useState<number | null>(null)
 
   return (
-    <section id="faq" style={{ background: '#070e1a', borderTop: '1px solid #1E2A3A', padding: '96px 32px' }}>
+    <section id="faq" style={{ background: '#000000', borderTop: '1px solid #1C1C1C', padding: '96px 32px' }}>
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
         <motion.p variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
-          style={{ fontSize: 11, fontWeight: 700, color: '#4A5C6E', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>
+          style={{ fontSize: 11, fontWeight: 700, color: '#787878', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>
           FAQ
         </motion.p>
         <motion.h2 variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
-          style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 700, color: '#dceaf4', margin: '0 0 56px', lineHeight: 1.15 }}>
+          style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 700, color: '#FFFFFF', margin: '0 0 56px', lineHeight: 1.15 }}>
           FAQ
         </motion.h2>
 
@@ -1108,7 +1109,7 @@ function FAQ() {
               <motion.div
                 key={i}
                 variants={fadeRise} initial="hidden" whileInView="show" viewport={{ once: true }}
-                style={{ borderTop: '1px solid #1E2A3A' }}
+                style={{ borderTop: '1px solid #1C1C1C' }}
               >
                 <button
                   onClick={() => setOpen(isOpen ? null : i)}
@@ -1118,19 +1119,19 @@ function FAQ() {
                     textAlign: 'left',
                   }}
                 >
-                  <span style={{ fontSize: 15, fontWeight: 500, color: isOpen ? '#dceaf4' : '#C8D5E0', lineHeight: 1.4, transition: 'color 0.18s' }}>
+                  <span style={{ fontSize: 15, fontWeight: 500, color: isOpen ? '#FFFFFF' : '#E8E8E8', lineHeight: 1.4, transition: 'color 0.18s' }}>
                     {faq.q}
                   </span>
                   <span style={{
                     width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-                    border: '1px solid #183048', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    border: '1px solid #1C1C1C', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     transition: 'border-color 0.18s, background 0.18s',
                     background: isOpen ? 'rgba(255,255,255,0.07)' : 'transparent',
-                    borderColor: isOpen ? '#3A4A5C' : '#183048',
+                    borderColor: isOpen ? '#505050' : '#1C1C1C',
                   }}>
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none"
                       style={{ transform: isOpen ? 'rotate(45deg)' : 'none', transition: 'transform 0.22s ease' }}>
-                      <path d="M5 1V9M1 5H9" stroke={isOpen ? '#dceaf4' : '#4a7a96'} strokeWidth="1.5" strokeLinecap="round" />
+                      <path d="M5 1V9M1 5H9" stroke={isOpen ? '#FFFFFF' : '#787878'} strokeWidth="1.5" strokeLinecap="round" />
                     </svg>
                   </span>
                 </button>
@@ -1142,7 +1143,7 @@ function FAQ() {
                   transition: 'grid-template-rows 0.28s ease',
                 }}>
                   <div style={{ overflow: 'hidden' }}>
-                    <p style={{ fontSize: 14, color: '#4a7a96', lineHeight: 1.75, margin: 0, paddingBottom: 22 }}>
+                    <p style={{ fontSize: 14, color: '#787878', lineHeight: 1.75, margin: 0, paddingBottom: 22 }}>
                       {faq.a}
                     </p>
                   </div>
@@ -1151,7 +1152,7 @@ function FAQ() {
             )
           })}
           {/* Final border */}
-          <div style={{ borderTop: '1px solid #1E2A3A' }} />
+          <div style={{ borderTop: '1px solid #1C1C1C' }} />
         </div>
       </div>
     </section>
@@ -1168,14 +1169,14 @@ const FOOTER_LINKS: [string, string][] = [
 
 function Footer() {
   return (
-    <footer style={{ background: '#0D1520', borderTop: '1px solid #183048', padding: '10px 32px' }}>
+    <footer style={{ background: '#101010', borderTop: '1px solid #1C1C1C', padding: '10px 32px' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
-        <Image src="/brand/newlogo.png" alt="Reelx" width={140} height={40} style={{ objectFit: 'contain' }} />
+        <Image src="/brand/reelx-logo-white-svg.svg" alt="Reelx" width={110} height={30} style={{ objectFit: 'contain' }} />
         <nav style={{ display: 'flex', gap: 28, flexWrap: 'wrap', alignItems: 'center' }}>
           {FOOTER_LINKS.map(([label, href]) => (
             <Link key={label} href={href}
               style={{ fontSize: 13, color: '#ffffff', textDecoration: 'none', transition: 'color 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#00d8ec')}
+              onMouseEnter={e => (e.currentTarget.style.color = '#E8E8E8')}
               onMouseLeave={e => (e.currentTarget.style.color = '#ffffff')}
             >{label}</Link>
           ))}

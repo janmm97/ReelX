@@ -98,17 +98,17 @@ function AuthCard() {
 
   return (
     <div style={{
-      background: '#0f2035', border: '1px solid #183048', borderRadius: 20,
+      background: '#161616', border: '1px solid #1C1C1C', borderRadius: 20,
       padding: 40, width: '100%', maxWidth: 380,
       display: 'flex', flexDirection: 'column', gap: 24, alignItems: 'center',
     }}>
-      <Image src="/brand/reelsy-icon.png" alt="Reelx" width={48} height={48} style={{ objectFit: 'contain' }} />
+      <Image src="/brand/reelx-logo-white-svg.svg" alt="Reelx" width={100} height={28} style={{ objectFit: 'contain' }} />
 
       <div style={{ textAlign: 'center' }}>
-        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 700, color: '#dceaf4', margin: '0 0 8px' }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 700, color: '#FFFFFF', margin: '0 0 8px' }}>
           {isSignup ? 'Create your Reelx workspace' : 'Sign in to Reelx'}
         </h1>
-        <p style={{ fontSize: 14, color: '#4a7a96', margin: 0, lineHeight: 1.5 }}>
+        <p style={{ fontSize: 14, color: '#787878', margin: 0, lineHeight: 1.5 }}>
           {isSignup
             ? 'Continue with Google to get started.'
             : 'Continue with your Google account to access your workspace.'}
@@ -120,21 +120,21 @@ function AuthCard() {
         style={{
           width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
           gap: 10, padding: '12px 20px', borderRadius: 12,
-          background: '#dceaf4', color: '#070e1a', fontWeight: 600, fontSize: 15,
+          background: '#FFFFFF', color: '#000000', fontWeight: 600, fontSize: 15,
           border: 'none', cursor: 'pointer', transition: 'background 0.2s',
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = '#e8eef4')}
-        onMouseLeave={e => (e.currentTarget.style.background = '#dceaf4')}
+        onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
+        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
       >
         <GoogleIcon />
         Continue with Google
       </button>
 
-      <p style={{ fontSize: 12, color: '#4a7a96', textAlign: 'center', lineHeight: 1.6, margin: 0 }}>
+      <p style={{ fontSize: 12, color: '#787878', textAlign: 'center', lineHeight: 1.6, margin: 0 }}>
         By continuing you agree to the{' '}
-        <a href="/legal" style={{ color: '#00d8ec', textDecoration: 'underline' }}>Terms of Service</a>
+        <a href="/legal" style={{ color: '#FFFFFF', textDecoration: 'underline' }}>Terms of Service</a>
         {' '}and{' '}
-        <a href="/privacy" style={{ color: '#00d8ec', textDecoration: 'underline' }}>Privacy Policy</a>.
+        <a href="/privacy" style={{ color: '#FFFFFF', textDecoration: 'underline' }}>Privacy Policy</a>.
       </p>
     </div>
   )
@@ -150,7 +150,7 @@ export default function LoginPage() {
 
       {/* ── Left: auth ───────────────────────────────────────── */}
       <div style={{
-        background: '#070e1a',
+        background: '#000000',
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
         padding: '40px', position: 'relative',
@@ -158,16 +158,16 @@ export default function LoginPage() {
       }}>
         {/* Logo top-left */}
         <div style={{ position: 'absolute', top: 12, left: 36 }}>
-          <Image src="/brand/newlogo.png" alt="Reelx" width={130} height={38} style={{ objectFit: 'contain' }} />
+          <Image src="/brand/reelx-logo-white-svg.svg" alt="Reelx" width={110} height={30} style={{ objectFit: 'contain' }} />
         </div>
 
         {/* Auth card — always centered, never clipped */}
         <Suspense fallback={
           <div style={{
-            background: '#0f2035', border: '1px solid #183048', borderRadius: 20,
+            background: '#161616', border: '1px solid #1C1C1C', borderRadius: 20,
             padding: 40, width: '100%', maxWidth: 380,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            height: 240, color: '#4a7a96', fontSize: 14,
+            height: 240, color: '#787878', fontSize: 14,
           }}>
             Loading…
           </div>
@@ -179,7 +179,7 @@ export default function LoginPage() {
       {/* ── Right: waterfall gallery ─────────────────────────── */}
       <div style={{
         position: 'relative', overflow: 'hidden',
-        background: '#070e1a', display: 'flex',
+        background: '#000000', display: 'flex',
         gap: 6, padding: 6, height: '100vh',
         alignItems: 'flex-start',
       }}>
@@ -194,13 +194,13 @@ export default function LoginPage() {
         {/* top / bottom fade */}
         <div style={{
           position: 'absolute', inset: 0, pointerEvents: 'none',
-          background: 'linear-gradient(to bottom, #070e1a 0%, transparent 10%, transparent 90%, #070e1a 100%)',
+          background: 'linear-gradient(to bottom, #000000 0%, transparent 10%, transparent 90%, #000000 100%)',
           zIndex: 2,
         }} />
         {/* left-edge blend into auth panel */}
         <div style={{
           position: 'absolute', inset: 0, pointerEvents: 'none',
-          background: 'linear-gradient(to right, #070e1a 0%, transparent 10%)',
+          background: 'linear-gradient(to right, #000000 0%, transparent 10%)',
           zIndex: 2,
         }} />
       </div>

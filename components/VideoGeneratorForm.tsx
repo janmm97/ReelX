@@ -216,7 +216,7 @@ export default function VideoGeneratorForm({ userId }: Props) {
               onClick={() => setModel(value)}
               className={`py-1.5 rounded-md text-xs font-semibold transition-all ${
                 model === value
-                  ? 'bg-gradient-to-r from-[#00b8d4] to-[#00d8ec] text-[#070e1a]'
+                  ? 'bg-white text-black'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -229,7 +229,7 @@ export default function VideoGeneratorForm({ userId }: Props) {
       {/* Portrait image upload */}
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-medium text-slate-300">Portrait Image</label>
-        <label className="relative flex flex-col items-center justify-center w-full h-40 rounded-xl border-2 border-dashed border-white/[0.12] hover:border-[#00b8d4]/40 transition-colors cursor-pointer bg-white/[0.02]">
+        <label className="relative flex flex-col items-center justify-center w-full h-40 rounded-xl border-2 border-dashed border-white/[0.12] hover:border-white/25 transition-colors cursor-pointer bg-white/[0.02]">
           {imagePreview ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={imagePreview} alt="Preview" className="w-full h-full object-contain rounded-xl" />
@@ -256,12 +256,12 @@ export default function VideoGeneratorForm({ userId }: Props) {
         <label className="text-xs font-medium text-slate-300">Audio</label>
         <label className={`relative flex flex-col items-center justify-center w-full rounded-xl border-2 border-dashed transition-colors cursor-pointer ${
           audioFile
-            ? 'border-[#00b8d4]/40 bg-[#00b8d4]/5 py-3'
-            : 'border-white/[0.12] hover:border-[#00b8d4]/40 bg-white/[0.02] py-6'
+            ? 'border-white/25 bg-white/5 py-3'
+            : 'border-white/[0.12] hover:border-white/25 bg-white/[0.02] py-6'
         } ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}>
           {audioFile ? (
             <div className="flex items-center gap-3 px-4 w-full">
-              <svg className="w-8 h-8 shrink-0 text-[#00b8d4]" viewBox="0 0 24 24" fill="none">
+              <svg className="w-8 h-8 shrink-0 text-white" viewBox="0 0 24 24" fill="none">
                 <path d="M9 18V5l12-2v13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 <circle cx="6" cy="18" r="3" stroke="currentColor" strokeWidth="1.5" />
                 <circle cx="18" cy="16" r="3" stroke="currentColor" strokeWidth="1.5" />
@@ -309,7 +309,7 @@ export default function VideoGeneratorForm({ userId }: Props) {
           onChange={(e) => setMotionPrompt(e.target.value)}
           placeholder="e.g. speak naturally with slight head movement"
           disabled={isLoading}
-          className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-[#00b8d4]/50 disabled:opacity-50"
+          className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-white/20 disabled:opacity-50"
         />
       </div>
 
@@ -317,7 +317,7 @@ export default function VideoGeneratorForm({ userId }: Props) {
       {isLoading && (
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-sm text-slate-300">
-            <svg className="w-4 h-4 animate-spin text-[#00b8d4] shrink-0" viewBox="0 0 24 24" fill="none">
+            <svg className="w-4 h-4 animate-spin text-white shrink-0" viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="31.4" strokeDashoffset="10" />
             </svg>
             <span>{STEP_LABELS[step.id]}</span>
@@ -326,7 +326,7 @@ export default function VideoGeneratorForm({ userId }: Props) {
             <div className="flex flex-col gap-1">
               <div className="w-full h-1.5 rounded-full bg-white/[0.08] overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#00b8d4] to-[#00d8ec] transition-all duration-500"
+                  className="h-full rounded-full bg-white transition-all duration-500"
                   style={{ width: `${(step.completed / step.total) * 100}%` }}
                 />
               </div>

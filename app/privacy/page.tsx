@@ -9,17 +9,17 @@ export const metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div style={{ background: '#070e1a', minHeight: '100vh', color: '#dceaf4' }}>
+    <div style={{ background: '#000000', minHeight: '100vh', color: '#FFFFFF' }}>
       <PublicHeader compact />
 
       {/* Body */}
       <main style={{ maxWidth: 760, margin: '0 auto', padding: '72px 32px 96px' }}>
-        <p style={{ fontSize: 11, fontWeight: 700, color: '#4A5C6E', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>Privacy & Terms</p>
+        <p style={{ fontSize: 11, fontWeight: 700, color: '#787878', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>Privacy & Terms</p>
         <h1 style={{ fontSize: 'clamp(28px,4vw,42px)', fontWeight: 700, margin: '0 0 8px', lineHeight: 1.15 }}>Privacy Policy & Terms of Service</h1>
-        <p style={{ fontSize: 13, color: '#4A5C6E', marginBottom: 56 }}>Last updated: {LAST_UPDATED}</p>
+        <p style={{ fontSize: 13, color: '#787878', marginBottom: 56 }}>Last updated: {LAST_UPDATED}</p>
 
         {/* Privacy */}
-        <h2 style={{ fontSize: 20, fontWeight: 700, color: '#C8D5E0', margin: '0 0 28px', paddingBottom: 12, borderBottom: '1px solid #1E2A3A' }}>Privacy Policy</h2>
+        <h2 style={{ fontSize: 20, fontWeight: 700, color: '#E8E8E8', margin: '0 0 28px', paddingBottom: 12, borderBottom: '1px solid #1C1C1C' }}>Privacy Policy</h2>
 
         <Section title="1. Information We Collect">
           <p>When you use Reelx we collect:</p>
@@ -52,7 +52,7 @@ export default function PrivacyPage() {
         </Section>
 
         <Section title="4. Data Retention">
-          <p>We retain your account data for as long as your account is active. Generated outputs are stored for 30 days after creation unless you delete them earlier. You may request full account deletion at any time by emailing <a href="mailto:support@reelx.app" style={{ color: '#4a7a96' }}>support@reelx.app</a>.</p>
+          <p>We retain your account data for as long as your account is active. Generated outputs are stored for 30 days after creation unless you delete them earlier. You may request full account deletion at any time by emailing <a href="mailto:support@reelx.app" style={{ color: '#787878' }}>support@reelx.app</a>.</p>
         </Section>
 
         <Section title="5. Cookies">
@@ -60,11 +60,11 @@ export default function PrivacyPage() {
         </Section>
 
         <Section title="6. Your Rights">
-          <p>Depending on your jurisdiction you may have the right to access, correct, or delete your personal data. To exercise these rights, contact us at <a href="mailto:support@reelx.app" style={{ color: '#4a7a96' }}>support@reelx.app</a>.</p>
+          <p>Depending on your jurisdiction you may have the right to access, correct, or delete your personal data. To exercise these rights, contact us at <a href="mailto:support@reelx.app" style={{ color: '#787878' }}>support@reelx.app</a>.</p>
         </Section>
 
         {/* Terms */}
-        <h2 style={{ fontSize: 20, fontWeight: 700, color: '#C8D5E0', margin: '48px 0 28px', paddingBottom: 12, borderBottom: '1px solid #1E2A3A' }}>Terms of Service</h2>
+        <h2 style={{ fontSize: 20, fontWeight: 700, color: '#E8E8E8', margin: '48px 0 28px', paddingBottom: 12, borderBottom: '1px solid #1C1C1C' }}>Terms of Service</h2>
 
         <Section title="7. Acceptance">
           <p>By creating an account or using Reelx you agree to these terms. If you do not agree, do not use the service.</p>
@@ -90,10 +90,10 @@ export default function PrivacyPage() {
           <p>We may revise these terms at any time. We will notify you of material changes via email at least 14 days before they take effect. Continued use after that date constitutes acceptance.</p>
         </Section>
 
-        <div style={{ marginTop: 56, paddingTop: 32, borderTop: '1px solid #1E2A3A' }}>
-          <p style={{ fontSize: 13, color: '#4A5C6E' }}>
+        <div style={{ marginTop: 56, paddingTop: 32, borderTop: '1px solid #1C1C1C' }}>
+          <p style={{ fontSize: 13, color: '#787878' }}>
             Questions?{' '}
-            <a href="mailto:support@reelx.app" style={{ color: '#4a7a96', textDecoration: 'underline', textUnderlineOffset: 3 }}>
+            <a href="mailto:support@reelx.app" style={{ color: '#787878', textDecoration: 'underline', textUnderlineOffset: 3 }}>
               support@reelx.app
             </a>
           </p>
@@ -106,8 +106,8 @@ export default function PrivacyPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section style={{ marginBottom: 36 }}>
-      <h3 style={{ fontSize: 15, fontWeight: 600, color: '#C8D5E0', margin: '0 0 10px' }}>{title}</h3>
-      <div style={{ fontSize: 14, color: '#4a7a96', lineHeight: 1.75 }}>
+      <h3 style={{ fontSize: 15, fontWeight: 600, color: '#E8E8E8', margin: '0 0 10px' }}>{title}</h3>
+      <div style={{ fontSize: 14, color: '#787878', lineHeight: 1.75 }}>
         {children}
       </div>
     </section>

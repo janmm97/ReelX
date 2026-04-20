@@ -1,25 +1,24 @@
 import type { Metadata } from "next";
-import { Open_Sans } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import "./globals.css";
 
-/* Brand typography spec: FreeSans Bold (headers) / FreeSans (body)
-   Open Sans is used as the closest available web-font approximation. */
-const openSansHeading = Open_Sans({
+const openSansHeading = DM_Sans({
   variable: "--font-heading",
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["500", "600", "700"],
   display: "swap",
 });
 
-const openSansBody = Open_Sans({
+const openSansBody = DM_Sans({
   variable: "--font-body-text",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["300", "400", "500"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://reelx.ai"),
+  icons: { icon: "/brand/reelx-tab-icon.svg" },
   title: "Reelx — AI Creative Studio",
   description:
     "Create images, videos, and avatar content at the speed of content. Reelx is an AI creative studio with fast workflows, flexible models, and production-ready output.",

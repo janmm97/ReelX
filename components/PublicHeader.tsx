@@ -7,9 +7,9 @@ export default function PublicHeader({ compact = false }: { compact?: boolean })
   return (
     <header style={{
       position: 'sticky', top: 0, zIndex: 50,
-      background: 'rgba(11,15,20,0.92)', backdropFilter: 'blur(14px)',
+      background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(14px)',
       WebkitBackdropFilter: 'blur(14px)',
-      borderBottom: '1px solid #1E2A3A',
+      borderBottom: '1px solid #1C1C1C',
       padding: '0 32px',
     }}>
       <div style={{
@@ -20,10 +20,10 @@ export default function PublicHeader({ compact = false }: { compact?: boolean })
         {/* Logo */}
         <Link href="/">
           <Image
-            src="/brand/newlogo.png"
+            src="/brand/reelx-logo-white-svg.svg"
             alt="Reelx"
-            width={compact ? 120 : 251}
-            height={compact ? 34 : 100}
+            width={compact ? 100 : 160}
+            height={compact ? 28 : 44}
             style={{ objectFit: 'contain' }}
           />
         </Link>
@@ -36,12 +36,12 @@ export default function PublicHeader({ compact = false }: { compact?: boolean })
           <Link
             href="/login"
             style={{
-              background: '#ffffff', color: '#070e1a', fontWeight: 600, fontSize: 13,
+              background: '#FFFFFF', color: '#000000', fontWeight: 600, fontSize: 13,
               padding: '8px 18px', borderRadius: 10, textDecoration: 'none',
-              display: 'inline-flex', alignItems: 'center', transition: 'background 0.2s',
+              display: 'inline-flex', alignItems: 'center', transition: 'opacity 0.18s',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#dceaf4')}
-            onMouseLeave={e => (e.currentTarget.style.background = '#ffffff')}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
           >
             Get Started
           </Link>

@@ -86,23 +86,23 @@ const CSS = `
     display:inline-flex; align-items:center; gap:6px;
     padding:5px 12px; border-radius:100px; font-size:12px; font-weight:500;
     background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08);
-    color:#00d8ec; white-space:nowrap; letter-spacing:0.01em;
+    color:#E8E8E8; white-space:nowrap; letter-spacing:0.01em;
   }
   .pill-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
 
   .check-item {
     display:flex; align-items:center; gap:10px;
-    font-size:14px; color:#00d8ec; line-height:1.5;
+    font-size:14px; color:#E8E8E8; line-height:1.5;
   }
   .check-ring {
     width:18px; height:18px; border-radius:50%; flex-shrink:0;
-    background:rgba(0,196,204,0.1); border:1px solid rgba(0,196,204,0.28);
+    background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.18);
     display:flex; align-items:center; justify-content:center;
   }
 
   .divider {
     width:100%; height:1px;
-    background:linear-gradient(90deg, transparent 0%, #183048 20%, #183048 80%, transparent 100%);
+    background:linear-gradient(90deg, transparent 0%, #2C2C2C 20%, #2C2C2C 80%, transparent 100%);
   }
 
   .prod-grid { display:grid; grid-template-columns:1fr 1fr; gap:clamp(40px,6vw,96px); align-items:center; }
@@ -112,7 +112,7 @@ const CSS = `
   .stat-item { text-align:center; }
 
   .wave-bar {
-    width:3px; border-radius:3px; background:#00b8d4; transform-origin:bottom;
+    width:3px; border-radius:3px; background:#FFFFFF; transform-origin:bottom;
   }
 
   .img-tile { border-radius:8px; overflow:hidden; position:relative; }
@@ -123,10 +123,10 @@ const CSS = `
   }
 
   .nav-link {
-    color:#00d8ec; font-size:14px; text-decoration:none;
+    color:#E8E8E8; font-size:14px; text-decoration:none;
     transition:color 0.2s; font-family:var(--font-body-text);
   }
-  .nav-link:hover, .nav-link.active { color:#dceaf4; }
+  .nav-link:hover, .nav-link.active { color:#FFFFFF; }
 
   @media (max-width:860px) {
     .prod-grid { grid-template-columns:1fr; }
@@ -158,7 +158,7 @@ function ArrowRight() {
 function CheckSvg() {
   return (
     <svg width="9" height="7" viewBox="0 0 9 7" fill="none" aria-hidden="true">
-      <path d="M1 3.5L3.5 6L8 1" stroke="#00b8d4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M1 3.5L3.5 6L8 1" stroke="#999999" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
@@ -168,7 +168,7 @@ function CheckSvg() {
 function ImageGenVisual() {
   const BASE = '/media/image-gen-svg'
   const tiles = [
-    { src: `${BASE}/1.svg`, label: 'Portrait',  dot: '#00b8d4', ratio: '3/4' },
+    { src: `${BASE}/1.svg`, label: 'Portrait',  dot: '#FFFFFF', ratio: '3/4' },
     { src: `${BASE}/2.svg`, label: 'Abstract',  dot: '#8B5CF6', ratio: '2/3' },
     { src: `${BASE}/3.svg`, label: 'Landscape', dot: '#10B981', ratio: '3/4' },
     { src: `${BASE}/4.svg`, label: 'Product',   dot: '#F59E0B', ratio: '3/4' },
@@ -181,7 +181,7 @@ function ImageGenVisual() {
       {/* Glow */}
       <div style={{
         position: 'absolute', inset: '-8%',
-        background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(0,196,204,0.07), transparent)',
+        background: 'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(255,255,255,0.05), transparent)',
         pointerEvents: 'none',
       }} />
 
@@ -199,7 +199,7 @@ function ImageGenVisual() {
             border: '1px solid rgba(255,255,255,0.1)',
             position: 'relative', overflow: 'hidden',
             boxShadow: '0 4px 24px rgba(0,0,0,0.5)',
-            background: '#0D1420',
+            background: '#161616',
           }}>
             {/* SVG image fills the card */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -238,14 +238,14 @@ function ImageGenVisual() {
       {/* Floating model badge */}
       <div style={{
         position: 'absolute', bottom: '-6%', right: '0%',
-        background: '#111A28', border: '1px solid #2A3D54',
+        background: '#161616', border: '1px solid #2C2C2C',
         borderRadius: 12, padding: '10px 14px',
         display: 'flex', alignItems: 'center', gap: 8,
         boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
         zIndex: 10,
       }}>
         <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', flexShrink: 0, boxShadow: '0 0 8px rgba(16,185,129,0.5)' }} />
-        <span style={{ fontSize: 12, fontWeight: 600, color: '#dceaf4', fontFamily: 'var(--font-body-text)', whiteSpace: 'nowrap' }}>
+        <span style={{ fontSize: 12, fontWeight: 600, color: '#FFFFFF', fontFamily: 'var(--font-body-text)', whiteSpace: 'nowrap' }}>
           GPT-5 Image Mode
         </span>
       </div>
@@ -272,7 +272,7 @@ function VideoGenVisual() {
         boxShadow: '0 8px 40px rgba(0,0,0,0.7)',
         transform: 'rotate(2.5deg)',
         animation: 'frameDrift2 4s ease-in-out infinite',
-        overflow: 'hidden', background: '#070e1a',
+        overflow: 'hidden', background: '#000000',
       }}>
         <video autoPlay muted loop playsInline
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}>
@@ -288,7 +288,7 @@ function VideoGenVisual() {
         boxShadow: '0 20px 60px rgba(0,0,0,0.75)',
         transform: 'rotate(-2deg)',
         animation: 'frameDrift 5s ease-in-out infinite',
-        zIndex: 2, overflow: 'hidden', background: '#070e1a',
+        zIndex: 2, overflow: 'hidden', background: '#000000',
       }}>
         <video autoPlay muted loop playsInline
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}>
@@ -300,14 +300,14 @@ function VideoGenVisual() {
       {/* Model badge */}
       <div style={{
         position: 'absolute', bottom: '4%', right: '8%', zIndex: 10,
-        background: '#111E30', border: '1px solid #2A3D54',
+        background: '#161616', border: '1px solid #2C2C2C',
         borderRadius: 10, padding: '9px 13px',
         display: 'flex', alignItems: 'center', gap: 8,
         boxShadow: '0 8px 28px rgba(0,0,0,0.6)',
       }}>
         <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#3B82F6', boxShadow: '0 0 8px rgba(59,130,246,0.5)' }} />
         <span style={{ fontSize: 11, fontWeight: 600, color: '#C8D8E8', fontFamily: 'var(--font-body-text)' }}>Veo 3.1</span>
-        <span style={{ fontSize: 9, color: '#4A6070', fontFamily: 'var(--font-body-text)' }}>/ Google</span>
+        <span style={{ fontSize: 9, color: '#505050', fontFamily: 'var(--font-body-text)' }}>/ Google</span>
       </div>
     </div>
   )
@@ -327,7 +327,7 @@ function StudioVisual() {
       {/* Back card — transcript */}
       <div style={{
         position: 'absolute', top: 0, left: 0, right: '10%',
-        background: '#0F1822', border: '1.5px solid rgba(255,255,255,0.12)',
+        background: '#161616', border: '1.5px solid rgba(255,255,255,0.12)',
         borderRadius: 16, padding: '20px 20px 18px',
         boxShadow: '0 12px 48px rgba(0,0,0,0.55)',
         transform: 'rotate(-4deg)',
@@ -335,12 +335,12 @@ function StudioVisual() {
       }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#456B80', fontFamily: 'var(--font-body-text)' }}>
+          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#505050', fontFamily: 'var(--font-body-text)' }}>
             Script Transcript
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#00b8d4', boxShadow: '0 0 6px rgba(0,196,204,0.7)' }} />
-            <span style={{ fontSize: 10, color: '#00b8d4', fontFamily: 'var(--font-body-text)', fontWeight: 600 }}>LIVE</span>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FFFFFF', boxShadow: '0 0 6px rgba(255,255,255,0.4)' }} />
+            <span style={{ fontSize: 10, color: '#787878', fontFamily: 'var(--font-body-text)', fontWeight: 600 }}>LIVE</span>
           </div>
         </div>
         {/* Lines */}
@@ -349,17 +349,17 @@ function StudioVisual() {
             <div key={i} style={{
               display: 'flex', gap: 10, alignItems: 'flex-start',
               padding: '8px 10px', borderRadius: 10,
-              background: l.active ? 'rgba(0,196,204,0.07)' : 'transparent',
-              border: l.active ? '1px solid rgba(0,196,204,0.18)' : '1px solid transparent',
+              background: l.active ? 'rgba(255,255,255,0.05)' : 'transparent',
+              border: l.active ? '1px solid rgba(255,255,255,0.12)' : '1px solid transparent',
             }}>
-              <span style={{ fontSize: 9, color: l.active ? '#00b8d4' : '#334A5E', fontFamily: 'var(--font-body-text)', fontWeight: 600, marginTop: 2, flexShrink: 0 }}>{l.t}</span>
-              <span style={{ fontSize: 12, color: l.active ? '#D4E8F0' : '#4A6070', fontFamily: 'var(--font-body-text)', lineHeight: 1.5 }}>{l.text}</span>
+              <span style={{ fontSize: 9, color: l.active ? '#FFFFFF' : '#505050', fontFamily: 'var(--font-body-text)', fontWeight: 600, marginTop: 2, flexShrink: 0 }}>{l.t}</span>
+              <span style={{ fontSize: 12, color: l.active ? '#FFFFFF' : '#505050', fontFamily: 'var(--font-body-text)', lineHeight: 1.5 }}>{l.text}</span>
             </div>
           ))}
         </div>
         {/* Progress bar */}
         <div style={{ marginTop: 16, height: 3, borderRadius: 3, background: 'rgba(255,255,255,0.06)' }}>
-          <div style={{ width: '38%', height: '100%', borderRadius: 3, background: '#00b8d4' }} />
+          <div style={{ width: '38%', height: '100%', borderRadius: 3, background: '#FFFFFF' }} />
         </div>
       </div>
 
@@ -373,7 +373,7 @@ function StudioVisual() {
         transformOrigin: 'bottom left',
         zIndex: 2,
         aspectRatio: '3/4',
-        background: '#070e1a',
+        background: '#000000',
       }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -383,8 +383,8 @@ function StudioVisual() {
         />
         {/* Badge */}
         <div style={{ position: 'absolute', bottom: 12, left: 12, display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(8,12,18,0.88)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, padding: '6px 11px' }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#00b8d4', boxShadow: '0 0 7px rgba(0,196,204,0.8)' }} />
-          <span style={{ fontSize: 10, fontWeight: 600, color: '#dceaf4', fontFamily: 'var(--font-body-text)' }}>ElevenLabs Voice</span>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FFFFFF', boxShadow: '0 0 7px rgba(255,255,255,0.5)' }} />
+          <span style={{ fontSize: 10, fontWeight: 600, color: '#FFFFFF', fontFamily: 'var(--font-body-text)' }}>ElevenLabs Voice</span>
         </div>
       </div>
 
@@ -399,7 +399,7 @@ function SectionLabel({ icon, text }: { icon: React.ReactNode; text: string }) {
       {icon}
       <span style={{
         fontFamily: 'var(--font-body-text)', fontSize: 11, fontWeight: 700,
-        letterSpacing: '0.13em', textTransform: 'uppercase', color: '#556B80',
+        letterSpacing: '0.13em', textTransform: 'uppercase', color: '#505050',
       }}>{text}</span>
     </div>
   )
@@ -439,7 +439,7 @@ export default function ProductsPage() {
       />
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
-      <div style={{ background: '#070e1a', minHeight: '100vh', color: '#dceaf4', fontFamily: 'var(--font-body-text)' }}>
+      <div style={{ background: '#000000', minHeight: '100vh', color: '#FFFFFF', fontFamily: 'var(--font-body-text)' }}>
 
         <PublicHeader compact />
 
@@ -448,7 +448,7 @@ export default function ProductsPage() {
           <div style={{ maxWidth: 1280, margin: '0 auto' }}>
             <p className="ar-0" style={{
               fontFamily: 'var(--font-body-text)', fontSize: 12, fontWeight: 700,
-              letterSpacing: '0.14em', textTransform: 'uppercase', color: '#00b8d4',
+              letterSpacing: '0.14em', textTransform: 'uppercase', color: '#787878',
               marginBottom: 14,
             }}>
               The Reelx Suite
@@ -462,7 +462,7 @@ export default function ProductsPage() {
               Three AI tools.<br />One creative<br />workflow.
             </h1>
             <p className="ar-2" style={{
-              fontSize: 'clamp(15px,1.8vw,18px)', color: '#8A9EAE',
+              fontSize: 'clamp(15px,1.8vw,18px)', color: '#999999',
               maxWidth: 480, lineHeight: 1.7, margin: 0,
             }}>
               From a single prompt to a finished video — Reelx connects image generation,
@@ -488,7 +488,7 @@ export default function ProductsPage() {
               position: 'absolute', top: -48, left: -16, zIndex: 0,
               fontFamily: 'var(--font-heading)', fontWeight: 800,
               fontSize: 'clamp(100px,16vw,192px)', lineHeight: 1,
-              color: '#111A26', userSelect: 'none', pointerEvents: 'none',
+              color: '#161616', userSelect: 'none', pointerEvents: 'none',
             }}>01</div>
 
             <div className="prod-grid" style={{ position: 'relative', zIndex: 1 }}>
@@ -498,10 +498,10 @@ export default function ProductsPage() {
                   text="Image Generation"
                   icon={
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#00b8d4" opacity="0.8" />
-                      <rect x="9" y="1" width="6" height="6" rx="1.5" fill="#00b8d4" opacity="0.35" />
-                      <rect x="1" y="9" width="6" height="6" rx="1.5" fill="#00b8d4" opacity="0.35" />
-                      <rect x="9" y="9" width="6" height="6" rx="1.5" fill="#00b8d4" opacity="0.15" />
+                      <rect x="1" y="1" width="6" height="6" rx="1.5" fill="#999999" opacity="0.8" />
+                      <rect x="9" y="1" width="6" height="6" rx="1.5" fill="#999999" opacity="0.35" />
+                      <rect x="1" y="9" width="6" height="6" rx="1.5" fill="#999999" opacity="0.35" />
+                      <rect x="9" y="9" width="6" height="6" rx="1.5" fill="#999999" opacity="0.15" />
                     </svg>
                   }
                 />
@@ -515,7 +515,7 @@ export default function ProductsPage() {
                   AI image generation<br />from every leading model.
                 </h2>
 
-                <p style={{ fontSize: 15, color: '#8A9EAE', lineHeight: 1.75, margin: '0 0 28px', maxWidth: '44ch' }}>
+                <p style={{ fontSize: 15, color: '#999999', lineHeight: 1.75, margin: '0 0 28px', maxWidth: '44ch' }}>
                   Switch between the world's best image models without leaving the platform.
                   Compare outputs side by side, iterate in seconds, and ship visuals at the
                   speed of thought.
@@ -536,7 +536,7 @@ export default function ProductsPage() {
                 <Link href="/login" className="cta-link" style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15,
-                  color: '#00b8d4', textDecoration: 'none',
+                  color: '#787878', textDecoration: 'none',
                 }}>
                   Start generating images
                   <span className="cta-arrow"><ArrowRight /></span>
@@ -568,7 +568,7 @@ export default function ProductsPage() {
               position: 'absolute', top: -48, right: -16, left: 'auto', zIndex: 0,
               fontFamily: 'var(--font-heading)', fontWeight: 800,
               fontSize: 'clamp(100px,16vw,192px)', lineHeight: 1,
-              color: '#111A26', userSelect: 'none', pointerEvents: 'none',
+              color: '#161616', userSelect: 'none', pointerEvents: 'none',
             }}>02</div>
 
             <div className="prod-grid flip" style={{ position: 'relative', zIndex: 1 }}>
@@ -583,8 +583,8 @@ export default function ProductsPage() {
                   text="Video Generation"
                   icon={
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <rect x="1" y="3" width="10" height="10" rx="2" stroke="#00b8d4" strokeWidth="1.4" opacity="0.8" />
-                      <path d="M11 8L15 5.5V10.5L11 8Z" fill="#00b8d4" opacity="0.8" />
+                      <rect x="1" y="3" width="10" height="10" rx="2" stroke="#999999" strokeWidth="1.4" opacity="0.8" />
+                      <path d="M11 8L15 5.5V10.5L11 8Z" fill="#999999" opacity="0.8" />
                     </svg>
                   }
                 />
@@ -598,7 +598,7 @@ export default function ProductsPage() {
                   AI video generation.<br />Cinematic output<br />from one prompt.
                 </h2>
 
-                <p style={{ fontSize: 15, color: '#8A9EAE', lineHeight: 1.75, margin: '0 0 28px', maxWidth: '44ch' }}>
+                <p style={{ fontSize: 15, color: '#999999', lineHeight: 1.75, margin: '0 0 28px', maxWidth: '44ch' }}>
                   Text-to-video or image-to-video — select a model and let it run. From
                   short social clips to long-form narratives, every format is supported.
                 </p>
@@ -619,7 +619,7 @@ export default function ProductsPage() {
                 <Link href="/login" className="cta-link" style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15,
-                  color: '#00b8d4', textDecoration: 'none',
+                  color: '#787878', textDecoration: 'none',
                 }}>
                   Generate your first video
                   <span className="cta-arrow"><ArrowRight /></span>
@@ -646,7 +646,7 @@ export default function ProductsPage() {
               position: 'absolute', top: -48, left: -16, zIndex: 0,
               fontFamily: 'var(--font-heading)', fontWeight: 800,
               fontSize: 'clamp(100px,16vw,192px)', lineHeight: 1,
-              color: '#111A26', userSelect: 'none', pointerEvents: 'none',
+              color: '#161616', userSelect: 'none', pointerEvents: 'none',
             }}>03</div>
 
             <div className="prod-grid" style={{ position: 'relative', zIndex: 1 }}>
@@ -656,9 +656,9 @@ export default function ProductsPage() {
                   text="Studio"
                   icon={
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <circle cx="8" cy="8" r="6.5" stroke="#00b8d4" strokeWidth="1.4" opacity="0.7" />
-                      <circle cx="8" cy="6" r="2.2" fill="#00b8d4" opacity="0.8" />
-                      <path d="M3.5 14C3.5 11.5 5.5 9.5 8 9.5C10.5 9.5 12.5 11.5 12.5 14" stroke="#00b8d4" strokeWidth="1.4" strokeLinecap="round" />
+                      <circle cx="8" cy="8" r="6.5" stroke="#999999" strokeWidth="1.4" opacity="0.7" />
+                      <circle cx="8" cy="6" r="2.2" fill="#999999" opacity="0.8" />
+                      <path d="M3.5 14C3.5 11.5 5.5 9.5 8 9.5C10.5 9.5 12.5 11.5 12.5 14" stroke="#999999" strokeWidth="1.4" strokeLinecap="round" />
                     </svg>
                   }
                 />
@@ -672,7 +672,7 @@ export default function ProductsPage() {
                   Talking video studio.<br />Your voice,<br />your face.
                 </h2>
 
-                <p style={{ fontSize: 15, color: '#8A9EAE', lineHeight: 1.75, margin: '0 0 28px', maxWidth: '44ch' }}>
+                <p style={{ fontSize: 15, color: '#999999', lineHeight: 1.75, margin: '0 0 28px', maxWidth: '44ch' }}>
                   Turn your script into a lifelike avatar video. Powered by ElevenLabs voice
                   synthesis — clone your voice or choose from hundreds of voices across
                   28 languages.
@@ -688,7 +688,7 @@ export default function ProductsPage() {
                 <Link href="/studio" className="cta-link" style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15,
-                  color: '#00b8d4', textDecoration: 'none',
+                  color: '#787878', textDecoration: 'none',
                 }}>
                   Open the Studio
                   <span className="cta-arrow"><ArrowRight /></span>
@@ -706,7 +706,7 @@ export default function ProductsPage() {
         {/* ── Bottom CTA ──────────────────────────────────────── */}
         <section style={{
           padding: 'clamp(60px,7vw,96px) 32px',
-          borderTop: '1px solid #151F2E',
+          borderTop: '1px solid #1C1C1C',
         }}>
           <div style={{
             maxWidth: 1280, margin: '0 auto',
@@ -721,22 +721,22 @@ export default function ProductsPage() {
               }}>
                 Ready to create?
               </h2>
-              <p style={{ fontSize: 15, color: '#8A9EAE', margin: 0 }}>
+              <p style={{ fontSize: 15, color: '#999999', margin: 0 }}>
                 Start free. No credit card required.
               </p>
             </div>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               <Link href="/login" style={{
-                background: '#dceaf4', color: '#070e1a', fontWeight: 700, fontSize: 15,
+                background: '#FFFFFF', color: '#000000', fontWeight: 700, fontSize: 15,
                 padding: '14px 28px', borderRadius: 12, textDecoration: 'none',
                 fontFamily: 'var(--font-heading)', display: 'inline-flex', alignItems: 'center',
               }}>
                 Get Started Free
               </Link>
               <Link href="/pricing" style={{
-                background: 'transparent', color: '#dceaf4', fontWeight: 600, fontSize: 15,
+                background: 'transparent', color: '#FFFFFF', fontWeight: 600, fontSize: 15,
                 padding: '14px 28px', borderRadius: 12, textDecoration: 'none',
-                fontFamily: 'var(--font-heading)', border: '1px solid #183048',
+                fontFamily: 'var(--font-heading)', border: '1px solid #1C1C1C',
                 display: 'inline-flex', alignItems: 'center',
               }}>
                 View Pricing

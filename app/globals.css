@@ -2,79 +2,45 @@
 
 :root {
   /* ── Backgrounds ── */
-  --color-bg-obsidian:      #070e1a;
-  --color-bg-charcoal:      #0c1825;
-  --color-bg-panel:         #0f2035;
-  --color-bg-graphite-line: #183048;
-
-  /* ── Accents ── */
-  --color-accent-teal: #00b8d4;
-  --color-accent-cyan: #00d8ec;
-  --color-accent-aqua: #7ee8f8;
-
-  /* ── Gradient ── */
-  --gradient-primary: linear-gradient(135deg, #00b8d4, #00d8ec);
+  --color-bg-primary:    #000000;
+  --color-bg-section:    #101010;
+  --color-bg-panel:      #161616;
+  --color-bg-surface:    #2C2C2C;
+  --color-bg-disabled:   #505050;
 
   /* ── Text ── */
-  --color-text-primary:   #dceaf4;
-  --color-text-secondary: #7aacc4;
-  --color-text-muted:     #4a7a96;
+  --color-text-primary:   #FFFFFF;
+  --color-text-secondary: #E8E8E8;
+  --color-text-body:      #999999;
+  --color-text-muted:     #787878;
+  --color-text-hint:      #505050;
+
+  /* ── Borders ── */
+  --color-border:        #2C2C2C;
+  --color-border-subtle: #1C1C1C;
 
   /* ── Semantic ── */
   --color-success: #21D69B;
   --color-warning: #F6B94A;
   --color-error:   #FF5D6C;
 
-  /* ── Legacy aliases for @theme block ── */
-  --background: #070e1a;
-  --foreground: #dceaf4;
+  /* ── Legacy aliases ── */
+  --background: #000000;
+  --foreground: #FFFFFF;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* Brand spec: FreeSans Bold (headers) / FreeSans (body) */
-  --font-sans: var(--font-heading), 'FreeSans', 'Open Sans', system-ui, sans-serif;
-  --font-body: var(--font-body-text), 'FreeSans', 'Open Sans', system-ui, sans-serif;
+  --font-sans: var(--font-heading), 'DM Sans', system-ui, sans-serif;
+  --font-body: var(--font-body-text), 'DM Sans', system-ui, sans-serif;
 }
 
 body {
-  background: var(--color-bg-obsidian);
+  background: var(--color-bg-primary);
   color: var(--color-text-primary);
-  font-family: var(--font-body-text), 'FreeSans', 'Open Sans', system-ui, sans-serif;
+  font-family: var(--font-body-text), 'DM Sans', system-ui, sans-serif;
 }
-
-/* ── Background drift blobs ── */
-@keyframes bg-drift-1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%  { transform: translate(30px, -50px) scale(1.1); }
-  66%  { transform: translate(-20px, 20px) scale(0.9); }
-}
-@keyframes bg-drift-2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%  { transform: translate(-40px, 30px) scale(1.15); }
-  66%  { transform: translate(25px, -40px) scale(0.85); }
-}
-@keyframes bg-drift-3 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%  { transform: translate(20px, 40px) scale(1.05); }
-  66%  { transform: translate(-30px, -30px) scale(0.95); }
-}
-.animate-bg-drift-1 { animation: bg-drift-1 8s ease-in-out infinite; }
-.animate-bg-drift-2 { animation: bg-drift-2 10s ease-in-out infinite; }
-.animate-bg-drift-3 { animation: bg-drift-3 12s ease-in-out infinite; }
-
-/* ── Float ── */
-@keyframes float-up {
-  0%, 100% { transform: translateY(0); }
-  50%  { transform: translateY(-12px); }
-}
-@keyframes float-down {
-  0%, 100% { transform: translateY(0); }
-  50%  { transform: translateY(12px); }
-}
-.animate-float-up   { animation: float-up 6s ease-in-out infinite; }
-.animate-float-down { animation: float-down 6s ease-in-out infinite; }
 
 /* ── Fade rise ── */
 @keyframes fade-rise {
@@ -108,7 +74,7 @@ body {
 .loader-ribbon {
   position: relative;
   height: 2px;
-  background: #183048;
+  background: #1C1C1C;
   border-radius: 99px;
   overflow: hidden;
 }
@@ -117,7 +83,7 @@ body {
   position: absolute;
   inset: 0;
   width: 25%;
-  background: linear-gradient(135deg, #00b8d4, #00d8ec);
+  background: #FFFFFF;
   border-radius: 99px;
   animation: ribbon-sweep 1.4s cubic-bezier(0.4,0,0.6,1) infinite;
 }
@@ -132,7 +98,7 @@ body {
   width: 3px;
   height: 24px;
   border-radius: 2px;
-  background: linear-gradient(135deg, #00b8d4, #00d8ec);
+  background: #FFFFFF;
   transform-origin: bottom;
   animation: waveform-pulse 0.9s ease-in-out infinite;
 }
@@ -145,7 +111,7 @@ body {
 
 /* ── Gallery waterfall (login) ── */
 @keyframes waterfall-down { from { transform: translateY(-50%); } to { transform: translateY(0%); } }
-@keyframes waterfall-up   { from { transform: translateY(0%); }   to { transform: translateY(-50%); } }
+@keyframes waterfall-up   { from { transform: translateY(0%);   } to { transform: translateY(-50%); } }
 .waterfall-down { animation: waterfall-down 25s linear infinite; }
 .waterfall-up   { animation: waterfall-up   20s linear infinite; }
 
@@ -161,14 +127,6 @@ body {
 @keyframes gallery-scroll-reverse { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
 .animate-marquee-reverse { animation: gallery-scroll-reverse 40s linear infinite; }
 
-/* ── Glow (cosmic) ── */
-@keyframes cosmic-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(0,184,212,0.3); }
-  50%       { box-shadow: 0 0 40px rgba(0,184,212,0.55), 0 0 80px rgba(0,216,236,0.18); }
-}
-.animate-teal-glow   { animation: cosmic-glow 3s ease-in-out infinite; }
-.animate-cosmic-glow { animation: cosmic-glow 3s ease-in-out infinite; }
-
 /* ── Stagger delays ── */
 .delay-100  { animation-delay: 100ms; }
 .delay-200  { animation-delay: 200ms; }
@@ -180,22 +138,14 @@ body {
 
 /* ── Glass panels ── */
 .glass {
-  background: rgba(27, 15, 50, 0.72);
+  background: rgba(255,255,255,0.03);
   backdrop-filter: blur(20px);
-  border: 1px solid #183048;
+  border: 1px solid #1C1C1C;
 }
 .glass-light {
   background: rgba(255,255,255,0.04);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255,255,255,0.07);
-}
-
-/* ── Gradient text ── */
-.text-gradient {
-  background: linear-gradient(90deg, #00b8d4, #00d8ec);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 /* ── Button base classes ── */
@@ -205,18 +155,17 @@ body {
   gap: 6px;
   padding: 10px 22px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #00b8d4, #00d8ec);
-  color: #0B0F14;
+  background: #FFFFFF;
+  color: #000000;
   font-weight: 600;
   font-size: 14px;
   border: none;
   cursor: pointer;
   text-decoration: none;
-  transition: opacity 0.2s, box-shadow 0.2s;
+  transition: opacity 0.18s;
 }
 .btn-primary:hover {
-  opacity: 0.9;
-  box-shadow: 0 0 24px rgba(0,184,212,0.45);
+  opacity: 0.88;
 }
 .btn-secondary {
   display: inline-flex;
@@ -224,41 +173,41 @@ body {
   gap: 6px;
   padding: 10px 22px;
   border-radius: 12px;
-  background: #0f2035;
-  color: #dceaf4;
+  background: transparent;
+  color: #FFFFFF;
   font-weight: 600;
   font-size: 14px;
-  border: 1px solid #00b8d4;
+  border: 1px solid #2C2C2C;
   cursor: pointer;
   text-decoration: none;
-  transition: background 0.2s, box-shadow 0.2s;
+  transition: border-color 0.18s, background 0.18s;
 }
 .btn-secondary:hover {
-  background: #183048;
-  box-shadow: 0 0 16px rgba(0,184,212,0.25);
+  border-color: #505050;
+  background: rgba(255,255,255,0.04);
 }
 .btn-tertiary {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: #00d8ec;
+  color: #E8E8E8;
   font-weight: 500;
   font-size: 14px;
   background: none;
   border: none;
   cursor: pointer;
   text-decoration: none;
-  transition: color 0.2s, text-shadow 0.2s;
+  transition: color 0.18s;
 }
 .btn-tertiary:hover {
-  color: #00d8ec;
+  color: #FFFFFF;
 }
 
 /* ── Sidebar active pill ── */
 .sidebar-active {
-  background: rgba(0,184,212,0.1);
-  border-left: 3px solid #00b8d4;
-  color: #dceaf4;
+  background: rgba(255,255,255,0.06);
+  border-left: 3px solid #FFFFFF;
+  color: #FFFFFF;
 }
 
 /* ── Respect reduced motion ── */

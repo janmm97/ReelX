@@ -138,30 +138,30 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#070e1a' }}>
-        <div style={{ color: '#4a7a96', fontSize: 14 }}>Loading…</div>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#000000' }}>
+        <div style={{ color: '#787878', fontSize: 14 }}>Loading…</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen text-white" style={{ background: '#070e1a', fontFamily: 'var(--font-body-text)' }}>
+    <div className="min-h-screen text-white" style={{ background: '#000000', fontFamily: 'var(--font-body-text)' }}>
 
       {/* Header */}
       <header style={{
         height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 24px', background: '#101722', borderBottom: '1px solid #183048',
+        padding: '0 24px', background: '#101010', borderBottom: '1px solid #1C1C1C',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
-            <Image src="/brand/reelx-icon.png" alt="Reelx" width={24} height={24} style={{ objectFit: 'contain' }} />
+            <Image src="/brand/reelx-icon-white-svg.svg" alt="Reelx" width={24} height={24} style={{ objectFit: 'contain' }} />
           </Link>
-          <span style={{ color: '#183048', fontSize: 14 }}>/</span>
-          <span style={{ color: '#dceaf4', fontSize: 14, fontWeight: 600 }}>Settings</span>
+          <span style={{ color: '#1C1C1C', fontSize: 14 }}>/</span>
+          <span style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 600 }}>Settings</span>
         </div>
-        <Link href="/dashboard" style={{ fontSize: 13, color: '#4a7a96', textDecoration: 'none' }}
-          onMouseEnter={e => (e.currentTarget.style.color = '#dceaf4')}
-          onMouseLeave={e => (e.currentTarget.style.color = '#4a7a96')}
+        <Link href="/dashboard" style={{ fontSize: 13, color: '#787878', textDecoration: 'none' }}
+          onMouseEnter={e => (e.currentTarget.style.color = '#FFFFFF')}
+          onMouseLeave={e => (e.currentTarget.style.color = '#787878')}
         >
           ← Back to Dashboard
         </Link>
@@ -170,8 +170,8 @@ export default function SettingsPage() {
       <main style={{ maxWidth: 680, margin: '0 auto', padding: '40px 24px', display: 'flex', flexDirection: 'column', gap: 24 }}>
 
         {/* Account info */}
-        <section style={{ background: '#101722', border: '1px solid #183048', borderRadius: 16, padding: '24px 28px' }}>
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#dceaf4', margin: '0 0 16px' }}>
+        <section style={{ background: '#101010', border: '1px solid #1C1C1C', borderRadius: 16, padding: '24px 28px' }}>
+          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#FFFFFF', margin: '0 0 16px' }}>
             Account
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -179,13 +179,13 @@ export default function SettingsPage() {
               // eslint-disable-next-line @next/next/no-img-element
               <img src={user.avatar_url} alt={user.name ?? ''} style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover' }} />
             ) : (
-              <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#1a2233', border: '1px solid #183048', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#4a7a96' }}>
+              <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#1A1A1A', border: '1px solid #1C1C1C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#787878' }}>
                 {(user?.name ?? user?.email ?? '?')[0].toUpperCase()}
               </div>
             )}
             <div>
-              {user?.name && <p style={{ fontSize: 15, fontWeight: 600, color: '#dceaf4', margin: '0 0 2px' }}>{user.name}</p>}
-              <p style={{ fontSize: 13, color: '#4a7a96', margin: 0 }}>{user?.email}</p>
+              {user?.name && <p style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF', margin: '0 0 2px' }}>{user.name}</p>}
+              <p style={{ fontSize: 13, color: '#787878', margin: 0 }}>{user?.email}</p>
             </div>
           </div>
         </section>
@@ -201,29 +201,29 @@ export default function SettingsPage() {
         )}
 
         {/* Download all */}
-        <section style={{ background: '#101722', border: '1px solid #183048', borderRadius: 16, padding: '24px 28px' }}>
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#dceaf4', margin: '0 0 6px' }}>
+        <section style={{ background: '#101010', border: '1px solid #1C1C1C', borderRadius: 16, padding: '24px 28px' }}>
+          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#FFFFFF', margin: '0 0 6px' }}>
             Download Your Content
           </h2>
-          <p style={{ fontSize: 13, color: '#4a7a96', margin: '0 0 20px', lineHeight: 1.5 }}>
+          <p style={{ fontSize: 13, color: '#787878', margin: '0 0 20px', lineHeight: 1.5 }}>
             Download all images and videos you&apos;ve generated. Files are downloaded one-by-one to your browser.
           </p>
 
           {downloadProgress && (
             <div style={{ marginBottom: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                <span style={{ fontSize: 12, color: '#4a7a96' }}>
+                <span style={{ fontSize: 12, color: '#787878' }}>
                   Downloading {downloadProgress.current} of {downloadProgress.total}…
                 </span>
-                <span style={{ fontSize: 12, color: '#4a7a96' }}>
+                <span style={{ fontSize: 12, color: '#787878' }}>
                   {Math.round((downloadProgress.current / downloadProgress.total) * 100)}%
                 </span>
               </div>
-              <div style={{ height: 4, background: '#1a2233', borderRadius: 99 }}>
+              <div style={{ height: 4, background: '#1A1A1A', borderRadius: 99 }}>
                 <div style={{
                   height: '100%', borderRadius: 99,
                   width: `${(downloadProgress.current / downloadProgress.total) * 100}%`,
-                  background: 'linear-gradient(90deg, #00b8d4, #00d8ec)',
+                  background: '#FFFFFF',
                   transition: 'width 0.3s ease',
                 }} />
               </div>
@@ -236,8 +236,8 @@ export default function SettingsPage() {
             style={{
               display: 'flex', alignItems: 'center', gap: 8,
               padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 600,
-              background: 'linear-gradient(135deg, #00b8d4, #00d8ec)',
-              border: 'none', color: '#070e1a', cursor: downloading ? 'wait' : 'pointer',
+              background: '#FFFFFF',
+              border: 'none', color: '#000000', cursor: downloading ? 'wait' : 'pointer',
               opacity: downloading ? 0.7 : 1, transition: 'opacity 0.15s',
             }}
           >
@@ -254,7 +254,7 @@ export default function SettingsPage() {
           <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#fca5a5', margin: '0 0 6px' }}>
             Danger Zone
           </h2>
-          <p style={{ fontSize: 13, color: '#4a7a96', margin: '0 0 20px', lineHeight: 1.5 }}>
+          <p style={{ fontSize: 13, color: '#787878', margin: '0 0 20px', lineHeight: 1.5 }}>
             Permanently delete your account and all associated data including generated images, videos, and credits. <strong style={{ color: '#fca5a5' }}>This cannot be undone.</strong>
           </p>
 
@@ -282,8 +282,8 @@ export default function SettingsPage() {
                 onChange={e => setConfirmText(e.target.value)}
                 placeholder="Type DELETE to confirm"
                 style={{
-                  background: '#070e1a', border: '1px solid rgba(239,68,68,0.4)', borderRadius: 8,
-                  padding: '10px 14px', fontSize: 13, color: '#dceaf4', outline: 'none',
+                  background: '#000000', border: '1px solid rgba(239,68,68,0.4)', borderRadius: 8,
+                  padding: '10px 14px', fontSize: 13, color: '#FFFFFF', outline: 'none',
                   maxWidth: 300,
                 }}
               />
@@ -293,7 +293,7 @@ export default function SettingsPage() {
                   disabled={confirmText !== 'DELETE' || deleting}
                   style={{
                     padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 600,
-                    background: confirmText === 'DELETE' ? '#ef4444' : '#1a2233',
+                    background: confirmText === 'DELETE' ? '#ef4444' : '#1A1A1A',
                     border: 'none', color: '#fff',
                     cursor: confirmText === 'DELETE' && !deleting ? 'pointer' : 'not-allowed',
                     opacity: confirmText !== 'DELETE' || deleting ? 0.5 : 1,
@@ -306,7 +306,7 @@ export default function SettingsPage() {
                   onClick={() => { setConfirmDelete(false); setConfirmText('') }}
                   style={{
                     padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 600,
-                    background: 'none', border: '1px solid #183048', color: '#4a7a96', cursor: 'pointer',
+                    background: 'none', border: '1px solid #1C1C1C', color: '#787878', cursor: 'pointer',
                   }}
                 >
                   Cancel

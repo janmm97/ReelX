@@ -9,14 +9,14 @@ export const metadata = {
 
 export default function LegalPage() {
   return (
-    <div style={{ background: '#070e1a', minHeight: '100vh', color: '#dceaf4' }}>
+    <div style={{ background: '#000000', minHeight: '100vh', color: '#FFFFFF' }}>
       <PublicHeader compact />
 
       {/* Body */}
       <main style={{ maxWidth: 760, margin: '0 auto', padding: '72px 32px 96px' }}>
-        <p style={{ fontSize: 11, fontWeight: 700, color: '#4A5C6E', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>Legal</p>
+        <p style={{ fontSize: 11, fontWeight: 700, color: '#787878', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>Legal</p>
         <h1 style={{ fontSize: 'clamp(28px,4vw,42px)', fontWeight: 700, margin: '0 0 8px', lineHeight: 1.15 }}>Legal Information</h1>
-        <p style={{ fontSize: 13, color: '#4A5C6E', marginBottom: 56 }}>Last updated: {LAST_UPDATED}</p>
+        <p style={{ fontSize: 13, color: '#787878', marginBottom: 56 }}>Last updated: {LAST_UPDATED}</p>
 
         <Section title="1. Company">
           <p>Reelx is operated by Reelx App, an independent software company. References to "Reelx," "we," "us," or "our" throughout this site refer to Reelx App and its services.</p>
@@ -58,10 +58,10 @@ export default function LegalPage() {
           <p>We may update this legal information from time to time. Continued use of the service after changes are posted constitutes acceptance of the revised terms. Material changes will be communicated via email or an in-app notice.</p>
         </Section>
 
-        <div style={{ marginTop: 56, paddingTop: 32, borderTop: '1px solid #1E2A3A' }}>
-          <p style={{ fontSize: 13, color: '#4A5C6E' }}>
+        <div style={{ marginTop: 56, paddingTop: 32, borderTop: '1px solid #1C1C1C' }}>
+          <p style={{ fontSize: 13, color: '#787878' }}>
             Questions about this page?{' '}
-            <a href="mailto:support@reelx.app" style={{ color: '#4a7a96', textDecoration: 'underline', textUnderlineOffset: 3 }}>
+            <a href="mailto:support@reelx.app" style={{ color: '#787878', textDecoration: 'underline', textUnderlineOffset: 3 }}>
               support@reelx.app
             </a>
           </p>
@@ -74,8 +74,8 @@ export default function LegalPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section style={{ marginBottom: 40 }}>
-      <h2 style={{ fontSize: 16, fontWeight: 600, color: '#C8D5E0', margin: '0 0 12px' }}>{title}</h2>
-      <div style={{ fontSize: 14, color: '#4a7a96', lineHeight: 1.75 }}>
+      <h2 style={{ fontSize: 16, fontWeight: 600, color: '#E8E8E8', margin: '0 0 12px' }}>{title}</h2>
+      <div style={{ fontSize: 14, color: '#787878', lineHeight: 1.75 }}>
         {children}
       </div>
     </section>
