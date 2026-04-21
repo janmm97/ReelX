@@ -4,6 +4,20 @@
 # Superpowers runtime state
 .superpowers/
 
+# Internal AI assistant instructions & tooling
+.agents/
+CLAUDE.md
+AGENTS.md
+skills-lock.json
+
+# Internal planning docs & dev logs
+docs/superpowers/
+logs/
+
+# Private business assets
+public/brand/*.pptx
+public/brand/*.mp4
+
 # dependencies
 node_modules/
 .pnp
